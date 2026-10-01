@@ -50,6 +50,8 @@ const RIGHT_PAGE_LINES = [
     fontSize: 16,
     yPos: 32,
     duration: 1800,
+    startU: 138,
+    endU: 22,
     translation: 'In the name of Allah, Most Gracious, Most Merciful'
   },
   {
@@ -59,6 +61,8 @@ const RIGHT_PAGE_LINES = [
     fontSize: 17.5,
     yPos: 76,
     duration: 1850,
+    startU: 148,
+    endU: 12,
     translation: 'Learn! For no person is born a scholar'
   },
   {
@@ -68,6 +72,8 @@ const RIGHT_PAGE_LINES = [
     fontSize: 17.5,
     yPos: 120,
     duration: 1850,
+    startU: 148,
+    endU: 14,
     translation: 'And the one with knowledge is not like the ignorant'
   },
   {
@@ -77,6 +83,8 @@ const RIGHT_PAGE_LINES = [
     fontSize: 17.5,
     yPos: 164,
     duration: 1900,
+    startU: 148,
+    endU: 12,
     translation: 'Even the leader of a people who has no knowledge'
   },
   {
@@ -86,46 +94,58 @@ const RIGHT_PAGE_LINES = [
     fontSize: 17.5,
     yPos: 208,
     duration: 1900,
+    startU: 148,
+    endU: 12,
     translation: 'Is small when gatherings surround him'
   }
 ];
 
 // Left Page: The Six Pillars of Attaining Sacred Knowledge
+// Lines 2 and 4 use authentic calligraphic kashida (tatweel) so all verses align perfectly
+// along both margins, matching the balanced presentation of the right page
 const LEFT_PAGE_LINES = [
   {
     id: 'l-v5',
     text: 'أَخِي لَنْ تَنَالَ الْعِلْمَ إِلَّا بِسِتَّةٍ',
     isGold: false,
-    fontSize: 17,
+    fontSize: 17.5,
     yPos: 34,
     duration: 1850,
+    startU: 148,
+    endU: 12,
     translation: 'My brother, you will never attain knowledge except by six:'
   },
   {
     id: 'l-v6',
-    text: 'سَأُنْبِئُكَ عَنْ تَفْصِيلِهَا بِبَيَانِ',
+    text: 'سَـأُنْبِـئُـكَ عَـنْ تَـفْـصِـيلِـهَـا بِـبَـيَـانِ',
     isGold: false,
-    fontSize: 17,
+    fontSize: 17.5,
     yPos: 78,
     duration: 1850,
+    startU: 148,
+    endU: 12,
     translation: 'I shall inform you of their details with clarity:'
   },
   {
     id: 'l-v7',
     text: 'ذَكَاءٌ وَحِرْصٌ وَاجْتِهَادٌ وَبُلْغَةٌ',
     isGold: false,
-    fontSize: 17,
+    fontSize: 17.5,
     yPos: 122,
     duration: 1900,
+    startU: 148,
+    endU: 12,
     translation: 'Intelligence, eagerness, perseverance, and sustenance,'
   },
   {
     id: 'l-v8',
-    text: 'وَصُحْبَةُ أُسْتَاذٍ وَطُولُ زَمَانِ',
+    text: 'وَصُـحْـبَـةُ أُسْـتَـاذٍ وَطُـولِ زَمَـانِ',
     isGold: false,
-    fontSize: 17,
+    fontSize: 17.5,
     yPos: 166,
     duration: 1900,
+    startU: 148,
+    endU: 12,
     translation: 'Companionship of a mentor (Ustadh), and length of time.'
   },
   {
@@ -135,6 +155,8 @@ const LEFT_PAGE_LINES = [
     fontSize: 15,
     yPos: 210,
     duration: 1250,
+    startU: 104,
+    endU: 56,
     isRosette: true
   }
 ];
@@ -144,7 +166,7 @@ export default function CalligraphyWritingStage({ isWriting = true }) {
   const [lineProgress, setLineProgress] = useState(0); // 0.0 to 1.0
 
   // Pen state in 640x876 container screen coordinates
-  const initialPoint = projectPoint(RIGHT_H, 146, 30);
+  const initialPoint = projectPoint(RIGHT_H, 138, 32);
   const [penState, setPenState] = useState({
     screenX: initialPoint.x,
     screenY: initialPoint.y,
@@ -165,7 +187,7 @@ export default function CalligraphyWritingStage({ isWriting = true }) {
     setLineProgress(0);
     setIsCompleted(false);
     stepStartRef.current = performance.now();
-    const p0 = projectPoint(RIGHT_H, 146, 30);
+    const p0 = projectPoint(RIGHT_H, 138, 32);
     setPenState({
       screenX: p0.x,
       screenY: p0.y,
@@ -214,8 +236,8 @@ export default function CalligraphyWritingStage({ isWriting = true }) {
       const pauseBetweenLines = 380;
 
       const currentH = isRightPage ? RIGHT_H : LEFT_H;
-      const startU = 146;
-      const endU = stepConfig.isRosette ? 62 : 14;
+      const startU = stepConfig.startU !== undefined ? stepConfig.startU : 148;
+      const endU = stepConfig.endU !== undefined ? stepConfig.endU : 12;
 
       if (elapsed < duration) {
         // Active writing of current verse line
@@ -260,7 +282,8 @@ export default function CalligraphyWritingStage({ isWriting = true }) {
         if (nextConfig) {
           const fromPt = projectPoint(currentH, endU, stepConfig.yPos);
           const nextH = nextIsRight ? RIGHT_H : LEFT_H;
-          const toPt = projectPoint(nextH, 146, nextConfig.yPos);
+          const nextStartU = nextConfig.startU !== undefined ? nextConfig.startU : 148;
+          const toPt = projectPoint(nextH, nextStartU, nextConfig.yPos);
 
           // Smooth lifted arc glide
           const liftHeight = 14 * Math.sin(pauseProgress * Math.PI);

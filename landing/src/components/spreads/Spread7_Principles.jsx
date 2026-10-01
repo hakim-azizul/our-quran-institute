@@ -46,7 +46,7 @@ export default function Spread7_Principles({ onNext, side = 'both' }) {
             <div className="label-rule" />
             <span className="label-text">CORE PHILOSOPHY · OUR SACRED COVENANT</span>
           </div>
-          <DiamondOrnament size={36} diamondSize={20} centerColor="#0D4B3E" borderColor="#C5A45A" />
+          <DiamondOrnament size={36} diamondSize={20} centerColor="#062A24" borderColor="#C5A45A" />
         </div>
 
         <h2 className="spread-heading principles-main-title">
@@ -129,7 +129,7 @@ export default function Spread7_Principles({ onNext, side = 'both' }) {
             “We do not measure your success by raw speed, but by the stillness and tranquility of your heart when you stand in prayer.”
           </p>
           <div className="founder-signature-row">
-            <span className="founder-name">Ustadh Azizul Hakim</span>
+            <span className="founder-name">Kazi Tayoubur Rahman</span>
             <span className="founder-role">Lead Qari &amp; Ijazah Holder</span>
           </div>
         </div>
@@ -146,7 +146,7 @@ export default function Spread7_Principles({ onNext, side = 'both' }) {
             <div className="label-rule" />
             <span className="label-text">PEDAGOGICAL PILLARS · 04 ANCHORS</span>
           </div>
-          <DiamondOrnament size={36} diamondSize={20} centerColor="#0D4B3E" borderColor="#C5A45A" />
+          <DiamondOrnament size={36} diamondSize={20} centerColor="#062A24" borderColor="#C5A45A" />
         </div>
         <h3 className="principles-subheading">
           Four anchors that protect your journey from exhaustion.
@@ -162,7 +162,7 @@ export default function Spread7_Principles({ onNext, side = 'both' }) {
           <div key={idx} className="principle-pillar-card">
             <div className="pillar-card-top">
               <div className="principle-card-icon">
-                <Icon name={item.icon} size={17} color="#F3E9D3" />
+                <Icon name={item.icon} size={17} color="#FFDF85" />
               </div>
               <div className="pillar-badge-group">
                 <span className="pillar-num-tag">{item.num}</span>

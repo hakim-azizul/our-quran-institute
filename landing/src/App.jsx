@@ -1,11 +1,16 @@
+'use client';
+
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import dynamic from 'next/dynamic';
 import Lenis from 'lenis';
-import ThreeBookCanvas from './components/ThreeBookCanvas';
 import Navigation from './components/Navigation';
 import BookingModal from './components/BookingModal';
-import BookControls from './components/BookControls';
 import { soundEngine } from './components/AudioEffects';
 import { DiamondOrnament, Icon } from './components/Icons';
+
+const ThreeBookCanvas = dynamic(() => import('./components/ThreeBookCanvas'), {
+  ssr: false
+});
 
 // Spreads
 import Spread0_Hero from './components/spreads/Spread0_Hero';
@@ -18,24 +23,22 @@ import Spread6_Stories from './components/spreads/Spread6_Stories';
 import Spread7_Principles from './components/spreads/Spread7_Principles';
 import Spread8_Closing from './components/spreads/Spread8_Closing';
 
-// Ample scroll travel distance per spread for slow, majestic, authentic page turning
-const SPREAD_SCROLL_DISTANCE = 1100;
-
-// Spread chapter names and page identifiers
-const SPREAD_INFO = [
-  { num: '00', title: 'Open the Book', left: 'Intention & Call', right: 'Sacred Stand' },
-  { num: '01', title: 'Core Pathway', left: 'Gentle Route', right: '3-Step Method' },
-  { num: '02', title: '15-Min Flow', left: 'Daily Habit', right: 'Interactive Surah' },
-  { num: '03', title: 'Sanctuary', left: 'Decay Curve', right: 'Revision Room' },
-  { num: '04', title: 'Consistency', left: 'Effort Metrics', right: 'Live Retention' },
-  { num: '05', title: 'Lead Mentor', left: 'Ustadh Azizul', right: 'Guidance & Adab' },
-  { num: '06', title: 'Global Sanctuary', left: "Dr. Sarah's Journey", right: 'Worldwide Map' },
-  { num: '07', title: 'Sacred Covenant', left: 'Core Philosophy', right: '04 Pillars' },
-  { num: '08', title: 'Enrollment', left: 'The Sacred Call', right: 'Reserve Session' }
+// Section IDs mapped to spread indices
+const SECTION_IDS = [
+  'section-hero',       // 0
+  'section-method',     // 1
+  'section-dailyflow',  // 2
+  'section-retention',  // 3
+  'section-progress',   // 4
+  'section-mentors',    // 5
+  'section-stories',    // 6
+  'section-principles', // 7
+  'section-enrollment'  // 8
 ];
 
 export default function App() {
-  const [scrollProgress, setScrollProgress] = useState(0); // continuous 0.0 to 8.0
+  const [activeSection, setActiveSection] = useState(0);
+  const [scrollProgress, setScrollProgress] = useState(0);
   const [scrollVelocity, setScrollVelocity] = useState(0);
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
@@ -46,21 +49,14 @@ export default function App() {
     height: typeof window !== 'undefined' ? window.innerHeight : 900
   });
 
-  // Mobile Single-Page Mode: Active Page ('left' | 'right')
+  // Mobile Single-Page Mode for Hero
   const [mobileSide, setMobileSide] = useState('left');
-  const [isMobileFlipping, setIsMobileFlipping] = useState(false);
-  const [mobileFlipDir, setMobileFlipDir] = useState('next'); // 'next' | 'prev'
-  const targetSideRef = useRef('left');
-
-  // Touch gesture tracking for mobile & tablet swipe
-  const touchStartRef = useRef({ x: 0, y: 0, time: 0 });
 
   // Opening book intro animation on first land / refresh (starts fully closed, then unfolds open)
   const [openIntroProgress, setOpenIntroProgress] = useState(0); // 0.0 (fully closed) to 1.0 (fully open)
   const [isOpeningIntro, setIsOpeningIntro] = useState(true);
 
   const lenisRef = useRef(null);
-  const totalSpreads = 9;
 
   // Viewport resize and orientation listener
   useEffect(() => {
@@ -78,10 +74,6 @@ export default function App() {
     };
   }, []);
 
-  // Responsive Viewport Categorization
-  // Portrait tablets (e.g. iPad 768x1024, iPad Air 820x1180) have ample height but narrower width.
-  // Rendering single-page volume at ~0.98 scale creates a majestic, readable manuscript layout.
-  // When rotated to landscape (1024x768), it automatically presents the 2-page spread.
   const isPortraitTablet =
     viewport.width >= 640 &&
     viewport.width < 1024 &&
@@ -95,31 +87,54 @@ export default function App() {
     viewport.height <= viewport.width;
   const isTablet = isPortraitTablet || isTabletLandscape;
 
-  // Dynamically calculated scale to guarantee 0 overflow and generous margin on any display
+  // Scale for Hero Book
   const navHeight = isMobile ? 66 : 74;
-  const bottomDockReserved = isTablet ? 90 : 86;
   const desktopScale = Math.min(
     (viewport.width - (isTablet ? 36 : 56)) / 1280,
-    (viewport.height - navHeight - bottomDockReserved) / 876,
+    (viewport.height - navHeight - 110) / 876,
     1.0
   );
 
-  // Mobile single-page scale: 640px base width, with margin for mobile nav & controls
-  const mobileControlH = 88;
   const mobileAvailableW = isPortraitTablet
     ? Math.min(640, viewport.width - 48)
     : viewport.width - 24;
-  const mobileAvailableH = viewport.height - navHeight - mobileControlH - 24;
   const mobileScale = Math.min(
     mobileAvailableW / 640,
-    mobileAvailableH / 876
+    1.0
   );
+
+  // Dynamic measurement of hero content on mobile to collapse phantom transform scale space
+  const heroSpreadRef = useRef(null);
+  const [mobileHeroHeight, setMobileHeroHeight] = useState(1010);
+
+  useEffect(() => {
+    if (!isMobile) return;
+    const el = heroSpreadRef.current;
+    if (!el) return;
+    const updateHeight = () => {
+      const h = el.offsetHeight;
+      if (h > 0) setMobileHeroHeight(h);
+    };
+    updateHeight();
+    const observer = new ResizeObserver(updateHeight);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [isMobile, mobileSide, isOpeningIntro]);
+
+  const mobileExtraSpace = isMobile
+    ? Math.round(mobileHeroHeight * (1 - mobileScale))
+    : 0;
 
   // On page land / refresh: fully closed book rests centered, then smoothly unfolds open into Spread 0
   useEffect(() => {
+    if (isMobile) {
+      setIsOpeningIntro(false);
+      setOpenIntroProgress(1);
+      return;
+    }
     let startTime = null;
-    const closedHoldDuration = 700; // Hold on closed book so user sees the closed volume
-    const openingDuration = 2000; // 2.0s majestic, physical 3D opening
+    const closedHoldDuration = 600;
+    const openingDuration = 1800;
     let animId;
 
     const timer = setTimeout(() => {
@@ -127,7 +142,6 @@ export default function App() {
         if (!startTime) startTime = timestamp;
         const elapsed = timestamp - startTime;
         const raw = Math.min(1, elapsed / openingDuration);
-        // Luxurious cubic ease-in-out
         const eased = raw < 0.5
           ? 4 * raw * raw * raw
           : 1 - Math.pow(-2 * raw + 2, 3) / 2;
@@ -148,16 +162,28 @@ export default function App() {
     };
   }, []);
 
-  // Initialize Lenis with slow, ultra-smooth luxury momentum
+  // Instantly finish intro if user scrolls early
+  useEffect(() => {
+    const handleScrollEarly = () => {
+      if (window.scrollY > 25 && isOpeningIntro) {
+        setOpenIntroProgress(1);
+        setIsOpeningIntro(false);
+      }
+    };
+    window.addEventListener('scroll', handleScrollEarly, { passive: true });
+    return () => window.removeEventListener('scroll', handleScrollEarly);
+  }, [isOpeningIntro]);
+
+  // Initialize Lenis smooth scroll
   useEffect(() => {
     const lenis = new Lenis({
-      duration: isMobile ? 1.6 : 2.2, // Snappier on mobile touch, majestic on desktop
+      duration: isMobile ? 1.2 : 1.6,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       orientation: 'vertical',
       gestureOrientation: 'vertical',
       smoothWheel: true,
-      wheelMultiplier: 0.55,
-      touchMultiplier: 1.15
+      wheelMultiplier: 0.8,
+      touchMultiplier: 1.2
     });
     lenisRef.current = lenis;
 
@@ -169,288 +195,219 @@ export default function App() {
 
     lenis.on('scroll', (e) => {
       setScrollVelocity(e.velocity || 0);
-
-      // Compute exact spread progress based on window scroll
       const scrollY = window.scrollY || document.documentElement.scrollTop || 0;
-      const rawProgress = scrollY / SPREAD_SCROLL_DISTANCE;
-      const clamped = Math.max(0, Math.min(totalSpreads - 1, rawProgress));
-      setScrollProgress(clamped);
+      const heroH = window.innerHeight || 800;
+      setScrollProgress(Math.min(3, scrollY / heroH));
+
+      // Active Section Detection
+      const checkPosition = scrollY + 240;
+      let curr = 0;
+      SECTION_IDS.forEach((id, idx) => {
+        const el = document.getElementById(id);
+        if (el) {
+          if (checkPosition >= el.offsetTop) {
+            curr = idx;
+          }
+        }
+      });
+      setActiveSection(curr);
     });
 
     return () => {
       cancelAnimationFrame(animId);
       lenis.destroy();
     };
-  }, [totalSpreads, isMobile]);
+  }, [isMobile]);
 
-  // Derived spread states
-  const baseSpread = Math.floor(scrollProgress);
-  const turnFraction = scrollProgress - baseSpread;
-  const nextSpread = Math.min(totalSpreads - 1, baseSpread + 1);
-  const currentSpread = Math.round(scrollProgress);
+  // Smooth scroll to a specific section by index (0..8)
+  const scrollToSection = useCallback((targetIndex) => {
+    if (targetIndex < 0 || targetIndex >= SECTION_IDS.length) return;
+    const targetId = SECTION_IDS[targetIndex];
+    const elem = document.getElementById(targetId);
+    if (!elem) return;
 
-  // Reset mobile side to left whenever spread index changes
-  const prevSpreadRef = useRef(currentSpread);
+    soundEngine.playPageTurn('forward');
+
+    if (lenisRef.current) {
+      lenisRef.current.scrollTo(elem, {
+        offset: targetIndex === 0 ? 0 : -84,
+        duration: isMobile ? 1.2 : 1.7
+      });
+    } else {
+      elem.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [isMobile]);
+
+  // Direct URL hash deep linking support on mount (e.g. #section-stories, #section-enrollment)
   useEffect(() => {
-    if (prevSpreadRef.current !== currentSpread) {
-      setMobileSide('left');
-      prevSpreadRef.current = currentSpread;
-    }
-  }, [currentSpread]);
-
-  // Active turning leaf calculation
-  const isActivelyTurning =
-    !isOpeningIntro &&
-    baseSpread < totalSpreads - 1 &&
-    turnFraction > 0.005 &&
-    turnFraction < 0.995;
-
-  // Smooth cosine easing for natural physical leaf weight and deceleration
-  const easedTurn = 0.5 - 0.5 * Math.cos(turnFraction * Math.PI);
-  const baseAngle = -easedTurn * 180; // 0 to -180 deg
-
-  // Natural paper flex physics (Seamless continuous unbroken sheet):
-  const sinP = Math.sin(turnFraction * Math.PI);
-  const leafTranslateZ = sinP * (isMobile ? 28 : 46);
-  const leafCurlZ = sinP * (turnFraction < 0.5 ? -4.5 : -2.0);
-  const leafBowX = sinP * 3.5;
-  const leafSkewY = sinP * (1 - turnFraction * 1.5) * 3.8;
-  const leafScaleX = 1 - sinP * 0.045;
-
-  // Keep book vertically centered without downward drift into bottom controls
-  const slowDownShift = 0;
-  const turnDip = isActivelyTurning ? Math.sin(turnFraction * Math.PI) * (isMobile ? 4 : 8) : 0;
-
-  // Dark spread detection
-  const isDarkSpread = (idx) => idx === 3 || idx === 8;
-
-  // Smooth scroll to a specific spread
-  const scrollToSpread = useCallback(
-    (targetSpread) => {
-      if (targetSpread < 0 || targetSpread >= totalSpreads) return;
-      const targetScrollY = targetSpread * SPREAD_SCROLL_DISTANCE;
-
-      if (lenisRef.current) {
-        lenisRef.current.scrollTo(targetScrollY, {
-          duration: isMobile ? 1.5 : 2.2
-        });
-      }
-    },
-    [totalSpreads, isMobile]
-  );
-
-  const handleNext = useCallback(() => {
-    if (isMobile && mobileSide === 'left') {
-      // On mobile: first turn to right page
-      handleToggleMobileSide('right');
-      return;
-    }
-    if (currentSpread < totalSpreads - 1) {
-      soundEngine.playPageTurn('forward');
-      if (isMobile) {
-        setMobileSide('left');
-      }
-      scrollToSpread(currentSpread + 1);
-    }
-  }, [currentSpread, totalSpreads, scrollToSpread, isMobile, mobileSide]);
-
-  const handlePrev = useCallback(() => {
-    if (isMobile && mobileSide === 'right') {
-      // On mobile: flip back to left page
-      handleToggleMobileSide('left');
-      return;
-    }
-    if (currentSpread > 0) {
-      soundEngine.playPageTurn('backward');
-      if (isMobile) {
-        setMobileSide('right');
-      }
-      scrollToSpread(currentSpread - 1);
-    }
-  }, [currentSpread, scrollToSpread, isMobile, mobileSide]);
-
-  // Mobile page switcher handler with 3D animation
-  const handleToggleMobileSide = (targetSide) => {
-    if (mobileSide === targetSide || isMobileFlipping) return;
-    const dir = targetSide === 'right' ? 'next' : 'prev';
-    setMobileFlipDir(dir);
-    targetSideRef.current = targetSide;
-    setIsMobileFlipping(true);
-    soundEngine.playPageTurn(dir === 'next' ? 'forward' : 'backward');
-
-    setTimeout(() => {
-      setMobileSide(targetSide);
-      setTimeout(() => {
-        setIsMobileFlipping(false);
-      }, 200);
-    }, 200);
-  };
-
-  // Mobile & Tablet Touch Swipe Handling
-  const handleTouchStart = (e) => {
-    const touch = e.touches[0];
-    touchStartRef.current = {
-      x: touch.clientX,
-      y: touch.clientY,
-      time: Date.now()
-    };
-  };
-
-  const handleTouchEnd = (e) => {
-    const touch = e.changedTouches[0];
-    const dx = touch.clientX - touchStartRef.current.x;
-    const dy = touch.clientY - touchStartRef.current.y;
-    const dt = Date.now() - touchStartRef.current.time;
-
-    // Detect horizontal swipe on any touch screen (horizontal delta > vertical delta * 1.2, distance > 35px, time < 650ms)
-    if (Math.abs(dx) > Math.abs(dy) * 1.2 && Math.abs(dx) > 35 && dt < 650) {
-      if (dx < 0) {
-        // Swiped left (advance forward)
-        handleNext();
-      } else {
-        // Swiped right (retreat backward)
-        handlePrev();
+    if (typeof window !== 'undefined' && window.location.hash) {
+      const hashId = window.location.hash.replace('#', '');
+      const idx = SECTION_IDS.indexOf(hashId);
+      if (idx !== -1) {
+        setIsOpeningIntro(false);
+        setOpenIntroProgress(1);
+        setTimeout(() => {
+          scrollToSection(idx);
+        }, 600);
       }
     }
-  };
+  }, [scrollToSection]);
 
-  // Keyboard navigation
+  // Keyboard navigation & modal shortcuts
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
         if (isBookingOpen) setIsBookingOpen(false);
         if (isVideoModalOpen) setIsVideoModalOpen(false);
-        return;
-      }
-      if (isBookingOpen || isVideoModalOpen) return;
-      if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') {
-        e.preventDefault();
-        handleNext();
-      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
-        e.preventDefault();
-        handlePrev();
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleNext, handlePrev, isBookingOpen, isVideoModalOpen]);
+  }, [isBookingOpen, isVideoModalOpen]);
 
-  // Render spread content with optional side prop ('left' | 'right' | 'both')
-  const renderSpread = (index, side = 'both') => {
-    switch (index) {
-      case 0:
-        return (
-          <Spread0_Hero
-            side={side}
-            isWriting={!isOpeningIntro}
-            onNext={handleNext}
-            onOpenBooking={() => setIsBookingOpen(true)}
-            onWatchVideo={() => setIsVideoModalOpen(true)}
-          />
-        );
-      case 1:
-        return <Spread1_Pathway side={side} onNext={handleNext} />;
-      case 2:
-        return <Spread2_DailyLesson side={side} onNext={handleNext} />;
-      case 3:
-        return <Spread3_Revision side={side} onNext={handleNext} />;
-      case 4:
-        return <Spread4_Progress side={side} onNext={handleNext} />;
-      case 5:
-        return (
-          <Spread5_Teacher
-            side={side}
-            onNext={handleNext}
-            onOpenBooking={() => setIsBookingOpen(true)}
-          />
-        );
-      case 6:
-        return <Spread6_Stories side={side} onNext={handleNext} />;
-      case 7:
-        return <Spread7_Principles side={side} onNext={handleNext} />;
-      case 8:
-        return (
-          <Spread8_Closing
-            side={side}
-            onOpenBooking={() => setIsBookingOpen(true)}
-            onNavigate={(idx) => scrollToSpread(idx)}
-          />
-        );
-      default:
-        return null;
+  // Vertical glassmorphism sections specification
+  const SECTIONS = [
+    {
+      id: 'section-method',
+      index: 1,
+      title: 'Methodology & Pathway',
+      kicker: 'CORE PATHWAY',
+      glowColor: 'amber',
+      component: (
+        <Spread1_Pathway
+          onNext={() => scrollToSection(2)}
+        />
+      )
+    },
+    {
+      id: 'section-dailyflow',
+      index: 2,
+      title: '15-Minute Daily Habit',
+      kicker: 'DAILY FLOW',
+      glowColor: 'emerald',
+      component: (
+        <Spread2_DailyLesson
+          onNext={() => scrollToSection(3)}
+        />
+      )
+    },
+    {
+      id: 'section-retention',
+      index: 3,
+      title: 'Spaced Repetition Sanctuary',
+      kicker: 'RETENTION SCIENCE',
+      glowColor: 'amber',
+      component: (
+        <Spread3_Revision
+          onNext={() => scrollToSection(4)}
+        />
+      )
+    },
+    {
+      id: 'section-progress',
+      index: 4,
+      title: 'Effort & Progress Tracking',
+      kicker: 'MEASURABLE MILESTONES',
+      glowColor: 'emerald',
+      component: (
+        <Spread4_Progress
+          onNext={() => scrollToSection(5)}
+        />
+      )
+    },
+    {
+      id: 'section-mentors',
+      index: 5,
+      title: 'Lead Mentorship & Guidance',
+      kicker: 'SANAD SCHOLARS',
+      glowColor: 'amber',
+      component: (
+        <Spread5_Teacher
+          onNext={() => scrollToSection(6)}
+          onOpenBooking={() => setIsBookingOpen(true)}
+        />
+      )
+    },
+    {
+      id: 'section-stories',
+      index: 6,
+      title: 'Global Sanctuary & Worldwide Map',
+      kicker: '38 COUNTRIES ACTIVE',
+      glowColor: 'emerald',
+      component: (
+        <Spread6_Stories
+          onNext={() => scrollToSection(7)}
+        />
+      )
+    },
+    {
+      id: 'section-principles',
+      index: 7,
+      title: 'Sacred Covenant & 04 Pillars',
+      kicker: 'CORE PHILOSOPHY',
+      glowColor: 'amber',
+      component: (
+        <Spread7_Principles
+          onNext={() => scrollToSection(8)}
+        />
+      )
+    },
+    {
+      id: 'section-enrollment',
+      index: 8,
+      title: 'The Sacred Call & Complimentary Session',
+      kicker: 'RESERVE SESSION',
+      glowColor: 'gold',
+      component: (
+        <Spread8_Closing
+          onOpenBooking={() => setIsBookingOpen(true)}
+          onNavigate={(idx) => scrollToSection(idx)}
+        />
+      )
     }
-  };
-
-  const currentInfo = SPREAD_INFO[currentSpread] || SPREAD_INFO[0];
-  const spreadTitles = SPREAD_INFO.map((s) => s.title);
+  ];
 
   return (
-    <div className={`scroll-story-viewport ${isMobile ? 'is-mobile-device' : ''}`}>
-      {/* 1. Three.js 3D WebGL Canvas Layer (Fixed Background: Hardcover, gold corners, silk ribbon, dust motes) */}
+    <div className={`vertical-landing-root ${isMobile ? 'is-mobile-device' : ''}`}>
+      {/* 1. Three.js Ambient Particle & Lighting Canvas (Fixed Background) */}
       <ThreeBookCanvas
-        spreadIndex={currentSpread}
+        spreadIndex={activeSection}
         scrollProgress={scrollProgress}
         scrollVelocity={scrollVelocity}
         isOpeningIntro={isOpeningIntro}
         openIntroProgress={openIntroProgress}
       />
 
-      {/* 2. Top Sticky Navigation */}
+      {/* 2. Sticky Glassmorphism Header Navigation */}
       <Navigation
-        activeSpread={currentSpread}
-        onNavigate={(idx) => scrollToSpread(idx)}
+        activeSpread={activeSection}
+        onNavigate={(idx) => scrollToSection(idx)}
         onOpenBooking={() => setIsBookingOpen(true)}
       />
 
-      {/* 3. Sticky Book Viewport Stage */}
-      <div
-        className="sticky-book-stage"
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-      >
-        {/* Mobile Page Switcher Bar */}
-        {isMobile && !isOpeningIntro && (
-          <div className="mobile-page-control-bar">
-            <div className="mobile-chapter-info">
-              <span className="mobile-chapter-tag">CH {currentInfo.num}</span>
-              <span className="mobile-chapter-title">{currentInfo.title}</span>
-            </div>
+      {/* 3. Hero Section (Kept intact with opening book presentation) */}
+      <section id="section-hero" className="landing-hero-section">
+        {/* Ambient Top Glow for Hero */}
+        <div className="section-ambient-glow glow-amber hero-top-glow" />
 
-            <div className="mobile-page-pill-switcher">
-              <button
-                className={`mobile-pill-btn ${mobileSide === 'left' ? 'active' : ''}`}
-                onClick={() => handleToggleMobileSide('left')}
-              >
-                <span>✦ I · {currentInfo.left}</span>
-              </button>
-              <button
-                className={`mobile-pill-btn ${mobileSide === 'right' ? 'active' : ''}`}
-                onClick={() => handleToggleMobileSide('right')}
-              >
-                <span>✦ II · {currentInfo.right}</span>
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Dynamic Scale Container */}
+        {/* Dynamic Scale Book Stage */}
         <div
           className={`book-scale-viewport ${isMobile ? 'is-mobile-viewport' : ''}`}
           style={{
             transform: `scale(${isMobile ? mobileScale : desktopScale})`,
-            transformOrigin: 'center center'
+            transformOrigin: 'top center',
+            ...(isMobile ? {
+              marginBottom: `${-mobileExtraSpace + 20}px`
+            } : {})
           }}
         >
           <div
             className={`book-spread-3d-wrapper ${isMobile ? 'mobile-single-page-wrapper' : ''} ${
-              isActivelyTurning || isOpeningIntro || isMobileFlipping ? 'is-turning' : ''
+              isOpeningIntro ? 'is-turning' : ''
             }`}
-            style={{
-              transform: `translateY(${slowDownShift + turnDip}px)`
-            }}
           >
             {isOpeningIntro ? (
-              /* INITIAL OPENING SEQUENCE: Fully closed book centered, then unfolds open into Spread 0 */
+              /* INITIAL OPENING SEQUENCE: Fully closed book unfolds open into Spread 0 */
               <div
                 className={`book-spread turning-spread-stage initial-opening-stage ${
                   isMobile ? 'mobile-book-spread' : ''
@@ -461,13 +418,13 @@ export default function App() {
                     : `translateX(${-320 * (1 - openIntroProgress)}px)`
                 }}
               >
-                {/* Realistic deep cast shadow underneath the closed book */}
+                {/* Desk Shadow */}
                 <div
                   className="closed-book-desk-shadow"
                   style={{ opacity: Math.max(0, 1 - openIntroProgress * 1.5) }}
                 />
 
-                {/* Rounded 3D leather spine on the left edge of the closed book */}
+                {/* Leather Spine */}
                 <div
                   className="closed-book-spine"
                   style={{ opacity: Math.max(0, 1 - openIntroProgress * 2.5) }}
@@ -479,7 +436,7 @@ export default function App() {
                   <div className="spine-rib" />
                 </div>
 
-                {/* Left Base Page: Spread 0 Left (waiting underneath the unfolding cover) */}
+                {/* Left Base Page: Spread 0 Left */}
                 <div
                   className="spread-half-base spread-half-left"
                   style={{
@@ -490,31 +447,39 @@ export default function App() {
                       : Math.min(1, (openIntroProgress - 0.75) / 0.25)
                   }}
                 >
-                  {renderSpread(0, 'left')}
+                  <Spread0_Hero
+                    side="left"
+                    isWriting={!isOpeningIntro}
+                    onNext={() => scrollToSection(1)}
+                    onOpenBooking={() => setIsBookingOpen(true)}
+                    onWatchVideo={() => setIsVideoModalOpen(true)}
+                  />
                   {isMobile && (
                     <div
                       className="under-page-shadow"
-                      style={{
-                        opacity: (1 - openIntroProgress) * 0.75
-                      }}
+                      style={{ opacity: (1 - openIntroProgress) * 0.75 }}
                     />
                   )}
                 </div>
 
-                {/* Right Base Page: Spread 0 Right (revealed underneath front cover on desktop) */}
+                {/* Right Base Page: Spread 0 Right */}
                 {!isMobile && (
                   <div className="spread-half-base spread-half-right">
-                    {renderSpread(0, 'right')}
+                    <Spread0_Hero
+                      side="right"
+                      isWriting={!isOpeningIntro}
+                      onNext={() => scrollToSection(1)}
+                      onOpenBooking={() => setIsBookingOpen(true)}
+                      onWatchVideo={() => setIsVideoModalOpen(true)}
+                    />
                     <div
                       className="under-page-shadow"
-                      style={{
-                        opacity: (1 - openIntroProgress) * 0.75
-                      }}
+                      style={{ opacity: (1 - openIntroProgress) * 0.75 }}
                     />
                   </div>
                 )}
 
-                {/* Closed book paper block thickness (visible while book is closed/opening) */}
+                {/* Gilded Block Edge */}
                 {openIntroProgress < 0.95 && (
                   <div
                     className="closed-book-gilded-block"
@@ -529,7 +494,7 @@ export default function App() {
                   </div>
                 )}
 
-                {/* Center Spine Gutter & Page Edge (desktop) */}
+                {/* Central Gutter */}
                 {!isMobile && (
                   <>
                     <div
@@ -543,7 +508,7 @@ export default function App() {
                   </>
                 )}
 
-                {/* The Opening Leather Front Cover */}
+                {/* Front Leather Cover Unfolding */}
                 <div
                   className="book-front-cover-leaf"
                   style={{
@@ -552,7 +517,6 @@ export default function App() {
                     }deg) translateZ(${Math.sin(openIntroProgress * Math.PI) * 44}px)`
                   }}
                 >
-                  {/* Front Face: Emerald Leather & Gold Embossing */}
                   <div className="cover-face cover-face-front">
                     <div className="cover-gold-border" />
                     <div className="cover-gold-corner top-left" />
@@ -577,14 +541,21 @@ export default function App() {
                     <div
                       className="cover-lighting"
                       style={{
-                        opacity: Math.sin(openIntroProgress * Math.PI) * 0.75 + (1 - openIntroProgress) * 0.15
+                        opacity:
+                          Math.sin(openIntroProgress * Math.PI) * 0.75 +
+                          (1 - openIntroProgress) * 0.15
                       }}
                     />
                   </div>
 
-                  {/* Back Face: Hero Left Page (Unfolds from 90deg to 180deg onto the desk) */}
                   <div className="cover-face cover-face-back">
-                    {renderSpread(0, 'left')}
+                    <Spread0_Hero
+                      side="left"
+                      isWriting={false}
+                      onNext={() => scrollToSection(1)}
+                      onOpenBooking={() => setIsBookingOpen(true)}
+                      onWatchVideo={() => setIsVideoModalOpen(true)}
+                    />
                     <div
                       className="cover-lighting"
                       style={{ opacity: Math.max(0, (1 - openIntroProgress) * 0.65) }}
@@ -592,276 +563,101 @@ export default function App() {
                   </div>
                 </div>
               </div>
-            ) : !isActivelyTurning && !isMobileFlipping ? (
-              /* STATIC RESTING SPREAD: 100% crisp, interactive */
-              isMobile ? (
-                <div className={`book-spread mobile-book-spread ${isDarkSpread(currentSpread) ? 'dark-spread' : ''}`}>
-                  <div className="book-page-edge mobile-edge" />
-                  <div className="lifted-corner mobile-lifted-corner" onClick={handleNext} title="Turn page" />
-                  {renderSpread(currentSpread, mobileSide)}
-                </div>
-              ) : (
-                renderSpread(currentSpread, 'both')
-              )
-            ) : isMobileFlipping && isMobile ? (
-              /* MOBILE SMOOTH 3D FLIP ANIMATION (BUTTON/GESTURE FLIP) */
-              <div
-                className={`book-spread mobile-book-spread turning-spread-stage ${
-                  isDarkSpread(currentSpread) ? 'dark-spread' : ''
-                }`}
-              >
-                {/* Destination page waiting underneath */}
-                <div className="spread-half-base mobile-base-page">
-                  {renderSpread(currentSpread, targetSideRef.current)}
-                </div>
-
-                {/* Animated flipping leaf */}
-                <div
-                  className={`turning-leaf-sheet mobile-turning-leaf mobile-flip-${mobileFlipDir}`}
-                >
-                  <div className="leaf-face leaf-face-front">
-                    {renderSpread(currentSpread, mobileSide)}
-                    <div className="leaf-cylinder-lighting dynamic-flip" />
-                  </div>
-                  <div className="leaf-face leaf-face-back">
-                    {renderSpread(currentSpread, targetSideRef.current)}
-                    <div className="leaf-cylinder-lighting dynamic-flip" />
-                  </div>
-                </div>
-              </div>
             ) : isMobile ? (
-              /* MOBILE 3D SCROLL PAGE TURN */
-              <div
-                className={`book-spread mobile-book-spread turning-spread-stage ${
-                  isDarkSpread(baseSpread) ? 'dark-spread' : ''
-                }`}
-              >
-                <div className="spread-half-base mobile-base-page">
-                  {renderSpread(nextSpread, 'left')}
-                </div>
-
-                <div
-                  className="turning-leaf-sheet mobile-turning-leaf"
-                  style={{
-                    transform: `rotateY(${baseAngle}deg) rotateZ(${leafCurlZ}deg) translateZ(${leafTranslateZ}px)`
-                  }}
-                >
-                  <div className="leaf-face leaf-face-front">
-                    {renderSpread(baseSpread, mobileSide)}
-                    <div
-                      className="leaf-cylinder-lighting"
-                      style={{ opacity: Math.sin(turnFraction * Math.PI) }}
-                    />
-                  </div>
-                  <div className="leaf-face leaf-face-back">
-                    {renderSpread(nextSpread, 'left')}
-                    <div
-                      className="leaf-cylinder-lighting"
-                      style={{ opacity: Math.sin(turnFraction * Math.PI) }}
-                    />
-                  </div>
-                </div>
+              <div ref={heroSpreadRef} className="mobile-hero-spread-wrapper">
+                <Spread0_Hero
+                  side="both"
+                  isWriting={true}
+                  onNext={() => scrollToSection(1)}
+                  onOpenBooking={() => setIsBookingOpen(true)}
+                  onWatchVideo={() => setIsVideoModalOpen(true)}
+                />
               </div>
             ) : (
-              /* DESKTOP/TABLET ACTIVE 3D BI-FOLD PAGE TURN */
-              <div
-                className={`book-spread turning-spread-stage ${
-                  isDarkSpread(baseSpread) ? 'dark-spread-left' : ''
-                } ${isDarkSpread(nextSpread) ? 'dark-spread-right' : ''}`}
-              >
-                {/* Stationary Left Base Page (Spread baseSpread Left) */}
-                <div
-                  className={`spread-half-base spread-half-left ${
-                    isDarkSpread(baseSpread) ? 'dark-spread' : ''
-                  }`}
-                >
-                  {renderSpread(baseSpread, 'left')}
-                  <div
-                    className="left-base-shadow"
-                    style={{
-                      opacity:
-                        turnFraction > 0.35
-                          ? Math.sin(((turnFraction - 0.35) / 0.65) * Math.PI * 0.5) * 0.42
-                          : 0
-                    }}
-                  />
-                </div>
-
-                {/* Stationary Right Base Page (Spread nextSpread Right, revealed from underneath) */}
-                <div
-                  className={`spread-half-base spread-half-right ${
-                    isDarkSpread(nextSpread) ? 'dark-spread' : ''
-                  }`}
-                >
-                  {renderSpread(nextSpread, 'right')}
-                  <div
-                    className="under-page-shadow"
-                    style={{
-                      opacity:
-                        turnFraction < 0.65
-                          ? Math.sin((1 - turnFraction / 0.65) * Math.PI * 0.5) * 0.45
-                          : 0
-                    }}
-                  />
-                </div>
-
-                {/* Central Spine Gutter & Page Edge */}
-                <div className="book-page-edge" />
-                <div className="book-center-gutter" />
-
-                {/* The Active Turning Leaf */}
-                <div
-                  className="turning-leaf-sheet"
-                  style={{
-                    transform: `rotateY(${baseAngle}deg) rotateZ(${leafCurlZ}deg) rotateX(${leafBowX}deg) skewY(${leafSkewY}deg) translateZ(${leafTranslateZ}px) scaleX(${leafScaleX})`
-                  }}
-                >
-                  {/* Front Face: current spread right page */}
-                  <div
-                    className={`leaf-face leaf-face-front ${
-                      isDarkSpread(baseSpread) ? 'dark-leaf' : ''
-                    }`}
-                  >
-                    {renderSpread(baseSpread, 'right')}
-                    <div
-                      className="leaf-cylinder-lighting"
-                      style={{
-                        opacity: Math.sin(turnFraction * Math.PI),
-                        background: `linear-gradient(
-                          to right,
-                          rgba(6, 42, 36, 0.4) 0%,
-                          rgba(6, 42, 36, 0.12) ${Math.max(0, (1 - turnFraction * 0.85) * 100 - 24)}%,
-                          rgba(255, 255, 255, 0.3) ${(1 - turnFraction * 0.85) * 100}%,
-                          rgba(6, 42, 36, 0.15) ${Math.min(100, (1 - turnFraction * 0.85) * 100 + 20)}%,
-                          rgba(6, 42, 36, 0.35) 100%
-                        )`
-                      }}
-                    />
-                    <div
-                      className="leaf-corner-curl-sheen"
-                      style={{
-                        opacity: Math.sin(turnFraction * Math.PI) * 0.75
-                      }}
-                    />
-                  </div>
-
-                  {/* Back Face: next spread left page */}
-                  <div
-                    className={`leaf-face leaf-face-back ${
-                      isDarkSpread(nextSpread) ? 'dark-leaf' : ''
-                    }`}
-                  >
-                    {renderSpread(nextSpread, 'left')}
-                    <div
-                      className="leaf-cylinder-lighting"
-                      style={{
-                        opacity: Math.sin(turnFraction * Math.PI),
-                        background: `linear-gradient(
-                          to left,
-                          rgba(6, 42, 36, 0.4) 0%,
-                          rgba(6, 42, 36, 0.12) ${Math.max(0, (0.15 + turnFraction * 0.85) * 100 - 24)}%,
-                          rgba(255, 255, 255, 0.3) ${(0.15 + turnFraction * 0.85) * 100}%,
-                          rgba(6, 42, 36, 0.15) ${Math.min(100, (0.15 + turnFraction * 0.85) * 100 + 20)}%,
-                          rgba(6, 42, 36, 0.35) 100%
-                        )`
-                      }}
-                    />
-                    <div
-                      className="leaf-corner-curl-sheen back-sheen"
-                      style={{
-                        opacity: Math.sin(turnFraction * Math.PI) * 0.75
-                      }}
-                    />
-                  </div>
-                </div>
-              </div>
+              <Spread0_Hero
+                side="both"
+                isWriting={true}
+                onNext={() => scrollToSection(1)}
+                onOpenBooking={() => setIsBookingOpen(true)}
+                onWatchVideo={() => setIsVideoModalOpen(true)}
+              />
             )}
           </div>
         </div>
 
-        {/* Mobile Bottom Quick Navigation */}
-        {isMobile && !isOpeningIntro && (
-          <div className="mobile-bottom-scrubber">
-            <button
-              className="mobile-nav-pill-btn prev"
-              onClick={handlePrev}
-              disabled={currentSpread === 0 && mobileSide === 'left'}
-              aria-label="Previous Page"
-            >
-              <Icon name="arrow-left" size={13} color="currentColor" />
-              <span>Prev</span>
-            </button>
+        {/* Scroll Down Prompt Indicator */}
+        <div className="hero-scroll-indicator" onClick={() => scrollToSection(1)}>
+          <span className="scroll-indicator-text">Explore the Methodology</span>
+          <div className="scroll-mouse-icon">
+            <div className="scroll-mouse-wheel" />
+          </div>
+        </div>
+      </section>
 
-            <div className="mobile-chapter-dots-badge">
-              <span className="mobile-chapter-num">
-                {currentInfo.num} <span className="mobile-part-indicator">({mobileSide === 'left' ? 'I' : 'II'})</span>
-              </span>
-              <div className="mobile-dots-track">
-                {SPREAD_INFO.map((s, idx) => (
-                  <button
-                    key={idx}
-                    className={`mobile-dot ${idx === currentSpread ? 'active' : ''}`}
-                    onClick={() => {
-                      setMobileSide('left');
-                      scrollToSpread(idx);
-                    }}
-                    title={s.title}
-                  />
-                ))}
+      {/* 4. Vertical Glassmorphism Sections (As in reference image) */}
+      <main className="landing-vertical-flow">
+        {SECTIONS.map((sec) => (
+          <section
+            key={sec.id}
+            id={sec.id}
+            className="landing-vertical-section"
+            data-section-index={sec.index}
+          >
+            <div className="section-glass-container">
+              {/* Atmospheric Ambient Glows behind the Glass Card */}
+              <div className={`section-ambient-glow glow-${sec.glowColor}`} />
+              <div className="section-ambient-glow glow-emerald" />
+
+              {/* The Glassmorphic Section Card */}
+              <div className="section-glass-card">
+                {sec.component}
               </div>
             </div>
+          </section>
+        ))}
+      </main>
 
-            <button
-              className="mobile-nav-pill-btn next"
-              onClick={handleNext}
-              disabled={currentSpread === totalSpreads - 1 && mobileSide === 'right'}
-              aria-label="Next Page"
-            >
-              <span>{mobileSide === 'left' ? 'Part II' : 'Next'}</span>
-              <Icon name="arrow-right" size={13} color="currentColor" />
-            </button>
-          </div>
-        )}
-
-        {/* Desktop / Tablet Bottom BookControls */}
-        {!isMobile && !isOpeningIntro && (
-          <div className="desktop-controls-wrapper">
-            <BookControls
-              currentSpread={currentSpread}
-              totalSpreads={totalSpreads}
-              spreadTitles={spreadTitles}
-              onPrev={handlePrev}
-              onNext={handleNext}
-              onGoToSpread={scrollToSpread}
+      {/* 5. Floating Quick Action Button (Bottom Right) */}
+      {activeSection > 0 && (
+        <div className="floating-quick-dock">
+          <button
+            className="floating-action-pill"
+            onClick={() => setIsBookingOpen(true)}
+            title="Book Free Assessment"
+          >
+            <DiamondOrnament size={18} diamondSize={10} centerColor="#062A24" borderColor="#C5A45A" />
+            <span>Book Free Session</span>
+            <Icon name="arrow-up-right" size={14} color="#062A24" />
+          </button>
+          <button
+            className="floating-top-btn"
+            onClick={() => scrollToSection(0)}
+            title="Our Quran Institute - Back to Top"
+            aria-label="Our Quran Institute - Back to Top"
+          >
+            <img
+              src="/assets/logo_gold.png"
+              alt="Our Quran Institute Logo"
+              className="floating-top-logo"
             />
-          </div>
-        )}
-      </div>
+          </button>
+        </div>
+      )}
 
-      {/* 4. Top-to-Bottom Scroll Track Height */}
-      <div
-        className="scroll-track-spacer"
-        style={{
-          height: `${
-            (totalSpreads - 1) * SPREAD_SCROLL_DISTANCE +
-            (typeof window !== 'undefined' ? window.innerHeight : 900)
-          }px`
-        }}
-      />
-
-      {/* 5. Booking Modal */}
+      {/* 6. Booking Modal */}
       <BookingModal
         isOpen={isBookingOpen}
         onClose={() => setIsBookingOpen(false)}
       />
 
-      {/* 6. Video Preview Modal */}
+      {/* 7. Video Preview Modal */}
       {isVideoModalOpen && (
         <div className="modal-backdrop" onClick={() => setIsVideoModalOpen(false)}>
           <div className="modal-card video-card" onClick={(e) => e.stopPropagation()}>
             <button
               className="modal-close-btn"
               onClick={() => setIsVideoModalOpen(false)}
+              aria-label="Close modal"
             >
               ×
             </button>

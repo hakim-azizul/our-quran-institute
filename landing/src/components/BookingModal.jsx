@@ -33,7 +33,7 @@ export default function BookingModal({ isOpen, onClose }) {
             <img src="/assets/logo_gold.png" alt="Our Quran Institute" className="modal-success-logo" />
             <h3 className="modal-success-title">Your Session is Reserved</h3>
             <p className="modal-success-desc">
-              Barakallahu feekum, <strong>{formData.name || 'Seeker'}</strong>. We have sent your onboarding diagnostic invite to <strong>{formData.email || 'your email'}</strong>. Ustadh Azizul Hakim and the mentorship team look forward to meeting you.
+              Barakallahu feekum, <strong>{formData.name || 'Seeker'}</strong>. We have sent your onboarding diagnostic invite to <strong>{formData.email || 'your email'}</strong>. Kazi Tayoubur Rahman and the mentorship team look forward to meeting you.
             </p>
             <button className="btn-gold-pill" onClick={onClose} style={{ marginTop: '20px' }}>
               <span>Return to Book</span>
