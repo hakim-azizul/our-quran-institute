@@ -163,29 +163,45 @@ html, body {
 }
 
 /* ==========================================================================
-   SCROLL-DRIVEN VIEWPORT & STICKY BOOK STAGE
+   VERTICAL LANDING PAGE LAYOUT & HERO BOOK STAGE
    ========================================================================== */
 
-.scroll-story-viewport {
+.vertical-landing-root {
   position: relative;
   width: 100%;
-  background: radial-gradient(circle at 50% 30%, #0a3a31 0%, #062a24 70%, #031713 100%);
+  min-height: 100vh;
+  background: radial-gradient(ellipse at 50% 15%, #082921 0%, #051915 45%, #020b08 100%);
   background-attachment: fixed;
+  color: var(--text-light-cream);
+  overflow-x: hidden;
 }
 
-/* Sticky Book Container anchored below the 90px navigation bar */
-.sticky-book-stage {
-  position: fixed;
-  top: 90px;
-  left: 0;
-  width: 100vw;
-  height: calc(100vh - 90px);
+/* Landing Hero Section */
+.landing-hero-section {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  padding-top: 100px;
+  padding-bottom: 30px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   z-index: 10;
+  overflow: visible;
+}
+
+.hero-top-glow {
+  position: absolute;
+  top: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 760px;
+  height: 380px;
+  background: radial-gradient(ellipse at center, rgba(197, 164, 90, 0.28) 0%, rgba(197, 164, 90, 0) 70%);
   pointer-events: none;
-  padding: 6px 16px 56px 16px;
+  filter: blur(80px);
+  z-index: 0;
 }
 
 .book-spread-3d-wrapper {
@@ -200,11 +216,94 @@ html, body {
   filter: drop-shadow(0 28px 48px rgba(0, 20, 16, 0.45));
 }
 
-/* The invisible spacer that creates the physical scroll distance from top to bottom */
-.scroll-track-spacer {
+/* Hero Scroll Down Prompt */
+.hero-scroll-indicator {
+  margin-top: 28px;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  z-index: 20;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+  user-select: none;
+}
+
+.hero-scroll-indicator:hover {
+  transform: translateY(4px);
+}
+
+.scroll-indicator-text {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-gold);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.scroll-mouse-icon {
+  width: 22px;
+  height: 36px;
+  border: 2px solid rgba(197, 164, 90, 0.6);
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  padding-top: 6px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.scroll-mouse-wheel {
+  width: 3px;
+  height: 7px;
+  background: var(--accent-gold);
+  border-radius: 2px;
+  animation: mouseWheelPulse 1.8s infinite ease-in-out;
+}
+
+@keyframes mouseWheelPulse {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  60% {
+    transform: translateY(10px);
+    opacity: 0.1;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Mobile Hero Page Switcher */
+.hero-mobile-page-switcher {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+  justify-content: center;
   width: 100%;
-  pointer-events: none;
-  visibility: hidden;
+}
+
+.hero-mobile-pill {
+  padding: 8px 16px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--text-light-cream);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.hero-mobile-pill.active {
+  background: rgba(197, 164, 90, 0.25);
+  border-color: var(--accent-gold);
+  color: #FFFDF8;
+  box-shadow: 0 2px 12px rgba(197, 164, 90, 0.35);
 }
 
 /* ==========================================================================
@@ -1650,17 +1749,18 @@ html, body {
   width: 100%;
   height: 100%;
   direction: rtl;
-  text-align: center;
 }
 
-/* Calligraphy Line */
+/* Calligraphy Line - Aligned flush to right margin for authentic Arabic script presentation */
 .calligraphy-line {
   position: absolute;
-  left: 6px;
-  right: 6px;
+  left: 12px;
+  right: 12px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  text-align: right;
+  direction: rtl;
   font-family: 'Amiri', 'Traditional Arabic', serif;
   font-weight: 700;
   line-height: 1.35;
@@ -1668,6 +1768,14 @@ html, body {
   user-select: none;
   will-change: clip-path;
   transition: opacity 0.25s ease;
+}
+
+/* Decorative centered lines (Illuminated Bismillah title & concluding Rosette flourish) */
+.calligraphy-line.gold-ink,
+.calligraphy-line.rosette-line,
+.calligraphy-line.is-centered {
+  justify-content: center;
+  text-align: center;
 }
 
 /* Deep Black-Emerald-Sepia Gall Nut / Antique Oak Ink */
@@ -3540,16 +3648,16 @@ html, body {
 /* Illuminated Quranic Calligraphy Card */
 .quran-ayah-illuminated-card {
   position: relative;
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.96) 0%, rgba(250, 246, 238, 0.90) 100%);
+  background: rgba(255, 255, 255, 0.04);
   backdrop-filter: blur(16px) saturate(160%);
   -webkit-backdrop-filter: blur(16px) saturate(160%);
-  border: 1.5px solid rgba(197, 164, 90, 0.55);
-  border-radius: 16px;
-  padding: 14px 20px 14px 20px;
-  box-shadow: 0 8px 24px rgba(6, 42, 36, 0.07), inset 0 1px 0 rgba(255, 255, 255, 1);
+  border: 1.5px solid rgba(197, 164, 90, 0.45);
+  border-radius: 18px;
+  padding: 16px 22px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.1);
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
 .ayah-card-top-row {
@@ -3564,7 +3672,7 @@ html, body {
   gap: 6px;
   font-size: 10.5px;
   font-weight: 800;
-  color: #8C6A1E;
+  color: #FFDF85;
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
@@ -3573,67 +3681,67 @@ html, body {
   font-family: 'Amiri', serif;
   font-size: 14px;
   font-weight: 700;
-  color: #8C6A1E;
+  color: #FFDF85;
 }
 
 .quranic-calligraphy-text {
   font-family: 'Amiri', 'Traditional Arabic', serif;
-  font-size: 24px;
+  font-size: 25px;
   font-weight: 700;
-  color: #041F19;
+  color: #FBF6E9;
   text-align: center;
   line-height: 1.6;
   padding: 4px 0 2px 0;
   letter-spacing: 0.02em;
+  text-shadow: 0 0 24px rgba(255, 223, 133, 0.3);
 }
 
 .ayah-translation-text {
   font-family: var(--font-serif);
-  font-size: 15.5px;
+  font-size: 15px;
   font-weight: 600;
   font-style: italic;
-  color: #062620;
+  color: rgba(243, 233, 211, 0.92);
   text-align: center;
-  line-height: 1.45;
+  line-height: 1.5;
   margin-bottom: 2px;
   letter-spacing: 0.01em;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.85);
 }
 
 .ayah-annotation-pill {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: rgba(197, 164, 90, 0.16);
-  border: 1px solid rgba(197, 164, 90, 0.42);
+  background: rgba(197, 164, 90, 0.12);
+  border: 1px solid rgba(197, 164, 90, 0.35);
   border-radius: 8px;
   padding: 6px 12px;
   font-size: 11px;
   font-weight: 600;
   line-height: 1.4;
-  color: #072B23;
+  color: rgba(243, 233, 211, 0.88);
 }
 
 .ayah-annotation-pill .pill-dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #B38628;
-  box-shadow: 0 0 6px rgba(197, 164, 90, 0.7);
+  background: #FFDF85;
+  box-shadow: 0 0 8px rgba(255, 223, 133, 0.8);
   flex-shrink: 0;
 }
 
 /* Philosophy Contrast Box */
 .philosophy-contrast-box {
   display: flex;
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.94) 0%, rgba(248, 242, 231, 0.90) 100%);
+  background: rgba(255, 255, 255, 0.035);
   backdrop-filter: blur(14px) saturate(150%);
   -webkit-backdrop-filter: blur(14px) saturate(150%);
-  border-radius: 14px;
-  padding: 13px 16px;
+  border-radius: 16px;
+  padding: 14px 18px;
   gap: 14px;
-  border: 1.5px solid rgba(197, 164, 90, 0.45);
-  box-shadow: 0 6px 20px rgba(6, 42, 36, 0.06), inset 0 1px 0 rgba(255, 255, 255, 1);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
 .contrast-col {
@@ -3650,31 +3758,31 @@ html, body {
 }
 
 .contrast-badge-icon.bad {
-  color: #A33425;
+  color: #F87171;
   font-weight: 800;
   font-size: 13px;
 }
 
 .contrast-badge-icon.good {
-  color: #075241;
+  color: #86EFAC;
   font-weight: 900;
   font-size: 14px;
 }
 
 .contrast-col-title {
   font-family: var(--font-sans);
-  font-size: 11px;
+  font-size: 11.5px;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
 
 .contrast-col.conventional .contrast-col-title {
-  color: #8C2A1E;
+  color: #FCA5A5;
 }
 
 .contrast-col.institute .contrast-col-title {
-  color: #064536;
+  color: #86EFAC;
 }
 
 .contrast-list {
@@ -3686,35 +3794,28 @@ html, body {
 
 .contrast-list li {
   font-size: 11.5px;
-  font-weight: 600;
-  line-height: 1.38;
+  font-weight: 500;
+  line-height: 1.4;
   position: relative;
   padding-left: 12px;
-}
-
-.contrast-col.conventional .contrast-list li {
-  color: #38201C;
+  color: rgba(243, 233, 211, 0.82);
 }
 
 .contrast-col.conventional .contrast-list li::before {
   content: '•';
   position: absolute;
   left: 0;
-  color: #B83A28;
+  color: #F87171;
   font-weight: 900;
   font-size: 13px;
   line-height: 1;
-}
-
-.contrast-col.institute .contrast-list li {
-  color: #092E25;
 }
 
 .contrast-col.institute .contrast-list li::before {
   content: '•';
   position: absolute;
   left: 0;
-  color: #0C614E;
+  color: #86EFAC;
   font-weight: 900;
   font-size: 13px;
   line-height: 1;
@@ -3722,7 +3823,7 @@ html, body {
 
 .contrast-col-divider {
   width: 1px;
-  background: rgba(197, 164, 90, 0.45);
+  background: rgba(255, 255, 255, 0.08);
   align-self: stretch;
 }
 
@@ -3731,13 +3832,13 @@ html, body {
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 11px 16px;
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.94) 0%, rgba(248, 243, 233, 0.90) 100%);
+  padding: 12px 18px;
+  background: rgba(255, 255, 255, 0.03);
   backdrop-filter: blur(14px) saturate(150%);
   -webkit-backdrop-filter: blur(14px) saturate(150%);
-  border: 1.5px solid rgba(197, 164, 90, 0.45);
-  border-radius: 14px;
-  box-shadow: 0 4px 16px rgba(6, 42, 36, 0.06), inset 0 1px 0 rgba(255, 255, 255, 1);
+  border: 1px solid rgba(197, 164, 90, 0.28);
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
 }
 
 .founder-seal-img {
@@ -3745,7 +3846,7 @@ html, body {
   height: 38px;
   object-fit: contain;
   flex-shrink: 0;
-  filter: drop-shadow(0 2px 4px rgba(6, 42, 36, 0.15));
+  filter: drop-shadow(0 2px 6px rgba(197, 164, 90, 0.3));
 }
 
 .founder-quote-content {
@@ -3757,10 +3858,10 @@ html, body {
 .founder-quote-text {
   font-family: var(--font-serif);
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   font-style: italic;
-  line-height: 1.42;
-  color: #062620;
+  line-height: 1.45;
+  color: rgba(243, 233, 211, 0.9);
   letter-spacing: 0.01em;
 }
 
@@ -3768,19 +3869,19 @@ html, body {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 10px;
+  font-size: 11px;
 }
 
 .founder-name {
   font-family: var(--font-sans);
-  font-weight: 800;
-  color: #074033;
+  font-weight: 700;
+  color: #FBF6E9;
   letter-spacing: 0.02em;
 }
 
 .founder-role {
   font-family: var(--font-sans);
-  color: #8C6A1E;
+  color: #C5A45A;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -3802,23 +3903,23 @@ html, body {
 .principles-right-header {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 8px;
 }
 
 .principles-subheading {
   font-family: var(--font-serif);
-  font-size: 25px;
-  font-weight: 600;
-  line-height: 1.15;
-  color: var(--text-forest-dark);
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #FBF6E9;
 }
 
 .principles-subdesc {
   font-family: var(--font-sans);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 500;
-  line-height: 1.5;
-  color: #12342C;
+  line-height: 1.55;
+  color: rgba(243, 233, 211, 0.8);
 }
 
 .principles-grid {
@@ -3828,25 +3929,26 @@ html, body {
 }
 
 .principle-pillar-card {
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.94) 0%, rgba(248, 242, 230, 0.85) 100%);
+  background: rgba(255, 255, 255, 0.04);
   backdrop-filter: blur(14px) saturate(150%);
   -webkit-backdrop-filter: blur(14px) saturate(150%);
-  border: 1.5px solid rgba(197, 164, 90, 0.42);
-  border-radius: 14px;
-  padding: 13px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 16px 18px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 7px;
-  min-height: 144px;
-  box-shadow: 0 6px 18px rgba(6, 42, 36, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  gap: 8px;
+  min-height: auto;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.06);
   transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.25s ease;
 }
 
 .principle-pillar-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 28px rgba(6, 42, 36, 0.12), inset 0 1px 0 rgba(255, 255, 255, 1);
-  border-color: var(--accent-gold);
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.07);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  border-color: rgba(197, 164, 90, 0.45);
 }
 
 .pillar-card-top {
@@ -3856,11 +3958,11 @@ html, body {
 }
 
 .principle-card-icon {
-  width: 34px;
-  height: 34px;
-  background: #0D4B3E;
-  border-radius: 50%;
-  border: 1px solid rgba(197, 164, 90, 0.4);
+  width: 36px;
+  height: 36px;
+  background: rgba(197, 164, 90, 0.15);
+  border-radius: 10px;
+  border: 1px solid rgba(197, 164, 90, 0.35);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3876,47 +3978,47 @@ html, body {
 .pillar-num-tag {
   font-size: 10.5px;
   font-weight: 800;
-  color: #8C6A1E;
+  color: #C5A45A;
   letter-spacing: 0.06em;
 }
 
 .pillar-arabic-text {
   font-family: 'Amiri', 'DM Sans', serif;
-  font-size: 12px;
+  font-size: 12.5px;
   font-weight: 700;
-  color: #063E32;
+  color: #FFDF85;
 }
 
 .principle-card-content {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 4px;
 }
 
 .principle-title {
   font-family: var(--font-serif);
-  font-size: 19px;
+  font-size: 17px;
   font-weight: 700;
-  color: #041F1A;
-  line-height: 1.15;
+  color: #FBF6E9;
+  line-height: 1.2;
 }
 
 .principle-desc {
-  font-size: 11.5px;
-  font-weight: 500;
-  line-height: 1.45;
-  color: #15372F;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.48;
+  color: rgba(243, 233, 211, 0.78);
 }
 
 .pillar-practice-pill {
   align-self: flex-start;
-  background: rgba(197, 164, 90, 0.18);
-  border: 1px solid rgba(197, 164, 90, 0.45);
+  background: rgba(197, 164, 90, 0.15);
+  border: 1px solid rgba(197, 164, 90, 0.35);
   border-radius: 999px;
-  padding: 3px 10px;
-  font-size: 10px;
-  font-weight: 700;
-  color: #61440C;
+  padding: 4px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #FFDF85;
 }
 
 /* Student Sanctuary Guarantee Banner */
@@ -4046,17 +4148,17 @@ html, body {
 
 .enrollment-card {
   width: 100%;
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.96) 0%, rgba(248, 242, 230, 0.90) 100%);
+  background: rgba(255, 255, 255, 0.04);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border: 1.5px solid rgba(197, 164, 90, 0.5);
+  border: 1.5px solid rgba(197, 164, 90, 0.4);
   border-radius: 20px;
-  padding: 22px 24px;
+  padding: 24px 26px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  color: var(--text-forest-dark);
-  box-shadow: 0 16px 44px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 1);
+  gap: 18px;
+  color: #FBF6E9;
+  box-shadow: 0 16px 44px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .enrollment-card-header {
@@ -4069,7 +4171,7 @@ html, body {
   font-family: var(--font-sans);
   font-size: 11px;
   font-weight: 800;
-  color: #8C6A1E;
+  color: #FFDF85;
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
@@ -4078,23 +4180,23 @@ html, body {
   font-family: var(--font-serif);
   font-size: 27px;
   font-weight: 700;
-  color: #062A24;
+  color: #FBF6E9;
   line-height: 1.1;
 }
 
 .duration-pill {
   padding: 0 13px;
   height: 30px;
-  background: rgba(197, 164, 90, 0.22);
+  background: rgba(197, 164, 90, 0.18);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  border: 1.5px solid rgba(197, 164, 90, 0.55);
+  border: 1px solid rgba(197, 164, 90, 0.45);
   border-radius: 999px;
   display: flex;
   align-items: center;
-  font-size: 11.5px;
+  font-size: 11px;
   font-weight: 800;
-  color: #5C410F;
+  color: #FFDF85;
   letter-spacing: 0.04em;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
 }
@@ -4139,86 +4241,110 @@ html, body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 16px;
+  padding: 22px 24px 24px 24px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.038);
+  border: 1px solid rgba(197, 164, 90, 0.28);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-sizing: border-box;
+  overflow: hidden;
+  margin-top: 4px;
 }
 
 .social-channels-header {
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: center;
+  gap: 16px;
   width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 .social-channels-rule {
   flex: 1;
   height: 1px;
-  background: rgba(197, 164, 90, 0.28);
+  background: linear-gradient(90deg, transparent 0%, rgba(197, 164, 90, 0.38) 50%, transparent 100%);
+  border: none;
 }
 
 .social-channels-title {
   font-family: var(--font-sans);
-  font-size: 9.5px;
+  font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--accent-gold);
+  letter-spacing: 0.1em;
+  color: #FFDF85;
   white-space: nowrap;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  margin: 0;
+  padding: 0 4px;
 }
 
 .social-channel-pills {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 9px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
   width: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 .social-pill-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 9px 12px;
-  background: linear-gradient(135deg, rgba(8, 59, 50, 0.85) 0%, rgba(5, 34, 29, 0.92) 100%);
-  backdrop-filter: blur(14px) saturate(160%);
-  -webkit-backdrop-filter: blur(14px) saturate(160%);
-  border: 1px solid rgba(197, 164, 90, 0.38);
-  border-radius: 12px;
+  gap: 10px;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
   text-decoration: none;
-  color: #F8F3E9;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  color: #FBF6E9;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.06);
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   cursor: pointer;
+  box-sizing: border-box;
 }
 
 .social-pill-btn:hover {
   transform: translateY(-2px);
-  border-color: var(--accent-gold);
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.4), 0 0 12px rgba(197, 164, 90, 0.35);
   color: #FFFFFF;
 }
 
 .social-pill-btn.whatsapp:hover {
+  background: rgba(37, 211, 102, 0.12);
   border-color: #25D366;
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.4), 0 0 14px rgba(37, 211, 102, 0.35);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 16px rgba(37, 211, 102, 0.3);
 }
 
 .social-pill-btn.youtube:hover {
-  border-color: #FF0000;
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.4), 0 0 14px rgba(255, 0, 0, 0.35);
+  background: rgba(255, 0, 0, 0.12);
+  border-color: #FF4D4D;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 16px rgba(255, 0, 0, 0.3);
 }
 
 .social-pill-btn.facebook:hover {
+  background: rgba(24, 119, 242, 0.12);
   border-color: #1877F2;
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.4), 0 0 14px rgba(24, 119, 242, 0.35);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 16px rgba(24, 119, 242, 0.3);
 }
 
 .social-pill-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
   flex-shrink: 0;
   transition: transform 0.25s ease;
 }
@@ -4228,24 +4354,25 @@ html, body {
 }
 
 .social-pill-icon.whatsapp {
-  background: rgba(37, 211, 102, 0.18);
+  background: rgba(37, 211, 102, 0.2);
   color: #25D366;
 }
 
 .social-pill-icon.youtube {
-  background: rgba(255, 0, 0, 0.18);
+  background: rgba(255, 0, 0, 0.2);
   color: #FF4D4D;
 }
 
 .social-pill-icon.facebook {
-  background: rgba(24, 119, 242, 0.18);
+  background: rgba(24, 119, 242, 0.2);
   color: #4B9BFF;
 }
 
 .social-pill-text {
   font-family: var(--font-sans);
-  font-size: 11.5px;
-  font-weight: 700;
+  color: #FBF6E9;
+  font-size: 13px;
+  font-weight: 600;
   letter-spacing: 0.02em;
 }
 
@@ -4778,6 +4905,10 @@ html, body {
   perspective: 2200px;
 }
 
+.mobile-single-page-wrapper:not(.is-turning) {
+  height: auto !important;
+}
+
 .mobile-book-spread {
   width: var(--book-page-w, 640px) !important;
   height: var(--book-page-h, 876px) !important;
@@ -4794,6 +4925,72 @@ html, body {
   border: none !important;
   height: 100% !important;
   overflow: hidden;
+}
+
+/* Fluid hero content inside opening animation on mobile */
+.mobile-single-page-wrapper .opening-page {
+  width: 100% !important;
+  height: 100% !important;
+  padding: 48px 28px 36px 32px !important;
+  box-sizing: border-box !important;
+}
+
+.mobile-single-page-wrapper .hero-copy {
+  width: 100% !important;
+  height: auto !important;
+}
+
+.mobile-single-page-wrapper .hero-title {
+  width: 100% !important;
+  min-height: auto !important;
+  font-size: 48px !important;
+  line-height: 100% !important;
+}
+
+.mobile-single-page-wrapper .hero-description {
+  width: 100% !important;
+  height: auto !important;
+  font-size: 16px !important;
+}
+
+.mobile-single-page-wrapper .hero-actions {
+  width: 100% !important;
+  height: auto !important;
+  flex-direction: column !important;
+}
+
+.mobile-single-page-wrapper .hero-actions .btn-gold-pill,
+.mobile-single-page-wrapper .hero-actions .btn-cream-pill {
+  width: 100% !important;
+}
+
+.mobile-single-page-wrapper .trust-signals {
+  width: 100% !important;
+  height: auto !important;
+}
+
+.mobile-single-page-wrapper .trust-divider {
+  width: 100% !important;
+}
+
+.mobile-single-page-wrapper .trust-details {
+  width: 100% !important;
+  height: auto !important;
+  flex-wrap: wrap !important;
+}
+
+.mobile-single-page-wrapper .trust-pill:nth-child(1),
+.mobile-single-page-wrapper .trust-pill:nth-child(2),
+.mobile-single-page-wrapper .trust-pill:nth-child(3) {
+  width: auto !important;
+}
+
+.mobile-single-page-wrapper .kicker-group {
+  width: 100% !important;
+}
+
+.mobile-single-page-wrapper .kicker-label {
+  width: auto !important;
 }
 
 .mobile-single-page-wrapper .spread-half-base {
@@ -5938,5 +6135,3539 @@ html, body {
     text-align: left;
   }
 }
+
+/* ==========================================================================
+   VERTICAL GLASSMORPHISM LANDING PAGE SPECIFICATION
+   Dark Glassmorphism Architecture matching reference example
+   ========================================================================== */
+
+/* Main Vertical Sections Container */
+.landing-vertical-flow {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 84px;
+  padding: 40px 0 120px 0;
+  z-index: 10;
+}
+
+/* Section Wrapper */
+.landing-vertical-section {
+  position: relative;
+  width: 100%;
+  padding: 0 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  scroll-margin-top: 104px;
+}
+
+/* Section Outer Glass Container with Ambient Radiance */
+.section-glass-container {
+  position: relative;
+  width: 100%;
+  max-width: 1260px;
+  margin: 0 auto;
+}
+
+/* Ambient Atmospheric Glows behind each Glass Card */
+.section-ambient-glow {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(80px);
+  opacity: 0.45;
+  z-index: 0;
+  transition: opacity 0.5s ease;
+}
+
+.section-ambient-glow.glow-amber {
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 580px;
+  height: 260px;
+  background: radial-gradient(ellipse at center, rgba(197, 164, 90, 0.35) 0%, rgba(197, 164, 90, 0) 70%);
+}
+
+.section-ambient-glow.glow-emerald {
+  bottom: -40px;
+  right: 12%;
+  width: 520px;
+  height: 280px;
+  background: radial-gradient(ellipse at center, rgba(16, 185, 129, 0.25) 0%, rgba(16, 185, 129, 0) 70%);
+}
+
+.section-ambient-glow.glow-gold {
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 640px;
+  height: 300px;
+  background: radial-gradient(ellipse at center, rgba(255, 223, 133, 0.32) 0%, rgba(197, 164, 90, 0) 70%);
+}
+
+.section-ambient-glow.glow-warm {
+  top: -40px;
+  left: 30%;
+  width: 540px;
+  height: 260px;
+  background: radial-gradient(ellipse at center, rgba(224, 86, 56, 0.25) 0%, rgba(224, 86, 56, 0) 70%);
+}
+
+/* The Core Glassmorphic Section Card (Matching reference design) */
+.section-glass-card {
+  position: relative;
+  z-index: 1;
+  background: rgba(10, 24, 20, 0.72);
+  backdrop-filter: blur(28px) saturate(160%);
+  -webkit-backdrop-filter: blur(28px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 32px;
+  box-shadow: 
+    0 30px 80px -10px rgba(0, 0, 0, 0.65),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    inset 0 0 40px rgba(197, 164, 90, 0.03);
+  padding: 56px 52px;
+  overflow: hidden;
+  transition: border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.section-glass-card:hover {
+  border-color: rgba(197, 164, 90, 0.28);
+  box-shadow: 
+    0 36px 90px -10px rgba(0, 0, 0, 0.75),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    inset 0 0 50px rgba(197, 164, 90, 0.06);
+}
+
+/* Top Subtle Specular Light Rim */
+.section-glass-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 8%;
+  right: 8%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.2) 25%,
+    rgba(197, 164, 90, 0.5) 50%,
+    rgba(255, 255, 255, 0.2) 75%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
+   Book Spread Adaptation inside Glassmorphism Card
+   Transforms fixed horizontal book pages into fluid 2-column glass layout
+   -------------------------------------------------------------------------- */
+
+.section-glass-card .book-spread {
+  position: relative !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
+  min-height: auto !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  border: none !important;
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 52px !important;
+  align-items: start !important;
+  overflow: visible !important;
+  padding: 0 !important;
+}
+
+/* Hide Book Simulator artifacts in vertical landing sections */
+.section-glass-card .book-page-edge,
+.section-glass-card .book-center-gutter,
+.section-glass-card .lifted-corner,
+.section-glass-card .page-number-tag {
+  display: none !important;
+}
+
+/* Spread Columns */
+.section-glass-card .spread-page-left,
+.section-glass-card .spread-page-right {
+  position: relative !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
+  min-height: auto !important;
+  border: none !important;
+  padding: 0 !important;
+  background: transparent !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+}
+
+.section-glass-card .spread-page-full {
+  width: 100% !important;
+  height: auto !important;
+  padding: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+}
+
+/* Reset individual spread page paddings inside glass cards */
+.section-glass-card .pathway-intro,
+.section-glass-card .pathway-sequence,
+.section-glass-card .lesson-explanation,
+.section-glass-card .lesson-workspace,
+.section-glass-card .revision-system,
+.section-glass-card .revision-schedule,
+.section-glass-card .progress-overview,
+.section-glass-card .progress-insight,
+.section-glass-card .milestones-page,
+.section-glass-card .teacher-portrait-page,
+.section-glass-card .teacher-support-page,
+.section-glass-card .stories-left-page,
+.section-glass-card .stories-right-page,
+.section-glass-card .principles-left-page,
+.section-glass-card .principles-right-page,
+.section-glass-card .invitation-page,
+.section-glass-card .enrollment-card-page {
+  padding: 0 !important;
+  width: 100% !important;
+  height: auto !important;
+  min-height: auto !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+}
+
+/* --------------------------------------------------------------------------
+   High-Contrast Modern Typography on Dark Glass
+   -------------------------------------------------------------------------- */
+
+.section-glass-card .spread-heading,
+.section-glass-card .overview-title,
+.section-glass-card .stories-title,
+.section-glass-card .principles-main-title,
+.section-glass-card .card-title {
+  color: #FBF6E9 !important;
+  font-family: var(--font-serif) !important;
+  font-size: clamp(2rem, 3.2vw, 2.75rem) !important;
+  line-height: 1.18 !important;
+  letter-spacing: -0.01em !important;
+}
+
+.section-glass-card .teacher-name {
+  color: #FBF6E9 !important;
+  font-family: var(--font-serif) !important;
+  font-size: clamp(1.25rem, 1.8vw, 1.55rem) !important;
+  line-height: 1.25 !important;
+  letter-spacing: -0.01em !important;
+  font-weight: 700 !important;
+  margin: 0 !important;
+}
+
+.section-glass-card .spread-desc,
+.section-glass-card .overview-desc,
+.section-glass-card .stories-desc,
+.section-glass-card .principles-main-desc,
+.section-glass-card .step-description,
+.section-glass-card .feature-desc,
+.section-glass-card .pillar-desc,
+.section-glass-card .method-note-text,
+.section-glass-card .principle-desc,
+.section-glass-card .assurance-text,
+.section-glass-card .encouragement-text {
+  color: rgba(243, 233, 211, 0.86) !important;
+  font-size: 15px !important;
+  line-height: 1.65 !important;
+}
+
+.section-glass-card .step-title,
+.section-glass-card .feature-title,
+.section-glass-card .pillar-title,
+.section-glass-card .principle-title,
+.section-glass-card .schedule-title,
+.section-glass-card .chart-title,
+.section-glass-card .step-row-title {
+  color: #FBF6E9 !important;
+}
+
+.section-glass-card .label-text,
+.section-glass-card .step-number,
+.section-glass-card .seq-title,
+.section-glass-card .card-kicker,
+.section-glass-card .schedule-kicker,
+.section-glass-card .metric-label,
+.section-glass-card .teacher-role,
+.section-glass-card .step-row-time {
+  color: #C5A45A !important;
+}
+
+.section-glass-card .metric-value {
+  color: #FFDF85 !important;
+  font-family: var(--font-serif) !important;
+}
+
+.section-glass-card .seq-duration {
+  color: #FFDF85 !important;
+  background: rgba(197, 164, 90, 0.16) !important;
+  border: 1px solid rgba(197, 164, 90, 0.35) !important;
+  padding: 4px 12px !important;
+  border-radius: 9999px !important;
+}
+
+.section-glass-card .label-rule,
+.section-glass-card .seq-divider {
+  background: rgba(197, 164, 90, 0.3) !important;
+}
+
+/* --------------------------------------------------------------------------
+   Dark Glass Sub-Cards & Interactive Components
+   (Locations, Course cards, Steps, Charts, Profiles matching image)
+   -------------------------------------------------------------------------- */
+
+.section-glass-card .pathway-step,
+.section-glass-card .method-note-box,
+.section-glass-card .daily-timer-box,
+.section-glass-card .lesson-step-row,
+.section-glass-card .surah-ayah-card,
+.section-glass-card .surah-card,
+.section-glass-card .revision-principle,
+.section-glass-card .metric-box,
+.section-glass-card .weekly-chart-card,
+.section-glass-card .roadmap-step-card,
+.section-glass-card .support-feature-row,
+.section-glass-card .teacher-quote-card,
+.section-glass-card .teacher-portrait-card,
+.section-glass-card .featured-journey-card,
+.section-glass-card .principle-card,
+.section-glass-card .pillar-card,
+.section-glass-card .enrollment-card {
+  background: rgba(255, 255, 255, 0.038) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.07) !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.section-glass-card .pathway-step:hover,
+.section-glass-card .method-note-box:hover,
+.section-glass-card .daily-timer-box:hover,
+.section-glass-card .lesson-step-row:hover,
+.section-glass-card .surah-ayah-card:hover,
+.section-glass-card .metric-box:hover,
+.section-glass-card .weekly-chart-card:hover,
+.section-glass-card .support-feature-row:hover,
+.section-glass-card .pillar-card:hover,
+.section-glass-card .enrollment-card:hover {
+  background: rgba(255, 255, 255, 0.065) !important;
+  border-color: rgba(197, 164, 90, 0.38) !important;
+  transform: translateY(-3px) !important;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4), 0 0 24px rgba(197, 164, 90, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+}
+
+/* Active Highlight Card matching reference image */
+.section-glass-card .pathway-step.active,
+.section-glass-card .pillar-card.active,
+.section-glass-card .featured-journey-card {
+  border-color: rgba(197, 164, 90, 0.5) !important;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45), 0 0 28px rgba(197, 164, 90, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+}
+
+.section-glass-card .step-marker {
+  background: rgba(197, 164, 90, 0.14) !important;
+  border: 1px solid rgba(197, 164, 90, 0.3) !important;
+}
+
+.section-glass-card .feature-icon-badge {
+  background: rgba(197, 164, 90, 0.14) !important;
+  border: 1px solid rgba(197, 164, 90, 0.3) !important;
+}
+
+.section-glass-card .step-row-icon {
+  background: rgba(197, 164, 90, 0.14) !important;
+}
+
+/* --------------------------------------------------------------------------
+   Section 1: Methodology & Pathway Refined Organization
+   -------------------------------------------------------------------------- */
+.section-glass-card .pathway-intro {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  gap: 28px !important;
+}
+
+.section-glass-card .intro-copy {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 20px !important;
+}
+
+.section-glass-card .section-label {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  margin-bottom: 2px !important;
+}
+
+.section-glass-card .pathway-sequence {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 14px !important;
+}
+
+.section-glass-card .sequence-heading {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  margin-bottom: 6px !important;
+  padding: 0 4px !important;
+}
+
+.section-glass-card .seq-title {
+  font-size: 11.5px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.1em !important;
+  color: #C5A45A !important;
+}
+
+.section-glass-card .seq-duration {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.04em !important;
+  color: #FFDF85 !important;
+  background: rgba(197, 164, 90, 0.16) !important;
+  border: 1px solid rgba(197, 164, 90, 0.35) !important;
+  padding: 4px 12px !important;
+  border-radius: 9999px !important;
+}
+
+.section-glass-card .pathway-step {
+  display: flex !important;
+  align-items: center !important;
+  gap: 20px !important;
+  padding: 18px 24px !important;
+  border-radius: 20px !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.07) !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.section-glass-card .pathway-step:hover {
+  background: rgba(255, 255, 255, 0.065) !important;
+  border-color: rgba(197, 164, 90, 0.38) !important;
+  transform: translateX(4px) translateY(-2px) !important;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4), 0 0 24px rgba(197, 164, 90, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+}
+
+.section-glass-card .step-marker {
+  width: 52px !important;
+  height: 52px !important;
+  border-radius: 16px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+  background: rgba(197, 164, 90, 0.12) !important;
+  border: 1px solid rgba(197, 164, 90, 0.3) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25) !important;
+  transition: all 0.3s ease !important;
+}
+
+.section-glass-card .pathway-step:hover .step-marker,
+.section-glass-card .pathway-step.active .step-marker {
+  background: rgba(197, 164, 90, 0.24) !important;
+  border-color: #FFDF85 !important;
+  box-shadow: 0 0 20px rgba(255, 223, 133, 0.35) !important;
+}
+
+.section-glass-card .step-copy {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 4px !important;
+}
+
+.section-glass-card .step-number {
+  font-size: 10.5px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.1em !important;
+  color: #C5A45A !important;
+  text-transform: uppercase !important;
+}
+
+.section-glass-card .step-title {
+  font-family: var(--font-serif) !important;
+  font-size: 19px !important;
+  font-weight: 700 !important;
+  color: #FBF6E9 !important;
+  line-height: 1.25 !important;
+  margin: 0 !important;
+}
+
+.section-glass-card .step-description {
+  font-size: 13.5px !important;
+  line-height: 1.55 !important;
+  color: rgba(243, 233, 211, 0.78) !important;
+  margin: 0 !important;
+}
+
+.section-glass-card .method-note-box {
+  display: flex !important;
+  align-items: center !important;
+  gap: 16px !important;
+  padding: 18px 22px !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(197, 164, 90, 0.25) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+}
+
+.section-glass-card .method-note-badge {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 12px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+  background: rgba(197, 164, 90, 0.15) !important;
+  border: 1px solid rgba(197, 164, 90, 0.35) !important;
+}
+
+.section-glass-card .method-note-text {
+  font-size: 13.5px !important;
+  line-height: 1.55 !important;
+  color: rgba(243, 233, 211, 0.88) !important;
+  margin: 0 !important;
+}
+
+/* --------------------------------------------------------------------------
+   Other Sub-Cards Refined Padding & Gap Normalization
+   -------------------------------------------------------------------------- */
+.section-glass-card .lesson-step-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 16px !important;
+  padding: 16px 20px !important;
+  margin-bottom: 10px !important;
+  border-radius: 18px !important;
+}
+
+.section-glass-card .support-feature-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 16px !important;
+  padding: 16px 20px !important;
+  margin-bottom: 12px !important;
+  border-radius: 18px !important;
+}
+
+.section-glass-card .milestone-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+  padding: 14px 18px !important;
+  margin-bottom: 10px !important;
+  border-radius: 16px !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+}
+
+.section-glass-card .benefit-item {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 16px !important;
+  padding: 12px 18px !important;
+  border-radius: 16px !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Button & CTA Upgrades */
+.section-glass-card .btn-gold-pill,
+.landing-hero-section .btn-gold-pill {
+  background: linear-gradient(135deg, #DFB96C 0%, #C5A45A 100%) !important;
+  color: #062A24 !important;
+  font-weight: 700 !important;
+  border-radius: 9999px !important;
+  box-shadow: 0 8px 24px rgba(197, 164, 90, 0.35) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.section-glass-card .btn-gold-pill:hover,
+.landing-hero-section .btn-gold-pill:hover {
+  transform: translateY(-2px) scale(1.02) !important;
+  box-shadow: 0 12px 32px rgba(197, 164, 90, 0.55) !important;
+}
+
+/* Green pill button matching the reference image's CTA */
+.btn-emerald-pill,
+.btn-green-cta {
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%) !important;
+  color: #FFFFFF !important;
+  font-weight: 700 !important;
+  padding: 14px 28px !important;
+  border-radius: 9999px !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  cursor: pointer !important;
+  transition: all 0.25s ease !important;
+}
+
+.btn-emerald-pill:hover,
+.btn-green-cta:hover {
+  transform: translateY(-2px) scale(1.02) !important;
+  box-shadow: 0 12px 32px rgba(16, 185, 129, 0.6) !important;
+}
+
+/* --------------------------------------------------------------------------
+   Floating Quick Action Dock
+   -------------------------------------------------------------------------- */
+
+.floating-quick-dock {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 400;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.floating-action-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 22px;
+  background: linear-gradient(135deg, #DFB96C 0%, #C5A45A 100%);
+  color: #062A24;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 700;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 9999px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.4), 0 0 20px rgba(197, 164, 90, 0.35);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.floating-action-pill:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.5), 0 0 28px rgba(197, 164, 90, 0.5);
+}
+
+.floating-top-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(13, 75, 62, 0.85) 0%, rgba(6, 42, 36, 0.95) 100%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(197, 164, 90, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 7px;
+  overflow: hidden;
+}
+
+.floating-top-btn:hover {
+  background: linear-gradient(135deg, rgba(13, 75, 62, 0.95) 0%, rgba(10, 60, 50, 1) 100%);
+  border-color: #FFDF85;
+  transform: translateY(-2px) scale(1.08);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(197, 164, 90, 0.45);
+}
+
+.floating-top-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform 0.25s ease;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.floating-top-btn:hover .floating-top-logo {
+  transform: scale(1.1);
+}
+
+/* --------------------------------------------------------------------------
+   Responsive Adaptations
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 1024px) {
+  .section-glass-card {
+    padding: 44px 34px;
+    border-radius: 28px;
+  }
+
+  .section-glass-card .book-spread {
+    grid-template-columns: 1fr !important;
+    gap: 40px !important;
+  }
+
+  .landing-vertical-flow {
+    gap: 68px;
+  }
+}
+
+@media (max-width: 640px) {
+  .landing-vertical-section {
+    padding: 0 14px;
+  }
+
+  .section-glass-card {
+    padding: 28px 18px;
+    border-radius: 22px;
+  }
+
+  .section-glass-card .book-spread {
+    gap: 32px !important;
+  }
+
+  .landing-vertical-flow {
+    gap: 52px;
+    padding-bottom: 90px;
+  }
+
+  .floating-quick-dock {
+    bottom: 20px;
+    right: 16px;
+  }
+
+  .floating-action-pill span {
+    display: none;
+  }
+
+  .floating-action-pill {
+    padding: 12px;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    justify-content: center;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   DETAILED ELEMENT REFINEMENTS FOR DARK GLASSMORPHISM
+   Guaranteeing 100% Contrast, Balanced Heights & Organized Aesthetic
+   -------------------------------------------------------------------------- */
+
+/* Spread 1: Methodology & Pathway */
+.section-glass-card .pathway-intro {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  gap: 24px !important;
+}
+
+.section-glass-card .intro-copy {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 16px !important;
+}
+
+.section-glass-card .method-note-box {
+  display: flex !important;
+  align-items: center !important;
+  gap: 16px !important;
+  padding: 16px 20px !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(197, 164, 90, 0.28) !important;
+  border-radius: 18px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25) !important;
+  margin: 0 !important;
+}
+
+.section-glass-card .pathway-sequence {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+}
+
+.section-glass-card .pathway-step {
+  display: flex !important;
+  align-items: center !important;
+  gap: 16px !important;
+  padding: 14px 20px !important;
+  border-radius: 18px !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  transition: all 0.25s ease !important;
+}
+
+/* Spread 2: Daily Lesson Workspace & Benefits */
+.section-glass-card .lesson-explanation {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  gap: 22px !important;
+}
+
+.section-glass-card .lesson-copy {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 14px !important;
+}
+
+.section-glass-card .lesson-benefits {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  margin: 0 !important;
+}
+
+.section-glass-card .benefit-item {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 16px !important;
+  padding: 12px 18px !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 16px !important;
+  backdrop-filter: blur(14px) !important;
+  transition: all 0.25s ease !important;
+}
+
+.section-glass-card .benefit-item:hover {
+  background: rgba(255, 255, 255, 0.07) !important;
+  border-color: rgba(197, 164, 90, 0.35) !important;
+  transform: translateY(-2px) !important;
+}
+
+.section-glass-card .benefit-badge {
+  width: 42px !important;
+  height: 42px !important;
+  border-radius: 12px !important;
+  background: rgba(197, 164, 90, 0.15) !important;
+  border: 1px solid rgba(197, 164, 90, 0.35) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+}
+
+.section-glass-card .benefit-copy {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+  flex: 1 !important;
+}
+
+.section-glass-card .benefit-title {
+  color: #FBF6E9 !important;
+  font-family: var(--font-sans) !important;
+  font-size: 14.5px !important;
+  font-weight: 700 !important;
+  margin: 0 !important;
+}
+
+.section-glass-card .benefit-desc {
+  color: rgba(243, 233, 211, 0.78) !important;
+  font-size: 12.5px !important;
+  line-height: 1.4 !important;
+  margin: 0 !important;
+}
+
+.section-glass-card .daily-lesson-card {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.09) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+  border-radius: 24px !important;
+  padding: 24px 26px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+}
+
+.section-glass-card .lesson-title {
+  color: #FBF6E9 !important;
+}
+
+.section-glass-card .lesson-status-badge {
+  background: rgba(16, 185, 129, 0.2) !important;
+  border: 1px solid rgba(16, 185, 129, 0.4) !important;
+  color: #86EFAC !important;
+}
+
+.section-glass-card .progress-track {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+.section-glass-card .progress-fill {
+  background: linear-gradient(90deg, #C5A45A 0%, #FFDF85 100%) !important;
+  box-shadow: 0 0 12px rgba(197, 164, 90, 0.5) !important;
+}
+
+.section-glass-card .progress-value {
+  color: #FFDF85 !important;
+  font-weight: 700 !important;
+}
+
+.section-glass-card .lesson-step-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+  background: rgba(255, 255, 255, 0.035) !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  border-radius: 14px !important;
+  padding: 11px 16px !important;
+  margin-bottom: 0 !important;
+  transition: all 0.25s ease !important;
+}
+
+.section-glass-card .lesson-step-row:hover {
+  background: rgba(255, 255, 255, 0.065) !important;
+  border-color: rgba(197, 164, 90, 0.35) !important;
+  transform: translateX(4px);
+}
+
+.section-glass-card .lesson-step-row.active {
+  border-color: rgba(197, 164, 90, 0.45) !important;
+  background: rgba(197, 164, 90, 0.08) !important;
+}
+
+.section-glass-card .step-check-badge {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 10px !important;
+}
+
+.section-glass-card .step-check-badge.completed {
+  background: rgba(197, 164, 90, 0.25) !important;
+  border-color: var(--accent-gold) !important;
+}
+
+.section-glass-card .step-row-title {
+  color: #FBF6E9 !important;
+  font-size: 14px !important;
+}
+
+.section-glass-card .step-row-detail {
+  color: rgba(243, 233, 211, 0.72) !important;
+  font-size: 12px !important;
+}
+
+.section-glass-card .lesson-footer {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  margin-top: 6px !important;
+  padding-top: 12px !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.section-glass-card .encouragement-text {
+  font-family: var(--font-serif) !important;
+  font-style: italic !important;
+  font-size: 13.5px !important;
+  color: rgba(243, 233, 211, 0.75) !important;
+  margin: 0 !important;
+}
+
+.section-glass-card .continue-lesson-btn {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(197, 164, 90, 0.35) !important;
+  color: #FFDF85 !important;
+  border-radius: 9999px !important;
+  padding: 8px 18px !important;
+  font-weight: 600 !important;
+  transition: all 0.2s ease !important;
+}
+
+.section-glass-card .continue-lesson-btn:hover {
+  background: rgba(197, 164, 90, 0.25) !important;
+  border-color: var(--accent-gold) !important;
+  transform: translateY(-2px);
+}
+
+/* Spread 3: Spaced Repetition Sanctuary */
+.section-glass-card .revision-system {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  gap: 26px !important;
+}
+
+.section-glass-card .revision-copy {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 16px !important;
+}
+
+.section-glass-card .revision-principle {
+  display: flex !important;
+  align-items: center !important;
+  gap: 16px !important;
+  padding: 16px 20px !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(197, 164, 90, 0.28) !important;
+  border-radius: 18px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25) !important;
+  margin: 0 !important;
+}
+
+.section-glass-card .revision-schedule {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  gap: 20px !important;
+}
+
+.section-glass-card .schedule-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: flex-end !important;
+  margin-bottom: 2px !important;
+}
+
+.section-glass-card .intervals-container {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  position: relative !important;
+  padding: 8px 10px !important;
+}
+
+.section-glass-card .intervals-line {
+  top: 38px !important;
+  left: 36px !important;
+  right: 36px !important;
+}
+
+.section-glass-card .revision-queue-card {
+  padding: 20px 22px !important;
+  border-radius: 20px !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+}
+
+.section-glass-card .queue-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  padding: 8px 12px !important;
+  border-radius: 12px !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+.section-glass-card .queue-item-state {
+  margin-left: auto !important;
+}
+
+/* Spread 4: Consistency & Progress Tracking */
+.section-glass-card .progress-overview {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  gap: 20px !important;
+}
+
+.section-glass-card .overview-heading {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: flex-start !important;
+  gap: 16px !important;
+  margin: 0 !important;
+}
+
+.section-glass-card .metrics-row {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 12px !important;
+  margin: 0 !important;
+}
+
+@media (max-width: 768px) {
+  .section-glass-card .metrics-row {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+.section-glass-card .metric-box {
+  padding: 16px 14px !important;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 16px !important;
+}
+
+.section-glass-card .metric-value {
+  font-size: 32px !important;
+  font-weight: 700 !important;
+  color: #FFDF85 !important;
+  line-height: 1 !important;
+}
+
+.section-glass-card .metric-label {
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  color: #FBF6E9 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.section-glass-card .metric-note {
+  font-size: 11px !important;
+  color: rgba(243, 233, 211, 0.65) !important;
+}
+
+.section-glass-card .weekly-chart-card {
+  padding: 20px 22px !important;
+  border-radius: 20px !important;
+  margin: 0 !important;
+}
+
+.section-glass-card .progress-insight {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  gap: 18px !important;
+}
+
+.section-glass-card .insight-card {
+  padding: 22px 24px !important;
+  border-radius: 20px !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(197, 164, 90, 0.35) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+}
+
+.section-glass-card .milestones-container {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  margin: 0 !important;
+}
+
+.section-glass-card .milestones-header-title {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.08em !important;
+  color: #C5A45A !important;
+  text-transform: uppercase !important;
+  margin-bottom: 4px !important;
+  display: block !important;
+}
+
+.section-glass-card .milestone-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+  padding: 12px 18px !important;
+  margin-bottom: 0 !important;
+  border-radius: 16px !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  transition: all 0.25s ease !important;
+}
+
+.section-glass-card .milestone-row:hover {
+  background: rgba(255, 255, 255, 0.07) !important;
+  border-color: rgba(197, 164, 90, 0.4) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25) !important;
+}
+
+.section-glass-card .milestone-badge {
+  width: 36px !important;
+  height: 36px !important;
+  background: rgba(197, 164, 90, 0.16) !important;
+  border: 1px solid rgba(197, 164, 90, 0.35) !important;
+  border-radius: 50% !important;
+  box-shadow: 0 0 12px rgba(197, 164, 90, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+}
+
+.section-glass-card .milestone-text {
+  flex: 1 !important;
+  font-size: 13.5px !important;
+  font-weight: 600 !important;
+  color: #FBF6E9 !important;
+  letter-spacing: -0.01em !important;
+}
+
+.section-glass-card .milestone-status {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  color: #FFDF85 !important;
+  letter-spacing: 0.06em !important;
+  flex-shrink: 0 !important;
+}
+
+/* Spread 5: Lead Mentor */
+.section-glass-card .teacher-portrait-page {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+}
+
+.section-glass-card .teacher-portrait-card {
+  padding: 8px !important;
+  border-radius: 26px !important;
+  overflow: hidden;
+}
+
+.section-glass-card .teacher-portrait-image {
+  height: 480px !important;
+  border-radius: 20px !important;
+  position: relative;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center top;
+}
+
+.section-glass-card .portrait-gradient {
+  background: linear-gradient(180deg, transparent 40%, rgba(6, 42, 36, 0.95) 90%, #062A24 100%) !important;
+}
+
+.section-glass-card .teacher-identity {
+  position: absolute;
+  bottom: 24px;
+  left: 24px;
+  right: 24px;
+  z-index: 2;
+}
+
+.section-glass-card .teacher-support-page {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  gap: 22px !important;
+}
+
+.section-glass-card .support-copy {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 18px !important;
+}
+
+.section-glass-card .support-features-list {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  margin: 0 !important;
+}
+
+.section-glass-card .support-feature-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 16px !important;
+  padding: 13px 18px !important;
+  margin-bottom: 0 !important;
+  border-radius: 16px !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.section-glass-card .support-action-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 16px !important;
+  margin-top: 4px !important;
+}
+
+/* Spread 7: Principles & 04 Pillars */
+.section-glass-card .principles-left-page {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  gap: 20px !important;
+}
+
+.section-glass-card .principles-left-header {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+}
+
+.section-glass-card .quran-ayah-illuminated-card {
+  position: relative !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(197, 164, 90, 0.38) !important;
+  border-radius: 18px !important;
+  padding: 18px 22px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.3) !important;
+}
+
+.section-glass-card .ayah-surah-badge {
+  color: #FFDF85 !important;
+}
+
+.section-glass-card .ayah-ornament-tag {
+  color: #FFDF85 !important;
+}
+
+.section-glass-card .quranic-calligraphy-text {
+  color: #FBF6E9 !important;
+  text-shadow: 0 0 20px rgba(255, 223, 133, 0.25) !important;
+}
+
+.section-glass-card .ayah-translation-text {
+  color: rgba(243, 233, 211, 0.9) !important;
+  text-shadow: none !important;
+}
+
+.section-glass-card .ayah-annotation-pill {
+  background: rgba(197, 164, 90, 0.12) !important;
+  border: 1px solid rgba(197, 164, 90, 0.3) !important;
+  color: rgba(243, 233, 211, 0.88) !important;
+  border-radius: 8px !important;
+}
+
+.section-glass-card .philosophy-contrast-box {
+  background: rgba(255, 255, 255, 0.035) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 16px !important;
+  padding: 14px 18px !important;
+  display: flex !important;
+  gap: 14px !important;
+}
+
+.section-glass-card .contrast-col-title {
+  color: #FBF6E9 !important;
+  font-size: 13.5px !important;
+  font-weight: 700 !important;
+}
+
+.section-glass-card .contrast-list li {
+  color: rgba(243, 233, 211, 0.78) !important;
+  font-size: 12.5px !important;
+}
+
+.section-glass-card .founder-covenant-bar {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(197, 164, 90, 0.25) !important;
+  border-radius: 16px !important;
+  padding: 14px 18px !important;
+}
+
+.section-glass-card .founder-quote-text {
+  color: rgba(243, 233, 211, 0.9) !important;
+}
+
+.section-glass-card .founder-name {
+  color: #FBF6E9 !important;
+}
+
+.section-glass-card .founder-role {
+  color: #C5A45A !important;
+}
+
+.section-glass-card .principles-right-page {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  gap: 18px !important;
+}
+
+.section-glass-card .principles-right-header {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+}
+
+.section-glass-card .principles-subheading {
+  font-family: var(--font-serif) !important;
+  font-size: 24px !important;
+  font-weight: 700 !important;
+  line-height: 1.2 !important;
+  color: #FBF6E9 !important;
+}
+
+.section-glass-card .principles-subdesc {
+  font-family: var(--font-sans) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  line-height: 1.55 !important;
+  color: rgba(243, 233, 211, 0.8) !important;
+}
+
+.section-glass-card .principles-grid {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 12px !important;
+}
+
+@media (max-width: 640px) {
+  .section-glass-card .principles-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+.section-glass-card .principle-pillar-card {
+  padding: 16px 18px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 16px !important;
+  min-height: auto !important;
+  transition: all 0.25s ease !important;
+}
+
+.section-glass-card .principle-pillar-card:hover {
+  background: rgba(255, 255, 255, 0.07) !important;
+  border-color: rgba(197, 164, 90, 0.4) !important;
+  transform: translateY(-2px) !important;
+}
+
+.section-glass-card .principle-card-icon {
+  background: rgba(197, 164, 90, 0.15) !important;
+  border: 1px solid rgba(197, 164, 90, 0.35) !important;
+}
+
+.section-glass-card .pillar-num-tag {
+  color: #C5A45A !important;
+}
+
+.section-glass-card .pillar-arabic-text {
+  color: #FFDF85 !important;
+}
+
+.section-glass-card .principle-title {
+  color: #FBF6E9 !important;
+  font-size: 16px !important;
+}
+
+.section-glass-card .principle-desc {
+  color: rgba(243, 233, 211, 0.75) !important;
+  font-size: 12.5px !important;
+  line-height: 1.45 !important;
+}
+
+.section-glass-card .pillar-practice-pill {
+  display: inline-block;
+  align-self: flex-start;
+  margin-top: 4px;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 600;
+  background: rgba(197, 164, 90, 0.16) !important;
+  color: #FFDF85 !important;
+  border: 1px solid rgba(197, 164, 90, 0.3) !important;
+}
+
+.section-glass-card .student-guarantee-banner {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(197, 164, 90, 0.3) !important;
+  border-radius: 16px !important;
+  padding: 14px 18px !important;
+  margin: 0 !important;
+}
+
+.section-glass-card .guarantee-title {
+  color: #FFDF85 !important;
+}
+
+.section-glass-card .guarantee-tagline {
+  color: rgba(243, 233, 211, 0.7) !important;
+}
+
+.section-glass-card .point-text-block strong {
+  color: #FBF6E9 !important;
+}
+
+.section-glass-card .point-text-block span {
+  color: rgba(243, 233, 211, 0.75) !important;
+}
+
+/* Spread 8: Complimentary Session & Full-Width Layout */
+.section-glass-card .enrollment-pages-layout {
+  grid-column: 1 / -1 !important;
+  width: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 36px !important;
+}
+
+.section-glass-card .enrollment-invitation-row {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 52px !important;
+  width: 100% !important;
+  align-items: start !important;
+}
+
+@media (max-width: 1024px) {
+  .section-glass-card .enrollment-invitation-row {
+    grid-template-columns: 1fr !important;
+    gap: 36px !important;
+  }
+}
+
+.section-glass-card .invitation-page {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  gap: 24px !important;
+  padding: 0 !important;
+}
+
+.section-glass-card .invitation-content {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 18px !important;
+}
+
+.section-glass-card .enrollment-card-page {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 18px !important;
+  padding: 0 !important;
+  width: 100% !important;
+}
+
+.section-glass-card .enrollment-card {
+  width: 100% !important;
+  padding: 28px 30px !important;
+  border-radius: 24px !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(197, 164, 90, 0.35) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 20px !important;
+}
+
+.section-glass-card .enrollment-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.section-glass-card .duration-pill {
+  padding: 6px 14px;
+  border-radius: 9999px;
+  background: rgba(197, 164, 90, 0.2);
+  border: 1px solid rgba(197, 164, 90, 0.4);
+  color: #FFDF85;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.section-glass-card .included-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.section-glass-card .included-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.section-glass-card .included-check {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(16, 185, 129, 0.2) !important;
+  border: 1px solid rgba(16, 185, 129, 0.45) !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.section-glass-card .included-text {
+  color: rgba(243, 233, 211, 0.9) !important;
+  font-size: 14px !important;
+  line-height: 1.45 !important;
+}
+
+.section-glass-card .closing-social-channels {
+  width: 100% !important;
+  padding: 22px 24px 24px 24px !important;
+  border-radius: 22px !important;
+  background: rgba(255, 255, 255, 0.038) !important;
+  border: 1px solid rgba(197, 164, 90, 0.28) !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 16px !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+  margin-top: 4px !important;
+}
+
+.section-glass-card .social-channels-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 16px !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.section-glass-card .social-channels-rule {
+  flex: 1 !important;
+  height: 1px !important;
+  background: linear-gradient(90deg, transparent 0%, rgba(197, 164, 90, 0.38) 50%, transparent 100%) !important;
+  border: none !important;
+}
+
+.section-glass-card .social-channels-title {
+  font-family: var(--font-sans) !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.1em !important;
+  color: #FFDF85 !important;
+  white-space: nowrap !important;
+  line-height: 1 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  margin: 0 !important;
+  padding: 0 4px !important;
+}
+
+.section-glass-card .social-channel-pills {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 12px !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.section-glass-card .social-pill-btn {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 10px !important;
+  padding: 12px 14px !important;
+  background: rgba(255, 255, 255, 0.045) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 14px !important;
+  text-decoration: none !important;
+  color: #FBF6E9 !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  cursor: pointer !important;
+}
+
+.section-glass-card .social-pill-btn:hover {
+  transform: translateY(-2px) !important;
+  color: #FFFFFF !important;
+}
+
+.section-glass-card .social-pill-btn.whatsapp:hover {
+  background: rgba(37, 211, 102, 0.12) !important;
+  border-color: #25D366 !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 16px rgba(37, 211, 102, 0.3) !important;
+}
+
+.section-glass-card .social-pill-btn.youtube:hover {
+  background: rgba(255, 0, 0, 0.12) !important;
+  border-color: #FF4D4D !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 16px rgba(255, 0, 0, 0.3) !important;
+}
+
+.section-glass-card .social-pill-btn.facebook:hover {
+  background: rgba(24, 119, 242, 0.12) !important;
+  border-color: #1877F2 !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 16px rgba(24, 119, 242, 0.3) !important;
+}
+
+.section-glass-card .social-pill-icon {
+  width: 28px !important;
+  height: 28px !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+}
+
+.section-glass-card .social-pill-icon.whatsapp {
+  background: rgba(37, 211, 102, 0.2) !important;
+  color: #25D366 !important;
+}
+
+.section-glass-card .social-pill-icon.youtube {
+  background: rgba(255, 0, 0, 0.2) !important;
+  color: #FF4D4D !important;
+}
+
+.section-glass-card .social-pill-icon.facebook {
+  background: rgba(24, 119, 242, 0.2) !important;
+  color: #4B9BFF !important;
+}
+
+.section-glass-card .social-pill-text {
+  color: #FBF6E9 !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.02em !important;
+}
+
+.section-glass-card .spread-footer {
+  width: 100% !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+  padding: 24px 0 0 0 !important;
+  margin-top: 8px !important;
+  height: auto !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  flex-wrap: wrap !important;
+  gap: 16px !important;
+}
+
+/* ==========================================================================
+   MODERN SOLID-COLOR WORLD MAP SPECIFICATION
+   Clear, Bold, Modern, Clean, Simple & Expanded Size (Section 6)
+   ========================================================================== */
+
+/* Section 6 Main Container */
+.section-stories-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* Section Header */
+.stories-section-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.stories-header-left {
+  flex: 1;
+  min-width: 300px;
+}
+
+.stories-header-right {
+  display: flex;
+  align-items: center;
+}
+
+.stories-mode-switch-pills {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 9999px;
+  backdrop-filter: blur(14px);
+}
+
+.mode-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: 9999px;
+  border: none;
+  background: transparent;
+  color: rgba(243, 233, 211, 0.7);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.mode-pill:hover {
+  color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.mode-pill.active {
+  background: linear-gradient(135deg, #DFB96C 0%, #C5A45A 100%);
+  color: #062A24;
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(197, 164, 90, 0.35);
+}
+
+/* Full Width Map Wrapper */
+.fullwidth-world-map-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* --------------------------------------------------------------------------
+   Modern World Map Container & Solid Colors
+   -------------------------------------------------------------------------- */
+
+.modern-world-map-container {
+  width: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Top Telemetry Bar */
+.map-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 8px 18px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 9999px;
+  backdrop-filter: blur(14px);
+}
+
+.map-telemetry-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.live-dot-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10B981;
+  box-shadow: 0 0 10px #10B981;
+  animation: liveDotPulse 2s infinite ease-in-out;
+  flex-shrink: 0;
+}
+
+@keyframes liveDotPulse {
+  0% { transform: scale(0.9); opacity: 0.8; }
+  50% { transform: scale(1.3); opacity: 1; }
+  100% { transform: scale(0.9); opacity: 0.8; }
+}
+
+.live-badge-label {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 700;
+  color: #10B981;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+.telemetry-separator {
+  color: rgba(255, 255, 255, 0.2);
+}
+
+.telemetry-summary {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: rgba(243, 233, 211, 0.85);
+}
+
+.telemetry-summary strong {
+  color: #FFDF85;
+}
+
+.map-view-pills {
+  display: inline-flex;
+  gap: 4px;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 3px;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.view-pill-btn {
+  background: transparent;
+  border: none;
+  border-radius: 9999px;
+  padding: 4px 12px;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(243, 233, 211, 0.7);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.view-pill-btn:hover {
+  color: #FFFFFF;
+}
+
+.view-pill-btn.active {
+  background: var(--accent-gold);
+  color: #062A24;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(197, 164, 90, 0.4);
+}
+
+/* Map SVG Viewport - Expanded Size */
+.map-svg-viewport {
+  position: relative;
+  width: 100%;
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  background: #061914; /* Solid ocean color */
+}
+
+.solid-world-map-svg {
+  width: 100%;
+  height: auto;
+  min-height: 440px;
+  max-height: 580px;
+  display: block;
+}
+
+/* Solid Ocean Background */
+.map-ocean-bg {
+  fill: #061914;
+}
+
+/* Solid Continents Landmass (Clean, Sharp, Modern, Solid Color) */
+.solid-map-landmass {
+  fill: #164639; /* Solid rich forest emerald */
+  stroke: rgba(255, 223, 133, 0.28);
+  stroke-width: 0.85;
+  stroke-linejoin: round;
+  transition: fill 0.3s ease;
+}
+
+/* Solid Minimalist Connecting Arcs */
+.solid-flight-arc {
+  fill: none;
+  stroke: rgba(197, 164, 90, 0.32);
+  stroke-width: 1.2;
+  stroke-dasharray: 4 4;
+  transition: all 0.3s ease;
+}
+
+.solid-flight-arc.is-active {
+  stroke: #FFDF85;
+  stroke-width: 2.2;
+  stroke-dasharray: none;
+  filter: drop-shadow(0 0 6px rgba(255, 223, 133, 0.8));
+}
+
+/* Hub Markers & Groups */
+.solid-hub-radar {
+  fill: none;
+  stroke: rgba(197, 164, 90, 0.35);
+  stroke-width: 1;
+  transition: all 0.3s ease;
+}
+
+.solid-hub-radar.radar-active {
+  stroke: #FFDF85;
+  stroke-width: 1.5;
+  animation: radarPulseRing 2s infinite ease-out;
+}
+
+@keyframes radarPulseRing {
+  0% { r: 8px; opacity: 1; }
+  100% { r: 24px; opacity: 0; }
+}
+
+.solid-hub-ring {
+  fill: rgba(197, 164, 90, 0.2);
+  stroke: rgba(197, 164, 90, 0.5);
+  stroke-width: 1;
+}
+
+/* Solid Modern High-Contrast Pill Tag */
+.solid-tag-rect {
+  fill: rgba(6, 25, 20, 0.94);
+  stroke: rgba(197, 164, 90, 0.4);
+  stroke-width: 1;
+  transition: all 0.25s ease;
+}
+
+.solid-tag-rect.active {
+  fill: #C5A45A;
+  stroke: #FFFDF8;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.6));
+}
+
+.solid-tag-text {
+  font-family: var(--font-sans);
+  font-size: 8.5px;
+  font-weight: 700;
+  fill: #FBF6E9;
+  letter-spacing: 0.02em;
+  transition: all 0.25s ease;
+}
+
+.solid-tag-text.active {
+  fill: #062A24;
+}
+
+/* Active Hub Card & Bottom Dock */
+.map-bottom-dock {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.active-hub-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 18px 24px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  backdrop-filter: blur(14px);
+  flex-wrap: wrap;
+}
+
+.active-hub-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.active-hub-flag {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.active-hub-name-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.active-hub-name {
+  font-family: var(--font-serif);
+  font-size: 19px;
+  font-weight: 700;
+  color: #FBF6E9;
+  margin: 0;
+}
+
+.active-hub-tz {
+  font-size: 11px;
+  color: var(--accent-gold);
+  background: rgba(197, 164, 90, 0.15);
+  border: 1px solid rgba(197, 164, 90, 0.3);
+  padding: 2px 8px;
+  border-radius: 9999px;
+}
+
+.active-hub-cities {
+  font-size: 12px;
+  color: rgba(243, 233, 211, 0.75);
+}
+
+.active-hub-metrics {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hub-metric-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 12px;
+}
+
+.hub-metric-pill .metric-val {
+  font-weight: 700;
+  color: #FFDF85;
+}
+
+.hub-metric-pill .metric-lbl {
+  color: rgba(243, 233, 211, 0.75);
+}
+
+.active-hub-focus {
+  font-size: 12px;
+  color: rgba(243, 233, 211, 0.85);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.active-hub-focus .focus-label {
+  color: var(--accent-gold);
+  font-weight: 700;
+  font-size: 10px;
+}
+
+/* Country Hubs Switcher Bar */
+.country-hubs-switcher {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  background: rgba(6, 26, 20, 0.85);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(197, 164, 90, 0.28);
+  border-radius: 9999px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  width: 100%;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.switcher-label-group {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding-right: 4px;
+}
+
+.switcher-title {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 700;
+  color: #FFDF85;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+}
+
+.switcher-pills-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none !important;
+  scrollbar-color: transparent transparent !important;
+  -ms-overflow-style: none !important;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  flex: 1;
+  min-width: 0;
+  padding: 3px 0;
+  cursor: grab;
+  user-select: none;
+}
+
+.switcher-pills-row:active {
+  cursor: grabbing;
+}
+
+.switcher-pills-row::-webkit-scrollbar,
+.switcher-pills-row::-webkit-scrollbar-thumb,
+.switcher-pills-row::-webkit-scrollbar-track,
+.switcher-pills-row::-webkit-scrollbar-corner,
+.switcher-pills-row::-webkit-scrollbar-button,
+.country-hubs-switcher::-webkit-scrollbar,
+.country-hubs-switcher::-webkit-scrollbar-thumb,
+.country-hubs-switcher::-webkit-scrollbar-track,
+.country-hubs-switcher::-webkit-scrollbar-corner,
+.country-hubs-switcher::-webkit-scrollbar-button {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  -webkit-appearance: none !important;
+}
+
+.hub-switch-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #FBF6E9;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hub-switch-pill:hover {
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(197, 164, 90, 0.4);
+  transform: translateY(-1px);
+}
+
+.hub-switch-pill.is-selected {
+  background: linear-gradient(135deg, rgba(197, 164, 90, 0.3) 0%, rgba(197, 164, 90, 0.15) 100%);
+  border-color: var(--accent-gold);
+  color: #FFFDF8;
+  box-shadow: 0 2px 10px rgba(197, 164, 90, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.hub-switch-pill .pill-count {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 9999px;
+  background: rgba(0, 0, 0, 0.35);
+  color: #FFDF85;
+}
+
+/* Global Impact Metrics Bar */
+.global-practice-metrics-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  padding: 20px 24px;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  backdrop-filter: blur(14px);
+}
+
+.global-metric-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+}
+
+.global-metric-num {
+  font-family: var(--font-serif);
+  font-size: 28px;
+  font-weight: 700;
+  color: #FFDF85;
+  line-height: 1;
+}
+
+.global-metric-label {
+  font-size: 12px;
+  color: rgba(243, 233, 211, 0.75);
+}
+
+.global-metric-divider {
+  display: none;
+}
+
+/* Featured Story Strip under Map */
+.map-featured-story-strip {
+  width: 100%;
+}
+
+/* 3-Column Stories Grid Container */
+.stories-grid-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  width: 100%;
+}
+
+@media (max-width: 960px) {
+  .stories-grid-container {
+    grid-template-columns: 1fr;
+  }
+
+  .global-practice-metrics-bar {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .solid-world-map-svg {
+    min-height: 320px;
+  }
+}
+
+@media (max-width: 640px) {
+  .global-practice-metrics-bar {
+    grid-template-columns: 1fr;
+  }
+
+  .stories-section-header {
+    flex-direction: column;
+  }
+
+  .active-hub-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .active-hub-metrics {
+    flex-wrap: wrap;
+  }
+}
+
+/* ==========================================================================
+   TARGETED DESIGN FIXES FOR SPREADS 3, 4, AND 6
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Spread 3: Spaced Repetition Interval Review Timeline
+   -------------------------------------------------------------------------- */
+.section-glass-card .review-interval {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 12px !important;
+  z-index: 2 !important;
+}
+
+.section-glass-card .review-ring {
+  width: 76px !important;
+  height: 76px !important;
+  background: linear-gradient(135deg, rgba(13, 75, 62, 0.75) 0%, rgba(6, 42, 36, 0.95) 100%) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(197, 164, 90, 0.35) !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+  transition: all 0.25s ease !important;
+}
+
+.section-glass-card .review-ring.active {
+  background: linear-gradient(135deg, rgba(13, 75, 62, 0.95) 0%, rgba(8, 59, 50, 0.98) 100%) !important;
+  border: 2px solid #FFDF85 !important;
+  box-shadow: 0 0 24px rgba(255, 223, 133, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.3) !important;
+  transform: scale(1.06) !important;
+}
+
+/* Numerals 1, 3, 7, 14 rendered in clean sans-serif digits (preventing Roman "I" and "I4") */
+.section-glass-card .ring-day {
+  font-family: var(--font-sans) !important;
+  font-weight: 800 !important;
+  font-size: 26px !important;
+  color: #FBF6E9 !important;
+  letter-spacing: -0.02em !important;
+  line-height: 1 !important;
+}
+
+.section-glass-card .ring-day.gold {
+  color: #FFDF85 !important;
+}
+
+.section-glass-card .ring-label {
+  font-family: var(--font-sans) !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  color: rgba(251, 246, 233, 0.75) !important;
+  letter-spacing: 0.01em !important;
+  text-align: center !important;
+}
+
+.section-glass-card .ring-label.active {
+  color: #FFDF85 !important;
+  font-weight: 700 !important;
+}
+
+/* --------------------------------------------------------------------------
+   2. Spread 4: Progress Tracking & LIVE DATA Badge
+   -------------------------------------------------------------------------- */
+.section-glass-card .overview-heading {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: 16px !important;
+  flex-wrap: nowrap !important;
+}
+
+.section-glass-card .heading-copy {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+}
+
+.status-pill-dark {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+  padding: 6px 14px !important;
+  height: auto !important;
+  min-height: 28px !important;
+  background: linear-gradient(135deg, rgba(13, 75, 62, 0.88) 0%, rgba(6, 42, 36, 0.94) 100%) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  border: 1px solid rgba(197, 164, 90, 0.4) !important;
+  border-radius: 999px !important;
+  color: #FFDF85 !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.08em !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+}
+
+.live-pulse-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #22C55E;
+  box-shadow: 0 0 8px #22C55E;
+  display: inline-block;
+  animation: liveDotPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes liveDotPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.35; transform: scale(0.85); }
+}
+
+/* --------------------------------------------------------------------------
+   3. Spread 6: Stories & Student Voices
+   -------------------------------------------------------------------------- */
+
+/* Avatar Image & Verified Badge */
+.section-glass-card .journey-avatar-wrapper {
+  position: relative !important;
+  width: 52px !important;
+  height: 52px !important;
+  flex-shrink: 0 !important;
+}
+
+.section-glass-card .journey-card-compact .journey-avatar-wrapper {
+  width: 48px !important;
+  height: 48px !important;
+}
+
+.section-glass-card .journey-avatar-img {
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 50% !important;
+  object-fit: cover !important;
+  border: 2px solid var(--accent-gold) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4) !important;
+  background-color: #0D4B3E !important;
+}
+
+.section-glass-card .avatar-verified-badge {
+  position: absolute !important;
+  bottom: -2px !important;
+  right: -2px !important;
+  width: 18px !important;
+  height: 18px !important;
+  background: #C5A45A !important;
+  border: 2px solid #062A24 !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Author Info & Sizing */
+.section-glass-card .journey-author-profile {
+  display: flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+  min-width: 0 !important;
+}
+
+.section-glass-card .author-name-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  white-space: nowrap !important;
+}
+
+.section-glass-card .journey-author-name {
+  color: #FBF6E9 !important;
+  font-family: var(--font-serif) !important;
+  font-size: 20px !important;
+  font-weight: 700 !important;
+  line-height: 1.2 !important;
+  letter-spacing: -0.01em !important;
+  margin: 0 !important;
+  white-space: nowrap !important;
+}
+
+.section-glass-card .journey-card-compact .journey-author-name {
+  font-size: 17px !important;
+  white-space: nowrap !important;
+}
+
+.section-glass-card .journey-author-role {
+  color: rgba(243, 233, 211, 0.72) !important;
+  font-size: 11.5px !important;
+  font-weight: 500 !important;
+  margin-top: 2px !important;
+}
+
+.section-glass-card .journey-card-compact .journey-author-role {
+  font-size: 11px !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.section-glass-card .story-stars {
+  color: #FFDF85 !important;
+  font-size: 11px !important;
+  letter-spacing: 2px !important;
+  flex-shrink: 0 !important;
+}
+
+.section-glass-card .journey-milestone-chip {
+  background: rgba(197, 164, 90, 0.16) !important;
+  border: 1px solid rgba(197, 164, 90, 0.4) !important;
+  color: #FFDF85 !important;
+  border-radius: 999px !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  padding: 5px 12px !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+}
+
+/* Featured Journey Card (Dr. Sarah Mansoor Highlight) */
+.section-glass-card .featured-journey-card {
+  padding: 24px 28px !important;
+  border-radius: 24px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 16px !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(197, 164, 90, 0.45) !important;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+}
+
+.section-glass-card .journey-case-headline {
+  color: #FBF6E9 !important;
+  font-family: var(--font-serif) !important;
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  line-height: 1.35 !important;
+  letter-spacing: -0.01em !important;
+  margin: 0 !important;
+}
+
+.section-glass-card .journey-quote-text {
+  color: rgba(243, 233, 211, 0.9) !important;
+  font-family: var(--font-serif) !important;
+  font-style: italic !important;
+  font-size: 15.5px !important;
+  line-height: 1.55 !important;
+  margin: 0 !important;
+}
+
+/* Recitation Audio Bar */
+.section-glass-card .recitation-audio-bar {
+  display: flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(197, 164, 90, 0.3) !important;
+  border-radius: 14px !important;
+  padding: 10px 18px !important;
+  cursor: pointer !important;
+  transition: all 0.25s ease !important;
+}
+
+.section-glass-card .recitation-audio-bar:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(197, 164, 90, 0.5) !important;
+}
+
+.section-glass-card .recitation-play-circle {
+  width: 32px !important;
+  height: 32px !important;
+  background: #C5A45A !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+.section-glass-card .recitation-title {
+  font-size: 12.5px !important;
+  font-weight: 600 !important;
+  color: #FBF6E9 !important;
+}
+
+.section-glass-card .recitation-duration {
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  color: #FFDF85 !important;
+}
+
+.section-glass-card .wave-bar {
+  background: #FFDF85 !important;
+}
+
+/* 3-Column Student Voices Grid & Cards */
+.stories-grid-container {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 22px !important;
+  width: 100% !important;
+}
+
+.section-glass-card .journey-card-compact {
+  border-radius: 20px !important;
+  padding: 22px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 14px !important;
+  background: linear-gradient(135deg, rgba(11, 69, 57, 0.88) 0%, rgba(6, 42, 36, 0.94) 100%) !important;
+  backdrop-filter: blur(16px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+  border: 1px solid rgba(197, 164, 90, 0.38) !important;
+  box-shadow: 0 12px 28px -6px rgba(0, 29, 24, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.16) !important;
+  transition: transform 0.25s ease, box-shadow 0.25s ease !important;
+}
+
+.section-glass-card .journey-card-compact:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 16px 36px -6px rgba(0, 29, 24, 0.5), 0 0 24px rgba(197, 164, 90, 0.15) !important;
+  border-color: rgba(197, 164, 90, 0.55) !important;
+}
+
+.section-glass-card .compact-card-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 10px !important;
+  margin-bottom: 2px !important;
+  flex-wrap: wrap !important;
+}
+
+.section-glass-card .compact-case-title {
+  color: #FBF6E9 !important;
+  font-family: var(--font-serif) !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  line-height: 1.35 !important;
+  letter-spacing: -0.01em !important;
+  margin: 0 !important;
+}
+
+.section-glass-card .compact-quote-text {
+  color: rgba(243, 233, 211, 0.9) !important;
+  font-family: var(--font-serif) !important;
+  font-style: italic !important;
+  font-size: 14.5px !important;
+  line-height: 1.55 !important;
+  margin: 0 !important;
+}
+
+.section-glass-card .compact-routine-pill {
+  background: rgba(0, 0, 0, 0.3) !important;
+  border: 1px solid rgba(197, 164, 90, 0.35) !important;
+  color: #FFDF85 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 6px 12px !important;
+  border-radius: 8px !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  width: fit-content !important;
+}
+
+/* ==========================================================================
+   COMPREHENSIVE FULL-WEBSITE RESPONSIVE SYSTEM
+   Guaranteed pixel-perfect responsiveness from 320px to 4K Ultra-Wide
+   ========================================================================== */
+
+/* --- 1. Global Viewport Overflow Protection --- */
+html, body {
+  overflow-x: hidden !important;
+  max-width: 100vw !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+.vertical-landing-root {
+  overflow-x: hidden !important;
+  width: 100% !important;
+  max-width: 100vw !important;
+}
+
+.section-glass-container {
+  width: 100% !important;
+  max-width: 1220px !important;
+  margin: 0 auto !important;
+  box-sizing: border-box !important;
+}
+
+/* --- 2. Large Screens & Laptops (1025px - 1280px) --- */
+@media (max-width: 1280px) {
+  .section-glass-card {
+    padding: 48px 42px !important;
+  }
+
+  .section-glass-card .book-spread {
+    gap: 40px !important;
+  }
+}
+
+/* --- 3. Tablet Landscape & Medium Screens (769px - 1024px) --- */
+@media (max-width: 1024px) {
+  .landing-vertical-section {
+    padding: 0 24px !important;
+  }
+
+  .section-glass-card {
+    padding: 42px 34px !important;
+    border-radius: 28px !important;
+  }
+
+  .section-glass-card .book-spread {
+    grid-template-columns: 1fr !important;
+    gap: 44px !important;
+  }
+
+  .stories-grid-container {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 20px !important;
+  }
+
+  .global-practice-metrics-bar {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 16px !important;
+  }
+
+  .section-glass-card .teacher-portrait-card {
+    height: 380px !important;
+  }
+
+  .section-glass-card .teacher-portrait-image {
+    min-height: 380px !important;
+  }
+
+  .landing-vertical-flow {
+    gap: 60px !important;
+  }
+}
+
+/* --- 4. Mobile & Phablets (481px - 768px) --- */
+@media (max-width: 768px) {
+  .landing-vertical-section {
+    padding: 0 18px !important;
+  }
+
+  .section-glass-card {
+    padding: 34px 22px !important;
+    border-radius: 24px !important;
+  }
+
+  .landing-vertical-flow {
+    gap: 50px !important;
+    padding-bottom: 96px !important;
+  }
+
+  /* Typography Scaling */
+  .section-glass-card .spread-heading,
+  .section-glass-card .overview-title,
+  .section-glass-card .stories-title,
+  .section-glass-card .principles-main-title {
+    font-size: clamp(1.75rem, 5vw, 2.25rem) !important;
+    line-height: 1.22 !important;
+  }
+
+  .section-glass-card .spread-desc,
+  .section-glass-card .overview-desc,
+  .section-glass-card .stories-desc,
+  .section-glass-card .principles-main-desc {
+    font-size: 14.5px !important;
+    line-height: 1.6 !important;
+  }
+
+  /* Hero adjustments */
+  .hero-actions {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    flex-direction: row !important;
+    gap: 10px !important;
+    flex-wrap: wrap !important;
+  }
+
+  .hero-actions .btn-gold-pill,
+  .hero-actions .btn-cream-pill {
+    flex: 1 1 180px !important;
+    width: auto !important;
+    min-width: 160px !important;
+    justify-content: center !important;
+  }
+
+  .trust-signals,
+  .trust-details,
+  .trust-divider {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .trust-details {
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    height: auto !important;
+  }
+
+  /* Spread 1: Pathway Step Reflow */
+  .section-glass-card .pathway-step {
+    padding: 14px 16px !important;
+    gap: 14px !important;
+  }
+
+  .section-glass-card .step-marker {
+    width: 44px !important;
+    height: 44px !important;
+  }
+
+  /* Spread 2: Daily Rhythm */
+  .section-glass-card .lesson-benefits {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+
+  .section-glass-card .benefit-item {
+    width: 100% !important;
+  }
+
+  /* Spread 3: Intervals */
+  .section-glass-card .intervals-container {
+    padding: 8px 0 !important;
+  }
+
+  .section-glass-card .review-ring {
+    width: 62px !important;
+    height: 62px !important;
+  }
+
+  .section-glass-card .ring-day {
+    font-size: 21px !important;
+  }
+
+  .section-glass-card .intervals-line {
+    top: 31px !important;
+    left: 28px !important;
+    right: 28px !important;
+  }
+
+  /* Spread 4: Progress & Milestones */
+  .section-glass-card .overview-heading {
+    flex-wrap: wrap !important;
+    gap: 12px !important;
+    align-items: flex-start !important;
+  }
+
+  .section-glass-card .metrics-row {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 10px !important;
+  }
+
+  .section-glass-card .metric-box {
+    padding: 14px 10px !important;
+  }
+
+  .section-glass-card .metric-value {
+    font-size: 26px !important;
+  }
+
+  .section-glass-card .metric-label {
+    font-size: 11px !important;
+  }
+
+  .section-glass-card .milestone-row {
+    padding: 10px 14px !important;
+    gap: 12px !important;
+  }
+
+  /* Spread 5: Teacher */
+  .section-glass-card .teacher-portrait-card {
+    height: 400px !important;
+  }
+
+  .section-glass-card .teacher-portrait-image {
+    height: 100% !important;
+    min-height: 100% !important;
+  }
+
+  .section-glass-card .teacher-name {
+    font-size: 1.25rem !important;
+    white-space: nowrap !important;
+  }
+
+  /* Spread 6: Stories & Student Voices */
+  .stories-grid-container {
+    grid-template-columns: 1fr !important;
+    gap: 18px !important;
+  }
+
+  .section-glass-card .journey-card-compact {
+    padding: 20px !important;
+  }
+
+  .stories-section-header {
+    flex-direction: column !important;
+    gap: 18px !important;
+  }
+
+  .stories-mode-switch-pills {
+    width: 100% !important;
+    display: flex !important;
+  }
+
+  .stories-mode-switch-pills .mode-pill {
+    flex: 1 !important;
+    justify-content: center !important;
+    padding: 9px 14px !important;
+  }
+
+  .active-hub-card {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 14px !important;
+  }
+
+  .active-hub-metrics {
+    flex-wrap: wrap !important;
+  }
+
+  /* Spread 7: Principles & Pillars */
+  .section-glass-card .philosophy-contrast-box {
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+
+  .section-glass-card .contrast-col {
+    width: 100% !important;
+  }
+
+  /* Spread 8: Enrollment & Footer */
+  .section-glass-card .enrollment-card {
+    padding: 24px 20px !important;
+  }
+
+  .section-glass-card .spread-footer {
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    gap: 20px !important;
+    padding-top: 20px !important;
+  }
+
+  .section-glass-card .footer-links {
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    gap: 12px !important;
+  }
+
+  /* Floating Quick Dock */
+  .floating-quick-dock {
+    bottom: 20px !important;
+    right: 18px !important;
+    gap: 10px !important;
+  }
+
+  .floating-action-pill {
+    padding: 10px 18px !important;
+    font-size: 12.5px !important;
+  }
+
+  .floating-top-btn {
+    width: 40px !important;
+    height: 40px !important;
+    padding: 6px !important;
+  }
+}
+
+/* --- 5. Mobile Small & Portrait Phones (<= 480px) --- */
+@media (max-width: 480px) {
+  .landing-vertical-section {
+    padding: 0 12px !important;
+  }
+
+  .section-glass-card {
+    padding: 26px 16px !important;
+    border-radius: 20px !important;
+  }
+
+  .landing-vertical-flow {
+    gap: 42px !important;
+    padding-bottom: 90px !important;
+  }
+
+  /* Headings & Texts */
+  .section-glass-card .spread-heading,
+  .section-glass-card .overview-title,
+  .section-glass-card .stories-title,
+  .section-glass-card .principles-main-title {
+    font-size: 1.6rem !important;
+    line-height: 1.25 !important;
+  }
+
+  .section-glass-card .spread-desc {
+    font-size: 14px !important;
+  }
+
+  /* Hero buttons full-width */
+  .hero-actions {
+    flex-direction: column !important;
+  }
+
+  .hero-actions .btn-gold-pill,
+  .hero-actions .btn-cream-pill {
+    width: 100% !important;
+    flex: none !important;
+  }
+
+  /* Spread 3: Intervals for 320px - 480px */
+  .section-glass-card .intervals-container {
+    padding: 6px 0 !important;
+  }
+
+  .section-glass-card .review-ring {
+    width: 54px !important;
+    height: 54px !important;
+  }
+
+  .section-glass-card .ring-day {
+    font-size: 19px !important;
+  }
+
+  .section-glass-card .ring-label {
+    font-size: 10px !important;
+  }
+
+  .section-glass-card .intervals-line {
+    top: 27px !important;
+    left: 24px !important;
+    right: 24px !important;
+  }
+
+  /* Spread 4: Stack metric boxes on very narrow phones */
+  .section-glass-card .metrics-row {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+
+  .section-glass-card .metric-box {
+    padding: 12px 14px !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+  }
+
+  .section-glass-card .metric-value {
+    font-size: 28px !important;
+  }
+
+  .section-glass-card .weekly-chart-card {
+    padding: 14px 16px !important;
+  }
+
+  .section-glass-card .chart-bars {
+    gap: 6px !important;
+  }
+
+  .section-glass-card .milestone-text {
+    font-size: 12.5px !important;
+  }
+
+  .section-glass-card .milestone-status {
+    font-size: 10px !important;
+  }
+
+  /* Spread 5: Teacher */
+  .section-glass-card .teacher-portrait-card {
+    height: 380px !important;
+  }
+
+  .section-glass-card .teacher-portrait-image {
+    height: 100% !important;
+    min-height: 100% !important;
+  }
+
+  .section-glass-card .teacher-identity {
+    position: absolute !important;
+    bottom: 16px !important;
+    left: 16px !important;
+    right: 16px !important;
+    padding: 12px 16px !important;
+    border-radius: 14px !important;
+  }
+
+  .section-glass-card .teacher-name {
+    font-size: 1.12rem !important;
+    line-height: 1.22 !important;
+    white-space: nowrap !important;
+    margin: 0 !important;
+  }
+
+  .section-glass-card .teacher-role {
+    font-size: 9.5px !important;
+    letter-spacing: 0.06em !important;
+  }
+
+  .section-glass-card .support-feature-row {
+    padding: 12px 14px !important;
+    gap: 12px !important;
+  }
+
+  .section-glass-card .support-action-row {
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+
+  .section-glass-card .support-action-row .btn-gold-pill {
+    width: 100% !important;
+  }
+
+  /* Spread 6: Stories & Audio */
+  .section-glass-card .featured-journey-card {
+    padding: 18px 16px !important;
+    border-radius: 18px !important;
+  }
+
+  .section-glass-card .journey-card-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+  }
+
+  .section-glass-card .journey-author-profile {
+    width: 100% !important;
+  }
+
+  .section-glass-card .journey-milestone-chip {
+    align-self: flex-start !important;
+  }
+
+  .section-glass-card .journey-case-headline {
+    font-size: 16px !important;
+  }
+
+  .section-glass-card .journey-quote-text {
+    font-size: 14px !important;
+  }
+
+  .section-glass-card .recitation-audio-bar {
+    padding: 8px 12px !important;
+    gap: 10px !important;
+  }
+
+  .section-glass-card .recitation-title {
+    font-size: 11.5px !important;
+  }
+
+  .section-glass-card .recitation-duration {
+    font-size: 10px !important;
+  }
+
+  .global-practice-metrics-bar {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+    padding: 14px 12px !important;
+  }
+
+  .global-metric-num {
+    font-size: 24px !important;
+  }
+
+  .global-metric-label {
+    font-size: 11px !important;
+  }
+
+  .solid-world-map-svg {
+    min-height: 240px !important;
+  }
+
+  .active-hub-header {
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+
+  .active-hub-name-row {
+    flex-wrap: wrap !important;
+  }
+
+  /* Spread 7: Principles & Pillars */
+  .section-glass-card .principles-header-top-row {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+  }
+
+  .section-glass-card .quran-ayah-illuminated-card {
+    padding: 16px 14px !important;
+  }
+
+  .section-glass-card .quranic-calligraphy-text {
+    font-size: 18px !important;
+  }
+
+  .section-glass-card .ayah-translation-text {
+    font-size: 13px !important;
+  }
+
+  .section-glass-card .pillar-card,
+  .section-glass-card .principle-card {
+    padding: 16px 14px !important;
+  }
+
+  /* Spread 8: Enrollment */
+  .section-glass-card .enrollment-card-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+  }
+
+  .section-glass-card .social-channels-header,
+  .social-channels-header {
+    gap: 6px !important;
+  }
+
+  .section-glass-card .social-channels-title,
+  .social-channels-title {
+    font-size: 10px !important;
+  }
+
+  .section-glass-card .social-channel-pills,
+  .social-channel-pills {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    gap: 8px !important;
+  }
+
+  .section-glass-card .social-pill-btn,
+  .social-pill-btn {
+    width: 100% !important;
+    justify-content: center !important;
+    padding: 10px 12px !important;
+  }
+
+  .country-hubs-switcher {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    border-radius: 20px !important;
+    padding: 10px 12px !important;
+    gap: 8px !important;
+  }
+
+  .switcher-label-group {
+    width: 100% !important;
+  }
+
+  .switcher-pills-row {
+    width: 100% !important;
+  }
+
+  .section-glass-card .spread-footer {
+    padding-top: 16px !important;
+    gap: 16px !important;
+  }
+
+  .section-glass-card .footer-links {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+
+  /* Floating Dock on small mobile */
+  .floating-quick-dock {
+    bottom: 14px !important;
+    right: 12px !important;
+    gap: 8px !important;
+  }
+
+  .floating-action-pill {
+    padding: 9px 14px !important;
+    font-size: 12px !important;
+    gap: 7px !important;
+  }
+
+  .floating-top-btn {
+    width: 38px !important;
+    height: 38px !important;
+    padding: 5px !important;
+  }
+}
+
+/* ==========================================================================
+   HERO SECTION MOBILE RESPONSIVENESS
+   Renders both left side (copy & actions) and right side (sacred stand) seamlessly
+   ========================================================================== */
+
+/* --- Mobile Hero Spread Wrapper (Hosts both left and right sides) --- */
+.mobile-hero-spread-wrapper {
+  width: var(--book-page-w, 640px) !important;
+  height: auto !important;
+  position: relative;
+  animation: heroMobileEntrance 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes heroMobileEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.mobile-hero-spread-wrapper .hero-spread,
+.mobile-book-spread.hero-spread {
+  width: 100% !important;
+  height: auto !important;
+  max-height: none !important;
+  display: flex !important;
+  flex-direction: column !important;
+  border-radius: 20px !important;
+  box-shadow: 0 16px 40px rgba(0, 29, 24, 0.35) !important;
+  border: 1px solid var(--border-parchment);
+  overflow: hidden;
+  position: relative;
+}
+
+.mobile-hero-spread-wrapper .book-page-edge,
+.mobile-hero-spread-wrapper .book-center-gutter {
+  display: none !important;
+}
+
+.mobile-hero-spread-wrapper .opening-page,
+.mobile-book-spread .opening-page {
+  width: 100% !important;
+  height: auto !important;
+  padding: 44px 28px 32px 32px !important;
+  box-sizing: border-box !important;
+  justify-content: flex-start !important;
+  gap: 24px !important;
+}
+
+.mobile-hero-spread-wrapper .hero-copy,
+.mobile-book-spread .hero-copy {
+  width: 100% !important;
+  height: auto !important;
+  gap: 16px !important;
+}
+
+.mobile-hero-spread-wrapper .kicker-group,
+.mobile-book-spread .kicker-group {
+  width: 100% !important;
+  height: auto !important;
+}
+
+.mobile-hero-spread-wrapper .kicker-label,
+.mobile-book-spread .kicker-label {
+  width: auto !important;
+  height: auto !important;
+  font-size: 10px !important;
+}
+
+.mobile-hero-spread-wrapper .hero-title,
+.mobile-book-spread .hero-title {
+  width: 100% !important;
+  min-height: auto !important;
+  font-size: 46px !important;
+  line-height: 100% !important;
+  word-break: keep-all !important;
+  overflow-wrap: break-word !important;
+}
+
+.mobile-hero-spread-wrapper .hero-description,
+.mobile-book-spread .hero-description {
+  width: 100% !important;
+  height: auto !important;
+  font-size: 16px !important;
+  line-height: 155% !important;
+}
+
+.mobile-hero-spread-wrapper .hero-actions,
+.mobile-book-spread .hero-actions {
+  width: 100% !important;
+  height: auto !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+}
+
+.mobile-hero-spread-wrapper .hero-actions .btn-gold-pill,
+.mobile-hero-spread-wrapper .hero-actions .btn-cream-pill,
+.mobile-book-spread .hero-actions .btn-gold-pill,
+.mobile-book-spread .hero-actions .btn-cream-pill {
+  width: 100% !important;
+  flex: none !important;
+}
+
+.mobile-hero-spread-wrapper .trust-signals,
+.mobile-book-spread .trust-signals {
+  width: 100% !important;
+  height: auto !important;
+}
+
+.mobile-hero-spread-wrapper .trust-divider,
+.mobile-book-spread .trust-divider {
+  width: 100% !important;
+}
+
+.mobile-hero-spread-wrapper .trust-details,
+.mobile-book-spread .trust-details {
+  width: 100% !important;
+  height: auto !important;
+  flex-wrap: wrap !important;
+  gap: 6px !important;
+}
+
+.mobile-hero-spread-wrapper .trust-pill,
+.mobile-book-spread .trust-pill:nth-child(1),
+.mobile-book-spread .trust-pill:nth-child(2),
+.mobile-book-spread .trust-pill:nth-child(3) {
+  width: auto !important;
+}
+
+/* Right page (illustrated stand) */
+.mobile-hero-spread-wrapper .illustrated-page,
+.mobile-book-spread .illustrated-page {
+  width: 100% !important;
+  height: auto !important;
+  min-height: 440px !important;
+  position: relative !important;
+  border-top: 1px solid rgba(197, 164, 90, 0.28) !important;
+}
+
+.mobile-hero-spread-wrapper .book-still-life,
+.mobile-book-spread .book-still-life {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 440px !important;
+  background-size: cover !important;
+  background-position: center center !important;
+  position: relative !important;
+}
+
+/* --- Narrow phones (< 400px) --- */
+@media (max-width: 400px) {
+  .mobile-book-spread .opening-page {
+    padding: 40px 20px 28px 24px !important;
+  }
+
+  .mobile-book-spread .hero-title {
+    font-size: 38px !important;
+  }
+
+  .mobile-book-spread .hero-description {
+    font-size: 14px !important;
+  }
+
+  .mobile-book-spread .hero-copy {
+    gap: 14px !important;
+  }
+
+  .mobile-book-spread .hero-mobile-page-switcher {
+    gap: 4px !important;
+  }
+
+  .hero-mobile-pill {
+    padding: 6px 10px !important;
+    font-size: 10px !important;
+  }
+}
+
+/* --- Very narrow phones (< 340px) --- */
+@media (max-width: 340px) {
+  .mobile-book-spread .opening-page {
+    padding: 36px 14px 24px 16px !important;
+  }
+
+  .mobile-book-spread .hero-title {
+    font-size: 32px !important;
+  }
+
+  .mobile-book-spread .hero-description {
+    font-size: 13px !important;
+  }
+
+  .mobile-book-spread .kicker-label {
+    font-size: 9px !important;
+  }
+
+  .section-glass-card .teacher-name {
+    font-size: 1rem !important;
+  }
+}
+
+/* --- Mobile Hero Section Spacing Fix (Eliminates dead empty space) --- */
+@media (max-width: 768px) {
+  .landing-hero-section {
+    min-height: auto !important;
+    padding-top: 76px !important;
+    padding-bottom: 12px !important;
+    justify-content: flex-start !important;
+  }
+
+  .hero-scroll-indicator {
+    margin-top: 0px !important;
+    margin-bottom: 16px !important;
+  }
+
+  .landing-vertical-flow {
+    padding-top: 24px !important;
+  }
+}
+
+
+
+
 
 

@@ -11,7 +11,7 @@ export default function Spread5_Teacher({ onNext, onOpenBooking, side = 'both' }
         >
           <div className="portrait-gradient" />
           <div className="teacher-identity">
-            <h3 className="teacher-name">Ustadh Azizul Hakim</h3>
+            <h3 className="teacher-name">Kazi Tayoubur Rahman</h3>
             <span className="teacher-role">LEAD QURAN MENTOR & IJAZAH HOLDER</span>
           </div>
         </div>
@@ -44,7 +44,7 @@ export default function Spread5_Teacher({ onNext, onOpenBooking, side = 'both' }
           {/* Feature 1 */}
           <div className="support-feature-row">
             <div className="feature-icon-badge">
-              <Icon name="message-square-more" size={18} color="#0D4B3E" />
+              <Icon name="message-square-more" size={18} color="#FFDF85" />
             </div>
             <div className="feature-copy">
               <h4 className="feature-title">1-on-1 Dedicated Mentorship</h4>
@@ -55,7 +55,7 @@ export default function Spread5_Teacher({ onNext, onOpenBooking, side = 'both' }
           {/* Feature 2 */}
           <div className="support-feature-row">
             <div className="feature-icon-badge">
-              <Icon name="calendar-check" size={18} color="#0D4B3E" />
+              <Icon name="calendar-check" size={18} color="#FFDF85" />
             </div>
             <div className="feature-copy">
               <h4 className="feature-title">Flexible Global Scheduling</h4>
@@ -66,7 +66,7 @@ export default function Spread5_Teacher({ onNext, onOpenBooking, side = 'both' }
           {/* Feature 3 */}
           <div className="support-feature-row">
             <div className="feature-icon-badge">
-              <Icon name="circle-help" size={18} color="#0D4B3E" />
+              <Icon name="circle-help" size={18} color="#FFDF85" />
             </div>
             <div className="feature-copy">
               <h4 className="feature-title">Anytime Voice Note Support</h4>
