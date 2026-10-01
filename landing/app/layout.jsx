@@ -1,8 +1,8 @@
 import '../src/index.css';
 
 export const metadata = {
-  title: 'Hifz Journey — A Gentle Route to Lasting Recall',
-  description: 'A structured, gentle, and intentional path to read, understand, and connect with the Quran from anywhere in the world.',
+  title: 'Our Quran Institute — A Complete Online Islamic Learning Journey',
+  description: 'A complete online Islamic learning journey. Master Quran memorization (Hifz), Tajweed, Quranic Arabic, and authentic Islamic Studies with certified scholars from Al-Azhar. 1-on-1 private lessons across 42+ countries with connected Sanad certification.',
   icons: {
     icon: '/assets/logo_badge.png',
   },

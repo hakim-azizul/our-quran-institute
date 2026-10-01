@@ -181,6 +181,35 @@ export default function CalligraphyWritingStage({ isWriting = true }) {
   const stepStartRef = useRef(0);
   const currentStepRef = useRef(0);
 
+  // Responsive scale tracker so calligraphy lines and pen map 1:1 onto physical book pages on all devices
+  const stageRef = useRef(null);
+  const [stageScale, setStageScale] = useState({ x: 1, y: 1 });
+
+  useEffect(() => {
+    const el = stageRef.current?.parentElement;
+    if (!el) return;
+
+    const updateScale = () => {
+      const w = el.offsetWidth || 640;
+      const h = el.offsetHeight || 876;
+      if (w > 0 && h > 0) {
+        setStageScale({
+          x: w / 640,
+          y: h / 876
+        });
+      }
+    };
+
+    updateScale();
+    const ro = new ResizeObserver(updateScale);
+    ro.observe(el);
+    window.addEventListener('resize', updateScale);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener('resize', updateScale);
+    };
+  }, []);
+
   const handleRestart = () => {
     currentStepRef.current = 0;
     setActiveStep(0);
@@ -322,9 +351,20 @@ export default function CalligraphyWritingStage({ isWriting = true }) {
 
   return (
     <div
-      className="calligraphy-stage-wrapper"
+      ref={stageRef}
+      className={`calligraphy-stage-wrapper ${isCompleted ? 'is-completed' : ''}`}
       onClick={handleRestart}
       title="Click to replay calligraphy inscription"
+      style={{
+        width: '640px',
+        height: '876px',
+        position: 'absolute',
+        left: 0,
+        top: 0,
+        transformOrigin: '0 0',
+        transform: `scale(${stageScale.x}, ${stageScale.y})`,
+        pointerEvents: 'none'
+      }}
     >
       {/* 1. RIGHT PAGE PERSPECTIVE PLANE (Opening Page - Part I) */}
       <div

@@ -22,6 +22,7 @@ import Spread5_Teacher from './components/spreads/Spread5_Teacher';
 import Spread6_Stories from './components/spreads/Spread6_Stories';
 import Spread7_Principles from './components/spreads/Spread7_Principles';
 import Spread8_Closing from './components/spreads/Spread8_Closing';
+import CourseShowcase from './components/CourseShowcase';
 
 // Section IDs mapped to spread indices
 const SECTION_IDS = [
@@ -31,9 +32,10 @@ const SECTION_IDS = [
   'section-retention',  // 3
   'section-progress',   // 4
   'section-mentors',    // 5
-  'section-stories',    // 6
-  'section-principles', // 7
-  'section-enrollment'  // 8
+  'section-courses',    // 6
+  'section-stories',    // 7
+  'section-principles', // 8
+  'section-enrollment'  // 9
 ];
 
 export default function App() {
@@ -41,7 +43,13 @@ export default function App() {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [scrollVelocity, setScrollVelocity] = useState(0);
   const [isBookingOpen, setIsBookingOpen] = useState(false);
+  const [selectedCourseForBooking, setSelectedCourseForBooking] = useState('');
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+
+  const handleOpenBooking = (courseName = '') => {
+    setSelectedCourseForBooking(courseName);
+    setIsBookingOpen(true);
+  };
 
   // Responsive Viewport Tracking
   const [viewport, setViewport] = useState({
@@ -324,43 +332,56 @@ export default function App() {
       component: (
         <Spread5_Teacher
           onNext={() => scrollToSection(6)}
-          onOpenBooking={() => setIsBookingOpen(true)}
+          onOpenBooking={() => handleOpenBooking()}
+        />
+      )
+    },
+    {
+      id: 'section-courses',
+      index: 6,
+      title: 'Academic Programs & Sacred Disciplines',
+      kicker: 'CERTIFIED CURRICULUM',
+      glowColor: 'emerald',
+      component: (
+        <CourseShowcase
+          onOpenBooking={handleOpenBooking}
+          onSelectCourse={(c) => handleOpenBooking(c.title)}
         />
       )
     },
     {
       id: 'section-stories',
-      index: 6,
+      index: 7,
       title: 'Global Sanctuary & Worldwide Map',
-      kicker: '38 COUNTRIES ACTIVE',
+      kicker: '42 COUNTRIES ACTIVE',
       glowColor: 'emerald',
       component: (
         <Spread6_Stories
-          onNext={() => scrollToSection(7)}
-        />
-      )
-    },
-    {
-      id: 'section-principles',
-      index: 7,
-      title: 'Sacred Covenant & 04 Pillars',
-      kicker: 'CORE PHILOSOPHY',
-      glowColor: 'amber',
-      component: (
-        <Spread7_Principles
           onNext={() => scrollToSection(8)}
         />
       )
     },
     {
-      id: 'section-enrollment',
+      id: 'section-principles',
       index: 8,
+      title: 'Our Vision & Core Principles',
+      kicker: 'OUR VISION',
+      glowColor: 'amber',
+      component: (
+        <Spread7_Principles
+          onNext={() => scrollToSection(9)}
+        />
+      )
+    },
+    {
+      id: 'section-enrollment',
+      index: 9,
       title: 'The Sacred Call & Complimentary Session',
       kicker: 'RESERVE SESSION',
       glowColor: 'gold',
       component: (
         <Spread8_Closing
-          onOpenBooking={() => setIsBookingOpen(true)}
+          onOpenBooking={() => handleOpenBooking()}
           onNavigate={(idx) => scrollToSection(idx)}
         />
       )
@@ -622,25 +643,23 @@ export default function App() {
         <div className="floating-quick-dock">
           <button
             className="floating-action-pill"
-            onClick={() => setIsBookingOpen(true)}
+            onClick={() => handleOpenBooking()}
             title="Book Free Assessment"
           >
             <DiamondOrnament size={18} diamondSize={10} centerColor="#062A24" borderColor="#C5A45A" />
             <span>Book Free Session</span>
             <Icon name="arrow-up-right" size={14} color="#062A24" />
           </button>
-          <button
-            className="floating-top-btn"
-            onClick={() => scrollToSection(0)}
-            title="Our Quran Institute - Back to Top"
-            aria-label="Our Quran Institute - Back to Top"
+          <a
+            href="https://wa.me/201094714943"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="floating-top-btn floating-whatsapp-btn"
+            title="Chat on WhatsApp (+20 10 94714943)"
+            aria-label="Chat on WhatsApp (+20 10 94714943)"
           >
-            <img
-              src="/assets/logo_gold.png"
-              alt="Our Quran Institute Logo"
-              className="floating-top-logo"
-            />
-          </button>
+            <Icon name="whatsapp" size={22} color="#25D366" />
+          </a>
         </div>
       )}
 
@@ -648,6 +667,7 @@ export default function App() {
       <BookingModal
         isOpen={isBookingOpen}
         onClose={() => setIsBookingOpen(false)}
+        initialCourse={selectedCourseForBooking}
       />
 
       {/* 7. Video Preview Modal */}

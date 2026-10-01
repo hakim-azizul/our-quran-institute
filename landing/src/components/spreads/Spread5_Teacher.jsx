@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import { Icon } from '../Icons';
 
 export default function Spread5_Teacher({ onNext, onOpenBooking, side = 'both' }) {
@@ -77,12 +78,20 @@ export default function Spread5_Teacher({ onNext, onOpenBooking, side = 'both' }
 
         {/* Support actions */}
         <div className="support-action-row">
-          <button className="btn-gold-pill" onClick={onOpenBooking}>
-            <span>Meet our teachers</span>
+          <button className="btn-gold-pill" onClick={onOpenBooking} type="button">
+            <span style={{ whiteSpace: 'nowrap', color: '#062A24' }}>Book with a Mentor</span>
             <Icon name="users" size={17} color="#062A24" />
           </button>
+          <Link
+            href="/teachers"
+            className="btn-cream-pill faculty-dir-btn"
+            style={{ textDecoration: 'none', color: '#062A24', whiteSpace: 'nowrap' }}
+          >
+            <span style={{ textDecoration: 'none', color: '#062A24', whiteSpace: 'nowrap' }}>Faculty Directory</span>
+            <Icon name="arrow-up-right" size={15} color="#062A24" />
+          </Link>
           <div className="status-pill-warm">
-            <span>120+ MENTORS</span>
+            <span style={{ whiteSpace: 'nowrap' }}>120+ MENTORS</span>
           </div>
         </div>
       </div>
