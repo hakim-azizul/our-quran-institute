@@ -44,7 +44,7 @@ export default function Spread7_Principles({ onNext, side = 'both' }) {
         <div className="principles-header-top-row">
           <div className="section-label">
             <div className="label-rule" />
-            <span className="label-text">CORE PHILOSOPHY · OUR SACRED COVENANT</span>
+            <span className="label-text">OUR VISION</span>
           </div>
           <DiamondOrnament size={36} diamondSize={20} centerColor="#062A24" borderColor="#C5A45A" />
         </div>

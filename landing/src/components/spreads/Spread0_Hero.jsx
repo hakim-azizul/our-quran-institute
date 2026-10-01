@@ -17,7 +17,7 @@ export default function Spread0_Hero({
         {/* Kicker */}
         <div className="kicker-group">
           <div className="kicker-rule" />
-          <span className="kicker-label">A THOUGHTFUL PATH TO QURAN MEMORIZATION</span>
+          <span className="kicker-label">A COMPLETE ONLINE ISLAMIC LEARNING JOURNEY</span>
         </div>
 
         {/* Title */}
@@ -30,18 +30,18 @@ export default function Spread0_Hero({
 
         {/* Description */}
         <p className="hero-description">
-          Hifz Journey brings daily memorization, intelligent revision, and caring teacher guidance into one calm, consistent learning rhythm.
+          Our Quran Institute brings structured Quran memorization (Hifz), Tajweed mastery, Quranic Arabic, and authentic Islamic Studies under the patient 1-on-1 guidance of certified scholars from Al-Azhar.
         </p>
 
         {/* Hero Actions */}
         <div className="hero-actions">
           <button className="btn-gold-pill" onClick={onOpenBooking}>
-            <span>Start your assessment</span>
-            <Icon name="arrow-right" size={17} color="#062A24" />
+            <span>Book Assessment</span>
+            <Icon name="arrow-right" size={15} color="#062A24" />
           </button>
-          <button className="btn-cream-pill" onClick={onWatchVideo}>
-            <span>See how it works</span>
-            <Icon name="play" size={17} color="#062A24" />
+          <button className="btn-cream-pill" onClick={onNext}>
+            <span>Explore Programs</span>
+            <Icon name="book-open" size={15} color="#062A24" />
           </button>
         </div>
       </div>
@@ -50,9 +50,9 @@ export default function Spread0_Hero({
       <div className="trust-signals">
         <div className="trust-divider" />
         <div className="trust-details">
-          <div className="trust-pill"><span>7-day trial</span></div>
-          <div className="trust-pill"><span>Teacher reviewed</span></div>
-          <div className="trust-pill"><span>Built for consistency</span></div>
+          <div className="trust-pill"><span>Al-Azhar Scholars</span></div>
+          <div className="trust-pill"><span>1-on-1 Live Mentorship</span></div>
+          <div className="trust-pill"><span>Connected Sanad Chains</span></div>
         </div>
       </div>
     </div>
