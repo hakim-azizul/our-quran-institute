@@ -36,26 +36,32 @@ export default function Spread2_DailyLesson({ onNext, side = 'both' }) {
       <div className="lesson-benefits">
         <div className="benefit-item">
           <div className="benefit-badge">
-            <Icon name="audio-lines" size={21} color="#0D4B3E" />
+            <Icon name="audio-lines" size={21} color="#FFDF85" />
           </div>
-          <h4 className="benefit-title">Audio Flow</h4>
-          <p className="benefit-desc">Pure reciter audio with instant loop & speed controls.</p>
+          <div className="benefit-copy">
+            <h4 className="benefit-title">Audio Flow</h4>
+            <p className="benefit-desc">Pure reciter audio with instant loop & speed controls.</p>
+          </div>
         </div>
 
         <div className="benefit-item">
           <div className="benefit-badge">
-            <Icon name="repeat-2" size={21} color="#0D4B3E" />
+            <Icon name="repeat-2" size={21} color="#FFDF85" />
           </div>
-          <h4 className="benefit-title">Micro-Loops</h4>
-          <p className="benefit-desc">Bite-sized verse sets to lock muscle memory naturally.</p>
+          <div className="benefit-copy">
+            <h4 className="benefit-title">Micro-Loops</h4>
+            <p className="benefit-desc">Bite-sized verse sets to lock muscle memory naturally.</p>
+          </div>
         </div>
 
         <div className="benefit-item">
           <div className="benefit-badge">
-            <Icon name="timer" size={21} color="#0D4B3E" />
+            <Icon name="timer" size={21} color="#FFDF85" />
           </div>
-          <h4 className="benefit-title">15-Min Habit</h4>
-          <p className="benefit-desc">Sustainable daily portions that protect against fatigue.</p>
+          <div className="benefit-copy">
+            <h4 className="benefit-title">15-Min Habit</h4>
+            <p className="benefit-desc">Sustainable daily portions that protect against fatigue.</p>
+          </div>
         </div>
       </div>
     </div>
@@ -90,7 +96,7 @@ export default function Spread2_DailyLesson({ onNext, side = 'both' }) {
           style={{ cursor: 'pointer' }}
         >
           <div className={`step-check-badge ${completedSteps[0] ? 'completed' : ''}`}>
-            <Icon name="check" size={18} color={completedSteps[0] ? '#C5A45A' : '#0D4B3E'} />
+            <Icon name="check" size={18} color={completedSteps[0] ? '#FFDF85' : 'rgba(243, 233, 211, 0.45)'} />
           </div>
           <div className="step-info">
             <h4 className="step-row-title">Recite Ayah 1-3 with Ustadha</h4>
@@ -105,7 +111,7 @@ export default function Spread2_DailyLesson({ onNext, side = 'both' }) {
           style={{ cursor: 'pointer' }}
         >
           <div className={`step-check-badge ${completedSteps[1] ? 'completed' : ''}`}>
-            <Icon name="book-open" size={18} color={completedSteps[1] ? '#C5A45A' : '#0D4B3E'} />
+            <Icon name="book-open" size={18} color={completedSteps[1] ? '#FFDF85' : 'rgba(243, 233, 211, 0.45)'} />
           </div>
           <div className="step-info">
             <h4 className="step-row-title">Explore vocabulary & tafsir</h4>
@@ -120,7 +126,7 @@ export default function Spread2_DailyLesson({ onNext, side = 'both' }) {
           style={{ cursor: 'pointer' }}
         >
           <div className={`step-check-badge ${completedSteps[2] ? 'completed' : ''}`}>
-            <Icon name="link-2" size={18} color={completedSteps[2] ? '#C5A45A' : '#0D4B3E'} />
+            <Icon name="link-2" size={18} color={completedSteps[2] ? '#FFDF85' : 'rgba(243, 233, 211, 0.45)'} />
           </div>
           <div className="step-info">
             <h4 className="step-row-title">Connect verses into rhythm</h4>
@@ -135,7 +141,7 @@ export default function Spread2_DailyLesson({ onNext, side = 'both' }) {
           style={{ cursor: 'pointer' }}
         >
           <div className={`step-check-badge ${completedSteps[3] ? 'completed' : ''}`}>
-            <Icon name="mic" size={18} color={completedSteps[3] ? '#C5A45A' : '#0D4B3E'} />
+            <Icon name="mic" size={18} color={completedSteps[3] ? '#FFDF85' : 'rgba(243, 233, 211, 0.45)'} />
           </div>
           <div className="step-info">
             <h4 className="step-row-title">Record active recall test</h4>

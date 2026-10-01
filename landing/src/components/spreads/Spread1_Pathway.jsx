@@ -27,7 +27,9 @@ export default function Spread1_Pathway({ onNext, side = 'both' }) {
       </div>
 
       <div className="method-note-box">
-        <div className="method-marker" />
+        <div className="method-note-badge">
+          <Icon name="sparkles" size={18} color="#FFDF85" />
+        </div>
         <p className="method-note-text">
           Every lesson connects recitation technique directly with comprehension, anchoring memory in meaning.
         </p>
@@ -41,11 +43,10 @@ export default function Spread1_Pathway({ onNext, side = 'both' }) {
         <span className="seq-title">4-STAGE METHODOLOGY</span>
         <span className="seq-duration">15 MIN / DAY</span>
       </div>
-      <div className="seq-divider" />
 
-      <div className="pathway-step">
+      <div className="pathway-step active">
         <div className="step-marker active">
-          <Icon name="headphones" size={21} color="#C5A45A" />
+          <Icon name="headphones" size={21} color="#FFDF85" />
         </div>
         <div className="step-copy">
           <span className="step-number">STEP 01</span>
@@ -58,7 +59,7 @@ export default function Spread1_Pathway({ onNext, side = 'both' }) {
 
       <div className="pathway-step">
         <div className="step-marker">
-          <Icon name="book-open" size={21} color="#0D4B3E" />
+          <Icon name="book-open" size={21} color="#FFDF85" />
         </div>
         <div className="step-copy">
           <span className="step-number">STEP 02</span>
@@ -71,7 +72,7 @@ export default function Spread1_Pathway({ onNext, side = 'both' }) {
 
       <div className="pathway-step">
         <div className="step-marker">
-          <Icon name="mic" size={21} color="#0D4B3E" />
+          <Icon name="mic" size={21} color="#FFDF85" />
         </div>
         <div className="step-copy">
           <span className="step-number">STEP 03</span>
@@ -84,7 +85,7 @@ export default function Spread1_Pathway({ onNext, side = 'both' }) {
 
       <div className="pathway-step">
         <div className="step-marker">
-          <Icon name="refresh-cw" size={21} color="#0D4B3E" />
+          <Icon name="refresh-cw" size={21} color="#FFDF85" />
         </div>
         <div className="step-copy">
           <span className="step-number">STEP 04</span>
@@ -94,8 +95,6 @@ export default function Spread1_Pathway({ onNext, side = 'both' }) {
           </p>
         </div>
       </div>
-
-      <div className="page-number-tag">01</div>
     </div>
   );
 

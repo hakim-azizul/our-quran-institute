@@ -44,6 +44,13 @@ export const Icon = ({ name, size = 18, color = 'currentColor', className = '' }
           <polyline points="7 7 17 7 17 17" />
         </svg>
       );
+    case 'arrow-up':
+      return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className}>
+          <line x1="12" y1="19" x2="12" y2="5" />
+          <polyline points="5 12 12 5 19 12" />
+        </svg>
+      );
     case 'arrow-right':
       return (
         <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className}>
@@ -56,6 +63,18 @@ export const Icon = ({ name, size = 18, color = 'currentColor', className = '' }
         <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className}>
           <line x1="19" y1="12" x2="5" y2="12" />
           <polyline points="12 19 5 12 12 5" />
+        </svg>
+      );
+    case 'chevron-left':
+      return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+          <polyline points="15 18 9 12 15 6" />
+        </svg>
+      );
+    case 'chevron-right':
+      return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+          <polyline points="9 18 15 12 9 6" />
         </svg>
       );
     case 'play':
