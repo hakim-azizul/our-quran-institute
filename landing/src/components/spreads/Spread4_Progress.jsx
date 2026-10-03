@@ -104,7 +104,7 @@ export default function Spread4_Progress({ onNext, side = 'both' }) {
         {/* Milestone 1 */}
         <div className="milestone-row">
           <div className="milestone-badge">
-            <Icon name="award" size={17} color="#FFDF85" />
+            <Icon name="award" size={17} color="#C5A45A" />
           </div>
           <span className="milestone-text">Juz' Amma Completion Verified</span>
           <span className="milestone-status">COMPLETED</span>
@@ -113,7 +113,7 @@ export default function Spread4_Progress({ onNext, side = 'both' }) {
         {/* Milestone 2 */}
         <div className="milestone-row">
           <div className="milestone-badge">
-            <Icon name="message-circle-check" size={17} color="#FFDF85" />
+            <Icon name="message-circle-check" size={17} color="#C5A45A" />
           </div>
           <span className="milestone-text">Monthly Ustadha Assessment</span>
           <span className="milestone-status">PASSED</span>
@@ -122,7 +122,7 @@ export default function Spread4_Progress({ onNext, side = 'both' }) {
         {/* Milestone 3 */}
         <div className="milestone-row">
           <div className="milestone-badge">
-            <Icon name="trending-up" size={17} color="#FFDF85" />
+            <Icon name="trending-up" size={17} color="#C5A45A" />
           </div>
           <span className="milestone-text">100-Day Consistency Shield</span>
           <span className="milestone-status">ACHIEVED</span>

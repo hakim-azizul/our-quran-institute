@@ -1,10 +1,16 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import Lenis from 'lenis';
 import Navigation from './components/Navigation';
 import BookingModal from './components/BookingModal';
+import LoginModal from './components/LoginModal';
+import MosqueHero from './components/MosqueHero';
+import BookFreeSessionSection from './components/BookFreeSessionSection';
+import GlobalContactMapSection from './components/GlobalContactMapSection';
+import LatestUpdatesSection from './components/LatestUpdatesSection';
 import { soundEngine } from './components/AudioEffects';
 import { DiamondOrnament, Icon } from './components/Icons';
 
@@ -12,30 +18,23 @@ const ThreeBookCanvas = dynamic(() => import('./components/ThreeBookCanvas'), {
   ssr: false
 });
 
-// Spreads
-import Spread0_Hero from './components/spreads/Spread0_Hero';
-import Spread1_Pathway from './components/spreads/Spread1_Pathway';
-import Spread2_DailyLesson from './components/spreads/Spread2_DailyLesson';
-import Spread3_Revision from './components/spreads/Spread3_Revision';
+// Spreads (The System, Daily Rhythm, Spaced Repetition removed per request)
 import Spread4_Progress from './components/spreads/Spread4_Progress';
 import Spread5_Teacher from './components/spreads/Spread5_Teacher';
 import Spread6_Stories from './components/spreads/Spread6_Stories';
 import Spread7_Principles from './components/spreads/Spread7_Principles';
-import Spread8_Closing from './components/spreads/Spread8_Closing';
 import CourseShowcase from './components/CourseShowcase';
 
 // Section IDs mapped to spread indices
 const SECTION_IDS = [
-  'section-hero',       // 0
-  'section-method',     // 1
-  'section-dailyflow',  // 2
-  'section-retention',  // 3
-  'section-progress',   // 4
-  'section-mentors',    // 5
-  'section-courses',    // 6
-  'section-stories',    // 7
-  'section-principles', // 8
-  'section-enrollment'  // 9
+  'section-hero',        // 0 — Hero Sanctuary
+  'section-courses',     // 1 — Academic Courses
+  'section-mentors',     // 2 — Lead Mentors & Scholars
+  'section-progress',    // 3 — Progress Tracking & Milestones
+  'section-map',         // 4 — Global Map & Student Stories
+  'section-vision',      // 5 — Our Vision & Pedagogical Pillars
+  'section-booking',     // 6 — Book a Free Session
+  'section-contact'      // 7 — Contact Us & Updates
 ];
 
 export default function App() {
@@ -43,12 +42,22 @@ export default function App() {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [scrollVelocity, setScrollVelocity] = useState(0);
   const [isBookingOpen, setIsBookingOpen] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [selectedCourseForBooking, setSelectedCourseForBooking] = useState('');
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
 
   const handleOpenBooking = (courseName = '') => {
     setSelectedCourseForBooking(courseName);
-    setIsBookingOpen(true);
+    const target = document.getElementById('section-booking') || document.getElementById('book-free-session');
+    if (target) {
+      if (lenisRef.current) {
+        lenisRef.current.scrollTo(target, { offset: -90, duration: isMobile ? 1.2 : 1.7 });
+      } else {
+        target.scrollIntoView({ behavior: 'smooth' });
+      }
+    } else {
+      setIsBookingOpen(true);
+    }
   };
 
   // Responsive Viewport Tracking
@@ -276,69 +285,8 @@ export default function App() {
   // Vertical glassmorphism sections specification
   const SECTIONS = [
     {
-      id: 'section-method',
-      index: 1,
-      title: 'Methodology & Pathway',
-      kicker: 'CORE PATHWAY',
-      glowColor: 'amber',
-      component: (
-        <Spread1_Pathway
-          onNext={() => scrollToSection(2)}
-        />
-      )
-    },
-    {
-      id: 'section-dailyflow',
-      index: 2,
-      title: '15-Minute Daily Habit',
-      kicker: 'DAILY FLOW',
-      glowColor: 'emerald',
-      component: (
-        <Spread2_DailyLesson
-          onNext={() => scrollToSection(3)}
-        />
-      )
-    },
-    {
-      id: 'section-retention',
-      index: 3,
-      title: 'Spaced Repetition Sanctuary',
-      kicker: 'RETENTION SCIENCE',
-      glowColor: 'amber',
-      component: (
-        <Spread3_Revision
-          onNext={() => scrollToSection(4)}
-        />
-      )
-    },
-    {
-      id: 'section-progress',
-      index: 4,
-      title: 'Effort & Progress Tracking',
-      kicker: 'MEASURABLE MILESTONES',
-      glowColor: 'emerald',
-      component: (
-        <Spread4_Progress
-          onNext={() => scrollToSection(5)}
-        />
-      )
-    },
-    {
-      id: 'section-mentors',
-      index: 5,
-      title: 'Lead Mentorship & Guidance',
-      kicker: 'SANAD SCHOLARS',
-      glowColor: 'amber',
-      component: (
-        <Spread5_Teacher
-          onNext={() => scrollToSection(6)}
-          onOpenBooking={() => handleOpenBooking()}
-        />
-      )
-    },
-    {
       id: 'section-courses',
-      index: 6,
+      index: 1,
       title: 'Academic Programs & Sacred Disciplines',
       kicker: 'CERTIFIED CURRICULUM',
       glowColor: 'emerald',
@@ -350,40 +298,120 @@ export default function App() {
       )
     },
     {
-      id: 'section-stories',
-      index: 7,
+      id: 'section-mentors',
+      index: 2,
+      title: 'Lead Mentorship & Guidance',
+      kicker: 'SANAD SCHOLARS',
+      glowColor: 'amber',
+      component: (
+        <Spread5_Teacher
+          onNext={() => scrollToSection(3)}
+          onOpenBooking={() => handleOpenBooking()}
+        />
+      )
+    },
+    {
+      id: 'section-progress',
+      index: 3,
+      title: 'Effort & Progress Tracking',
+      kicker: 'MEASURABLE MILESTONES',
+      glowColor: 'emerald',
+      component: (
+        <Spread4_Progress
+          onNext={() => scrollToSection(4)}
+        />
+      )
+    },
+    {
+      id: 'section-map',
+      index: 4,
       title: 'Global Sanctuary & Worldwide Map',
       kicker: '42 COUNTRIES ACTIVE',
       glowColor: 'emerald',
       component: (
         <Spread6_Stories
-          onNext={() => scrollToSection(8)}
+          onNext={() => scrollToSection(5)}
         />
       )
     },
     {
-      id: 'section-principles',
-      index: 8,
+      id: 'section-vision',
+      index: 5,
       title: 'Our Vision & Core Principles',
       kicker: 'OUR VISION',
       glowColor: 'amber',
       component: (
         <Spread7_Principles
-          onNext={() => scrollToSection(9)}
+          onNext={() => scrollToSection(6)}
         />
       )
     },
     {
-      id: 'section-enrollment',
-      index: 9,
-      title: 'The Sacred Call & Complimentary Session',
-      kicker: 'RESERVE SESSION',
+      id: 'section-booking',
+      index: 6,
+      title: 'Book / Reserve Your Free Session',
+      kicker: 'FREE ASSESSMENT',
       glowColor: 'gold',
+      isCustomCard: true,
       component: (
-        <Spread8_Closing
-          onOpenBooking={() => handleOpenBooking()}
-          onNavigate={(idx) => scrollToSection(idx)}
-        />
+        <div className="section-standalone-wrap">
+          <BookFreeSessionSection initialCourse={selectedCourseForBooking} />
+        </div>
+      )
+    },
+    {
+      id: 'section-contact',
+      index: 7,
+      title: 'Contact Us & Global Centers',
+      kicker: 'GET IN TOUCH',
+      glowColor: 'emerald',
+      isCustomCard: true,
+      component: (
+        <div className="contact-and-footer-wrapper">
+          {/* Contact with Us & Global World Map */}
+          <GlobalContactMapSection />
+
+          {/* Latest Updates from Our Islamic Center */}
+          <LatestUpdatesSection />
+
+          {/* Social Channels & Institute Footer */}
+          <footer className="spread-footer institute-main-footer">
+            <div className="footer-brand" onClick={() => scrollToSection(0)} style={{ cursor: 'pointer' }}>
+              <img src="/assets/logo_gold.png" alt="Our Quran Institute" className="footer-brand-logo" />
+              <div className="footer-brand-text">
+                <span className="footer-brand-name">Our Quran Institute</span>
+                <span className="footer-brand-tagline">Authentic Al-Azhar Quranic Studies</span>
+              </div>
+            </div>
+
+            <div className="footer-links">
+              <Link href="/courses" className="footer-link">Programs</Link>
+              <Link href="/teachers" className="footer-link">Faculty</Link>
+              <Link href="/about" className="footer-link">About Us</Link>
+              <button className="footer-link" onClick={() => scrollToSection(1)}>Our Courses</button>
+              <button className="footer-link" onClick={() => scrollToSection(2)}>Our Teachers</button>
+              <button className="footer-link" onClick={() => scrollToSection(3)}>Progress</button>
+              <button className="footer-link" onClick={() => scrollToSection(4)}>Global Map</button>
+              <button className="footer-link" onClick={() => scrollToSection(5)}>Our Vision</button>
+              <button className="footer-link" onClick={() => scrollToSection(6)}>Book a Session</button>
+              <button className="footer-link" onClick={() => scrollToSection(7)}>Contact Us</button>
+            </div>
+
+            <div className="footer-social-links">
+              <a href="https://wa.me/201094714943" target="_blank" rel="noopener noreferrer" className="footer-social-btn" title="WhatsApp (+20 10 94714943)">
+                <Icon name="whatsapp" size={15} />
+              </a>
+              <a href="https://youtube.com/@ourquraninstitute" target="_blank" rel="noopener noreferrer" className="footer-social-btn" title="YouTube">
+                <Icon name="youtube" size={15} />
+              </a>
+              <a href="https://facebook.com/ourquraninstitute" target="_blank" rel="noopener noreferrer" className="footer-social-btn" title="Facebook">
+                <Icon name="facebook" size={15} />
+              </a>
+            </div>
+
+            <span className="footer-copyright">© 2026 Our Quran Institute • All Rights Reserved</span>
+          </footer>
+        </div>
       )
     }
   ];
@@ -403,216 +431,17 @@ export default function App() {
       <Navigation
         activeSpread={activeSection}
         onNavigate={(idx) => scrollToSection(idx)}
-        onOpenBooking={() => setIsBookingOpen(true)}
+        onOpenBooking={() => handleOpenBooking()}
+        onOpenLogin={() => setIsLoginModalOpen(true)}
       />
 
-      {/* 3. Hero Section (Kept intact with opening book presentation) */}
-      <section id="section-hero" className="landing-hero-section">
-        {/* Ambient Top Glow for Hero */}
-        <div className="section-ambient-glow glow-amber hero-top-glow" />
-
-        {/* Dynamic Scale Book Stage */}
-        <div
-          className={`book-scale-viewport ${isMobile ? 'is-mobile-viewport' : ''}`}
-          style={{
-            transform: `scale(${isMobile ? mobileScale : desktopScale})`,
-            transformOrigin: 'top center',
-            ...(isMobile ? {
-              marginBottom: `${-mobileExtraSpace + 20}px`
-            } : {})
-          }}
-        >
-          <div
-            className={`book-spread-3d-wrapper ${isMobile ? 'mobile-single-page-wrapper' : ''} ${
-              isOpeningIntro ? 'is-turning' : ''
-            }`}
-          >
-            {isOpeningIntro ? (
-              /* INITIAL OPENING SEQUENCE: Fully closed book unfolds open into Spread 0 */
-              <div
-                className={`book-spread turning-spread-stage initial-opening-stage ${
-                  isMobile ? 'mobile-book-spread' : ''
-                }`}
-                style={{
-                  transform: isMobile
-                    ? `translateX(${-160 * (1 - openIntroProgress)}px)`
-                    : `translateX(${-320 * (1 - openIntroProgress)}px)`
-                }}
-              >
-                {/* Desk Shadow */}
-                <div
-                  className="closed-book-desk-shadow"
-                  style={{ opacity: Math.max(0, 1 - openIntroProgress * 1.5) }}
-                />
-
-                {/* Leather Spine */}
-                <div
-                  className="closed-book-spine"
-                  style={{ opacity: Math.max(0, 1 - openIntroProgress * 2.5) }}
-                >
-                  <div className="spine-rib" />
-                  <div className="spine-rib" />
-                  <div className="spine-rib" />
-                  <div className="spine-rib" />
-                  <div className="spine-rib" />
-                </div>
-
-                {/* Left Base Page: Spread 0 Left */}
-                <div
-                  className="spread-half-base spread-half-left"
-                  style={{
-                    opacity: isMobile
-                      ? 1
-                      : openIntroProgress < 0.75
-                      ? 0
-                      : Math.min(1, (openIntroProgress - 0.75) / 0.25)
-                  }}
-                >
-                  <Spread0_Hero
-                    side="left"
-                    isWriting={!isOpeningIntro}
-                    onNext={() => scrollToSection(1)}
-                    onOpenBooking={() => setIsBookingOpen(true)}
-                    onWatchVideo={() => setIsVideoModalOpen(true)}
-                  />
-                  {isMobile && (
-                    <div
-                      className="under-page-shadow"
-                      style={{ opacity: (1 - openIntroProgress) * 0.75 }}
-                    />
-                  )}
-                </div>
-
-                {/* Right Base Page: Spread 0 Right */}
-                {!isMobile && (
-                  <div className="spread-half-base spread-half-right">
-                    <Spread0_Hero
-                      side="right"
-                      isWriting={!isOpeningIntro}
-                      onNext={() => scrollToSection(1)}
-                      onOpenBooking={() => setIsBookingOpen(true)}
-                      onWatchVideo={() => setIsVideoModalOpen(true)}
-                    />
-                    <div
-                      className="under-page-shadow"
-                      style={{ opacity: (1 - openIntroProgress) * 0.75 }}
-                    />
-                  </div>
-                )}
-
-                {/* Gilded Block Edge */}
-                {openIntroProgress < 0.95 && (
-                  <div
-                    className="closed-book-gilded-block"
-                    style={{
-                      opacity: Math.max(0, 1 - openIntroProgress * 1.1)
-                    }}
-                  >
-                    <div className="gilded-block-right" />
-                    <div className="gilded-block-top" />
-                    <div className="gilded-block-bottom" />
-                    <div className="closed-ribbon-bookmark" />
-                  </div>
-                )}
-
-                {/* Central Gutter */}
-                {!isMobile && (
-                  <>
-                    <div
-                      className="book-page-edge"
-                      style={{ opacity: openIntroProgress }}
-                    />
-                    <div
-                      className="book-center-gutter"
-                      style={{ opacity: openIntroProgress }}
-                    />
-                  </>
-                )}
-
-                {/* Front Leather Cover Unfolding */}
-                <div
-                  className="book-front-cover-leaf"
-                  style={{
-                    transform: `rotateY(${-openIntroProgress * 180}deg) rotateZ(${
-                      Math.sin(openIntroProgress * Math.PI) * -3.5
-                    }deg) translateZ(${Math.sin(openIntroProgress * Math.PI) * 44}px)`
-                  }}
-                >
-                  <div className="cover-face cover-face-front">
-                    <div className="cover-gold-border" />
-                    <div className="cover-gold-corner top-left" />
-                    <div className="cover-gold-corner top-right" />
-                    <div className="cover-gold-corner bottom-left" />
-                    <div className="cover-gold-corner bottom-right" />
-
-                    <div className="cover-inscription">
-                      <img
-                        src="/assets/logo_gold.png"
-                        alt="Our Quran Institute Seal"
-                        className="cover-seal-emblem"
-                      />
-                      <h1 className="cover-title">OUR QURAN INSTITUTE</h1>
-                      <div className="cover-arabic-calligraphy">حِفْظُ القُرْآنِ الكَرِيم</div>
-                      <div className="cover-rule" />
-                      <p className="cover-subtitle">
-                        A Sacred Pathway from Intention to Lifelong Recall
-                      </p>
-                    </div>
-
-                    <div
-                      className="cover-lighting"
-                      style={{
-                        opacity:
-                          Math.sin(openIntroProgress * Math.PI) * 0.75 +
-                          (1 - openIntroProgress) * 0.15
-                      }}
-                    />
-                  </div>
-
-                  <div className="cover-face cover-face-back">
-                    <Spread0_Hero
-                      side="left"
-                      isWriting={false}
-                      onNext={() => scrollToSection(1)}
-                      onOpenBooking={() => setIsBookingOpen(true)}
-                      onWatchVideo={() => setIsVideoModalOpen(true)}
-                    />
-                    <div
-                      className="cover-lighting"
-                      style={{ opacity: Math.max(0, (1 - openIntroProgress) * 0.65) }}
-                    />
-                  </div>
-                </div>
-              </div>
-            ) : isMobile ? (
-              <div ref={heroSpreadRef} className="mobile-hero-spread-wrapper">
-                <Spread0_Hero
-                  side="both"
-                  isWriting={true}
-                  onNext={() => scrollToSection(1)}
-                  onOpenBooking={() => setIsBookingOpen(true)}
-                  onWatchVideo={() => setIsVideoModalOpen(true)}
-                />
-              </div>
-            ) : (
-              <Spread0_Hero
-                side="both"
-                isWriting={true}
-                onNext={() => scrollToSection(1)}
-                onOpenBooking={() => setIsBookingOpen(true)}
-                onWatchVideo={() => setIsVideoModalOpen(true)}
-              />
-            )}
-          </div>
-        </div>
-
-        {/* Scroll Down Prompt Indicator */}
-        <div className="hero-scroll-indicator" onClick={() => scrollToSection(1)}>
-          <span className="scroll-indicator-text">Explore the Methodology</span>
-          <div className="scroll-mouse-icon">
-            <div className="scroll-mouse-wheel" />
-          </div>
-        </div>
+      {/* 3. Hero Section - Grand Mosque Sanctuary (Entirely updated from reference image) */}
+      <section id="section-hero" className="landing-mosque-hero-section">
+        <MosqueHero
+          onOpenBooking={() => handleOpenBooking()}
+          onExplorePrograms={() => scrollToSection(1)}
+          onScrollDown={() => scrollToSection(1)}
+        />
       </section>
 
       {/* 4. Vertical Glassmorphism Sections (As in reference image) */}
@@ -629,10 +458,14 @@ export default function App() {
               <div className={`section-ambient-glow glow-${sec.glowColor}`} />
               <div className="section-ambient-glow glow-emerald" />
 
-              {/* The Glassmorphic Section Card */}
-              <div className="section-glass-card">
-                {sec.component}
-              </div>
+              {/* The Glassmorphic Section Card (or direct component if custom full-width card) */}
+              {sec.isCustomCard ? (
+                sec.component
+              ) : (
+                <div className="section-glass-card">
+                  {sec.component}
+                </div>
+              )}
             </div>
           </section>
         ))}
@@ -668,6 +501,12 @@ export default function App() {
         isOpen={isBookingOpen}
         onClose={() => setIsBookingOpen(false)}
         initialCourse={selectedCourseForBooking}
+      />
+
+      {/* 6b. Student & Teacher Portal Login Modal */}
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
       />
 
       {/* 7. Video Preview Modal */}

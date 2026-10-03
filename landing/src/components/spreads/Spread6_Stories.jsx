@@ -49,7 +49,7 @@ export default function Spread6_Stories({ onNext, side = 'both' }) {
       {viewMode === 'map' ? (
         /* FULL-WIDTH EXPANDED MODERN SOLID-COLOR WORLD MAP */
         <div className="fullwidth-world-map-wrapper">
-          <GlobalWorldMap rightPageView={viewMode} onToggleView={setViewMode} />
+          <GlobalWorldMap rightPageView={viewMode} />
 
           {/* Global Impact Summary Bar */}
           <div className="global-practice-metrics-bar">

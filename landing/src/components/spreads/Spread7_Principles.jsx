@@ -162,7 +162,7 @@ export default function Spread7_Principles({ onNext, side = 'both' }) {
           <div key={idx} className="principle-pillar-card">
             <div className="pillar-card-top">
               <div className="principle-card-icon">
-                <Icon name={item.icon} size={17} color="#FFDF85" />
+                <Icon name={item.icon} size={17} color="#C5A45A" />
               </div>
               <div className="pillar-badge-group">
                 <span className="pillar-num-tag">{item.num}</span>
