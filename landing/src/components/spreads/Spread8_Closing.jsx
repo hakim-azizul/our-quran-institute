@@ -100,16 +100,16 @@ export default function Spread8_Closing({ onOpenBooking, onNavigate, side = 'bot
           </a>
 
           <a
-            href="https://facebook.com/ourquraninstitute"
+            href="https://www.instagram.com/ourquraninstitute/"
             target="_blank"
             rel="noopener noreferrer"
-            className="social-pill-btn facebook"
-            title="Join Our Facebook Community"
+            className="social-pill-btn instagram"
+            title="Follow us on Instagram (@ourquraninstitute)"
           >
-            <span className="social-pill-icon facebook">
-              <Icon name="facebook" size={16} />
+            <span className="social-pill-icon instagram">
+              <Icon name="instagram" size={16} />
             </span>
-            <span className="social-pill-text">Facebook</span>
+            <span className="social-pill-text">Instagram</span>
           </a>
         </div>
       </div>
@@ -158,6 +158,9 @@ export default function Spread8_Closing({ onOpenBooking, onNavigate, side = 'bot
             </a>
             <a href="https://youtube.com/@ourquraninstitute" target="_blank" rel="noopener noreferrer" className="footer-social-btn" title="YouTube">
               <Icon name="youtube" size={15} />
+            </a>
+            <a href="https://www.instagram.com/ourquraninstitute/" target="_blank" rel="noopener noreferrer" className="footer-social-btn" title="Instagram (@ourquraninstitute)">
+              <Icon name="instagram" size={15} />
             </a>
             <a href="https://facebook.com/ourquraninstitute" target="_blank" rel="noopener noreferrer" className="footer-social-btn" title="Facebook">
               <Icon name="facebook" size={15} />

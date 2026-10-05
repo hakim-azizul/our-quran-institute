@@ -320,6 +320,14 @@ export const Icon = ({ name, size = 18, color = 'currentColor', className = '' }
           <path d="M12.004 2C6.48 2 2.004 6.478 2.004 12a9.96 9.96 0 0 0 1.574 5.378L2 22l4.757-1.547A9.962 9.962 0 0 0 12.004 22c5.522 0 10-4.478 10-10s-4.478-10-10-10zm0 18.25c-1.65 0-3.21-.49-4.53-1.33l-.32-.2-3.14 1.02 1.04-3.05-.21-.34A8.214 8.214 0 0 1 3.754 12c0-4.55 3.7-8.25 8.25-8.25s8.25 3.7 8.25 8.25-3.7 8.25-8.25 8.25z"/>
         </svg>
       );
+    case 'instagram':
+      return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+          <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+          <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+          <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+        </svg>
+      );
     default:
       return null;
   }
