@@ -404,6 +404,9 @@ export default function App() {
               <a href="https://youtube.com/@ourquraninstitute" target="_blank" rel="noopener noreferrer" className="footer-social-btn" title="YouTube">
                 <Icon name="youtube" size={15} />
               </a>
+              <a href="https://www.instagram.com/ourquraninstitute/" target="_blank" rel="noopener noreferrer" className="footer-social-btn" title="Instagram (@ourquraninstitute)">
+                <Icon name="instagram" size={15} />
+              </a>
               <a href="https://facebook.com/ourquraninstitute" target="_blank" rel="noopener noreferrer" className="footer-social-btn" title="Facebook">
                 <Icon name="facebook" size={15} />
               </a>

@@ -3,7 +3,6 @@ import { DiamondOrnament, Icon } from '../Icons';
 import GlobalWorldMap from './GlobalWorldMap';
 
 export default function Spread6_Stories({ onNext, side = 'both' }) {
-  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [viewMode, setViewMode] = useState('map'); // 'map' | 'stories'
 
   return (
@@ -50,97 +49,6 @@ export default function Spread6_Stories({ onNext, side = 'both' }) {
         /* FULL-WIDTH EXPANDED MODERN SOLID-COLOR WORLD MAP */
         <div className="fullwidth-world-map-wrapper">
           <GlobalWorldMap rightPageView={viewMode} />
-
-          {/* Global Impact Summary Bar */}
-          <div className="global-practice-metrics-bar">
-            <div className="global-metric-item">
-              <span className="global-metric-num">42</span>
-              <span className="global-metric-label">Active Nations</span>
-            </div>
-            <div className="global-metric-divider" />
-            <div className="global-metric-item">
-              <span className="global-metric-num">1.8M</span>
-              <span className="global-metric-label">Verses Revised</span>
-            </div>
-            <div className="global-metric-divider" />
-            <div className="global-metric-item">
-              <span className="global-metric-num">98.4%</span>
-              <span className="global-metric-label">Spaced Retention Rate</span>
-            </div>
-            <div className="global-metric-divider" />
-            <div className="global-metric-item">
-              <span className="global-metric-num">320+</span>
-              <span className="global-metric-label">Sanad Huffadh Certified</span>
-            </div>
-          </div>
-
-          {/* Featured Highlight Story Card (Dr. Sarah Mansoor) */}
-          <div className="map-featured-story-strip">
-            <div className="featured-journey-card">
-              <div className="journey-card-header">
-                <div className="journey-author-profile">
-                  <div className="journey-avatar-wrapper">
-                    <img
-                      src="/assets/student_sarah.jpg"
-                      alt="Dr. Sarah Mansoor"
-                      className="journey-avatar-img"
-                    />
-                    <span className="avatar-verified-badge" title="Verified Hifz Student">
-                      <Icon name="check" size={10} color="#062A24" />
-                    </span>
-                  </div>
-                  <div className="journey-author-info">
-                    <div className="author-name-row">
-                      <h3 className="journey-author-name light">Dr. Sarah Mansoor</h3>
-                      <span className="story-stars gold-stars">★★★★★</span>
-                    </div>
-                    <span className="journey-author-role light">Pediatrician &bull; London, UK</span>
-                  </div>
-                </div>
-                <div className="journey-milestone-chip gold-chip">
-                  <Icon name="award" size={13} color="#FFDF85" />
-                  <span>18 Ajza' Memorized</span>
-                </div>
-              </div>
-
-              <div className="journey-quote-block">
-                <h4 className="journey-case-headline">
-                  “Balancing 80-Hour Hospital Shifts with Daily Surah Retention”
-                </h4>
-                <p className="journey-quote-text">
-                  The 15-minute daily structure fit seamlessly into my medical residency. I never thought Hifz was possible with grueling hospital shifts until this method gave me sustainable barakah.
-                </p>
-              </div>
-
-              {/* Audio Recitation Bar */}
-              <div
-                className={`recitation-audio-bar ${isPlayingAudio ? 'is-playing' : ''}`}
-                onClick={() => setIsPlayingAudio(!isPlayingAudio)}
-                role="button"
-                tabIndex={0}
-              >
-                <div className="recitation-play-circle">
-                  <Icon name={isPlayingAudio ? 'audio-lines' : 'play'} size={13} color="#062A24" />
-                </div>
-                <div className="recitation-meta">
-                  <span className="recitation-title">Sarah's recitation: Surah Maryam (1–15)</span>
-                  <div className="recitation-wave-track">
-                    {[40, 65, 85, 45, 95, 70, 30, 80, 100, 60, 45, 90, 75, 50, 85, 60, 95, 40, 70, 55, 80, 45].map((h, i) => (
-                      <span
-                        key={i}
-                        className="wave-bar"
-                        style={{
-                          height: `${isPlayingAudio ? Math.max(20, (h * Math.sin((i + 1) * 0.8) + 100) % 100) : h * 0.65}%`,
-                          animationDelay: `${i * 0.05}s`
-                        }}
-                      />
-                    ))}
-                  </div>
-                </div>
-                <span className="recitation-duration">0:42 / 2:18</span>
-              </div>
-            </div>
-          </div>
         </div>
       ) : (
         /* FULL 3-COLUMN STUDENT VOICES GRID */

@@ -1,18 +1,13 @@
 <svg viewBox="0 0 380 180" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="hillGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#8DC63F"/>
-      <stop offset="60%" stop-color="#73A92A"/>
-      <stop offset="100%" stop-color="#55861B"/>
-    </linearGradient>
     <linearGradient id="mosqueGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#B2E05E"/>
-      <stop offset="60%" stop-color="#8EC63E"/>
-      <stop offset="100%" stop-color="#6DA229"/>
+      <stop offset="0%" stop-color="#C5A45A" stop-opacity="0.85"/>
+      <stop offset="60%" stop-color="#C5A45A" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#8C6F2D" stop-opacity="0.2"/>
     </linearGradient>
   </defs>
 
-  <!-- Mosque Architectural Skyline -->
+  <!-- Mosque Architectural Skyline Watermark -->
   <g fill="url(#mosqueGradient)">
     <!-- Far-Left Slender Minaret -->
     <rect x="24" y="55" width="6" height="65" rx="1.5"/>
@@ -45,7 +40,7 @@
     <!-- Crescent Finial -->
     <path d="M 164.5 13 A 4.5 4.5 0 1 0 164.5 22 A 3.2 3.2 0 1 1 164.5 13 Z"/>
     <!-- Dome Base Arched Accents -->
-    <rect x="136" y="92" width="56" height="8" rx="1.5" fill="#669D25" opacity="0.6"/>
+    <rect x="136" y="92" width="56" height="8" rx="1.5" fill="#C5A45A" opacity="0.3"/>
 
     <!-- Right Flanking Dome -->
     <path d="M 202 105 C 202 78, 230 78, 230 105 Z"/>
@@ -63,10 +58,8 @@
     <rect x="268" y="58" width="6" height="65" rx="1.5"/>
     <polygon points="271,35 267,58 275,58"/>
     <circle cx="271" cy="33" r="2"/>
-  </g>
 
-  <!-- Rolling Forefront Hill (Layer 1) -->
-  <path d="M 0 110 Q 140 98, 270 130 T 380 180 L 0 180 Z" fill="url(#hillGradient)"/>
-  <!-- Rolling Forefront Hill (Layer 2 Shadow Accent) -->
-  <path d="M 0 128 Q 160 120, 290 148 T 380 180 L 0 180 Z" fill="#4C7816" opacity="0.4"/>
+    <!-- Base Terrace Line -->
+    <rect x="10" y="120" width="280" height="2" rx="1" opacity="0.3"/>
+  </g>
 </svg>

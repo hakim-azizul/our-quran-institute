@@ -324,7 +324,7 @@ html, body {
   z-index: 500;
   width: 100%;
   height: 84px;
-  padding: 0 80px;
+  padding: 0 60px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -395,7 +395,7 @@ html, body {
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 32px;
+  gap: 20px;
 }
 
 .nav-link {
@@ -4489,6 +4489,12 @@ a.btn-cream-pill:active {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 16px rgba(24, 119, 242, 0.3);
 }
 
+.social-pill-btn.instagram:hover {
+  background: rgba(225, 48, 108, 0.15);
+  border-color: #E1306C;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 16px rgba(225, 48, 108, 0.35);
+}
+
 .social-pill-icon {
   width: 28px;
   height: 28px;
@@ -4517,6 +4523,11 @@ a.btn-cream-pill:active {
 .social-pill-icon.facebook {
   background: rgba(24, 119, 242, 0.2);
   color: #4B9BFF;
+}
+
+.social-pill-icon.instagram {
+  background: rgba(225, 48, 108, 0.2);
+  color: #E1306C;
 }
 
 .social-pill-text {
@@ -5622,6 +5633,48 @@ a.btn-cream-pill:active {
 .drawer-cta {
   width: 100%;
   justify-content: center;
+}
+
+/* Medium desktops (1280px–1024px) */
+@media (max-width: 1280px) {
+  .nav-container.sticky-nav {
+    padding: 0 28px;
+    height: 76px;
+  }
+  .nav-links {
+    gap: 14px !important;
+  }
+  .nav-link {
+    font-size: 13px !important;
+  }
+  .nav-highlight-link {
+    padding: 5px 10px !important;
+    font-size: 13px !important;
+  }
+  .brand-descriptor {
+    display: none !important;
+  }
+  .nav-actions {
+    gap: 10px !important;
+  }
+  .nav-cta-btn {
+    padding: 0 16px !important;
+    height: 40px !important;
+  }
+  .nav-cta-btn span {
+    font-size: 12.5px !important;
+  }
+  .nav-whatsapp-link {
+    padding: 6px 10px !important;
+    font-size: 11px !important;
+  }
+  .nav-wa-text {
+    font-size: 11px !important;
+  }
+  .sticky-book-stage {
+    top: 76px;
+    height: calc(100vh - 76px);
+  }
 }
 
 /* Tablet & Mobile Media Queries */
@@ -8695,15 +8748,15 @@ a.btn-cream-pill:active {
   box-shadow: 0 2px 8px rgba(18, 47, 30, 0.25);
 }
 
-/* Map SVG Viewport - Expanded Size */
+/* Map SVG Viewport - Expanded Size & Light Porcelain Theme */
 .map-svg-viewport {
   position: relative;
   width: 100%;
   border-radius: 24px;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  background: #061914; /* Solid ocean color */
+  border: 1px solid rgba(197, 164, 90, 0.28);
+  box-shadow: 0 12px 36px rgba(18, 47, 30, 0.06), 0 2px 8px rgba(18, 47, 30, 0.03), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  background: #F4F8F3; /* Light serene porcelain water */
 }
 
 .solid-world-map-svg {
@@ -8716,40 +8769,40 @@ a.btn-cream-pill:active {
 
 /* Solid Ocean Background */
 .map-ocean-bg {
-  fill: #061914;
+  fill: #F4F8F3;
 }
 
-/* Solid Continents Landmass (Clean, Sharp, Modern, Solid Color with Light Green Outline) */
+/* Solid Continents Landmass (Solid Calm Sage Green matching Porcelain Theme) */
 .solid-map-landmass {
-  fill: #14493B; /* Solid rich forest emerald */
-  stroke: #34D399; /* Solid light green border */
-  stroke-width: 0.85;
+  fill: #C6DEC5; /* Solid soft sage emerald */
+  stroke: #669B73; /* Refined forest contour border */
+  stroke-width: 0.95;
   stroke-linejoin: round;
-  transition: fill 0.3s ease;
+  transition: fill 0.3s ease, stroke 0.3s ease;
 }
 
 /* Golden Light Force & Connecting System from Egypt */
 .golden-arc-filament {
   fill: none;
-  stroke: rgba(197, 164, 90, 0.22);
+  stroke: rgba(140, 103, 24, 0.35);
   stroke-width: 1.1;
   stroke-dasharray: 3 4;
   transition: all 0.3s ease;
 }
 
 .beam-group.is-active .golden-arc-filament {
-  stroke: rgba(255, 223, 133, 0.5);
-  stroke-width: 1.5;
+  stroke: #8C6718;
+  stroke-width: 1.6;
 }
 
 /* Radiant Golden Light Stream (Flows from Egypt outward to countries once per section visit) */
 .golden-light-stream {
   fill: none;
   stroke: url(#goldBeamGrad);
-  stroke-width: 1.8;
+  stroke-width: 2;
   stroke-dasharray: 22 100;
   stroke-linecap: round;
-  filter: drop-shadow(0 0 4px rgba(255, 223, 133, 0.85));
+  filter: drop-shadow(0 1px 3px rgba(140, 103, 24, 0.45));
   animation: goldenBeamFlow linear forwards;
   animation-iteration-count: 1;
   opacity: 0;
@@ -8757,9 +8810,9 @@ a.btn-cream-pill:active {
 }
 
 .golden-light-stream.is-active {
-  stroke-width: 3;
+  stroke-width: 3.2;
   stroke-dasharray: 28 100;
-  filter: drop-shadow(0 0 8px rgba(255, 223, 133, 1)) drop-shadow(0 0 16px rgba(212, 175, 55, 0.9));
+  filter: drop-shadow(0 2px 6px rgba(140, 103, 24, 0.7));
 }
 
 @keyframes goldenBeamFlow {
@@ -8781,28 +8834,28 @@ a.btn-cream-pill:active {
 
 /* Golden Photon / Comet Head traveling along arc */
 .golden-photon-halo {
-  fill: rgba(255, 223, 133, 0.45);
+  fill: rgba(197, 164, 90, 0.4);
   filter: blur(1.5px);
 }
 
 .golden-photon-core {
-  fill: #FFFFFF;
-  filter: drop-shadow(0 0 4px #FFDF85) drop-shadow(0 0 8px #FFDF85);
+  fill: #8C6718;
+  filter: drop-shadow(0 0 3px rgba(140, 103, 24, 0.6));
 }
 
 .beam-group.is-active .golden-photon-halo {
-  fill: rgba(255, 223, 133, 0.7);
+  fill: rgba(197, 164, 90, 0.7);
 }
 
 .beam-group.is-active .golden-photon-core {
-  fill: #FFFFFF;
-  filter: drop-shadow(0 0 6px #FFFFFF) drop-shadow(0 0 12px #FFDF85);
+  fill: #5A3F07;
+  filter: drop-shadow(0 0 4px #8C6718);
 }
 
 /* Destination Reception Wave (pulses 1 time upon arrival) */
 .golden-dest-pulse {
   fill: none;
-  stroke: #FFDF85;
+  stroke: #8C6718;
   stroke-width: 1.4;
   opacity: 0;
   animation: destPulseWave 1.4s ease-out forwards;
@@ -8844,8 +8897,8 @@ a.btn-cream-pill:active {
 
 .egypt-ripple-wave {
   fill: none;
-  stroke: #FFDF85;
-  stroke-width: 1.2;
+  stroke: #B88B2E;
+  stroke-width: 1.3;
   opacity: 0;
   transform-origin: 468px 152px;
   animation: egyptRippleWave 2.8s cubic-bezier(0.15, 0.85, 0.35, 1) forwards;
@@ -8883,13 +8936,13 @@ a.btn-cream-pill:active {
 /* Hub Markers & Groups */
 .solid-hub-radar {
   fill: none;
-  stroke: rgba(197, 164, 90, 0.35);
+  stroke: rgba(140, 103, 24, 0.3);
   stroke-width: 1;
   transition: all 0.3s ease;
 }
 
 .solid-hub-radar.radar-active {
-  stroke: #FFDF85;
+  stroke: #8C6718;
   stroke-width: 1.5;
   animation: radarPulseRing 2s infinite ease-out;
 }
@@ -8900,57 +8953,59 @@ a.btn-cream-pill:active {
 }
 
 .solid-hub-ring {
-  fill: rgba(197, 164, 90, 0.2);
-  stroke: rgba(197, 164, 90, 0.5);
+  fill: rgba(197, 164, 90, 0.15);
+  stroke: rgba(140, 103, 24, 0.45);
   stroke-width: 1;
 }
 
-/* Solid Modern High-Contrast Pill Tag */
+/* Solid Modern High-Contrast Pill Tag - Light Theme Porcelain Badges */
 .solid-tag-rect {
-  fill: rgba(6, 25, 20, 0.94);
-  stroke: rgba(197, 164, 90, 0.4);
+  fill: #FFFFFF;
+  stroke: rgba(197, 164, 90, 0.45);
   stroke-width: 1;
+  filter: drop-shadow(0 2px 6px rgba(10, 36, 18, 0.08));
   transition: all 0.25s ease;
 }
 
 .solid-tag-rect.active {
-  fill: #C5A45A;
-  stroke: #FFFDF8;
-  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.6));
+  fill: #122F1E;
+  stroke: #122F1E;
+  filter: drop-shadow(0 4px 12px rgba(18, 47, 30, 0.25));
 }
 
 .solid-tag-rect.scholars-tag-rect {
-  stroke: #FFDF85;
+  fill: #FFFDF7;
+  stroke: #C5A45A;
   stroke-width: 1.3;
-  filter: drop-shadow(0 0 8px rgba(255, 223, 133, 0.45));
+  filter: drop-shadow(0 2px 8px rgba(197, 164, 90, 0.35));
 }
 
 .solid-tag-rect.scholars-tag-rect.active {
   fill: #C5A45A;
   stroke: #FFFFFF;
-  filter: drop-shadow(0 0 12px rgba(255, 223, 133, 0.85));
+  filter: drop-shadow(0 4px 14px rgba(197, 164, 90, 0.45));
 }
 
 .solid-tag-text {
   font-family: var(--font-sans);
   font-size: 8.5px;
   font-weight: 700;
-  fill: #FBF6E9;
+  fill: #122F1E;
   letter-spacing: 0.02em;
   transition: all 0.25s ease;
 }
 
 .solid-tag-text.active {
-  fill: #062A24;
+  fill: #FFFFFF;
 }
 
 .solid-tag-text.scholars-tag-text {
-  fill: #FFDF85;
+  fill: #8C6F2D;
   font-weight: 800;
 }
 
 .solid-tag-text.scholars-tag-text.active {
-  fill: #062A24;
+  fill: #FFFFFF;
 }
 
 /* Active Hub Card & Bottom Dock */
@@ -11190,6 +11245,12 @@ html, body {
   padding-top: 90px;
 }
 
+@media (max-width: 1280px) {
+  .dedicated-page-wrapper {
+    padding-top: 76px;
+  }
+}
+
 @media (max-width: 1024px) {
   .dedicated-page-wrapper {
     padding-top: 70px;
@@ -11542,22 +11603,22 @@ html, body {
 }
 
 .catalog-course-card {
-  background: #07251E;
-  border: 1.5px solid rgba(197, 164, 90, 0.35);
+  background: #FFFFFF;
+  border: 1.5px solid rgba(197, 164, 90, 0.28);
   border-radius: 24px;
   padding: 32px;
   display: flex;
   flex-direction: column;
   gap: 18px;
-  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 4px 24px rgba(10, 36, 18, 0.07);
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .catalog-course-card:hover {
-  border-color: #34D399;
-  background: #0A3027;
+  border-color: #10B981;
+  background: #F7FBF8;
   transform: translateY(-3px);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55), 0 0 28px rgba(52, 211, 153, 0.22);
+  box-shadow: 0 12px 36px rgba(10, 36, 18, 0.12), 0 0 0 1px rgba(16, 185, 129, 0.15);
 }
 
 .catalog-card-header {
@@ -11580,7 +11641,7 @@ html, body {
 .catalog-category-tag {
   font-family: var(--font-sans);
   font-size: 12px;
-  color: #34D399;
+  color: #0D7A58;
   font-weight: 700;
   letter-spacing: 0.03em;
 }
@@ -11594,7 +11655,7 @@ html, body {
 .catalog-arabic-calligraphy {
   font-family: 'Amiri', 'Traditional Arabic', serif;
   font-size: 18px;
-  color: #FFDF85;
+  color: #B8883A;
   direction: rtl;
   letter-spacing: 0;
 }
@@ -11603,7 +11664,7 @@ html, body {
   font-family: var(--font-serif);
   font-size: 26px;
   font-weight: 600;
-  color: #FFFFFF;
+  color: #122F1E;
   line-height: 120%;
   margin: 0;
 }
@@ -11612,7 +11673,7 @@ html, body {
   font-family: var(--font-sans);
   font-size: 14px;
   line-height: 160%;
-  color: rgba(243, 233, 211, 0.82);
+  color: #4D6652;
   margin: 0;
 }
 
@@ -11620,8 +11681,8 @@ html, body {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 12px;
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: #F4F8F5;
+  border: 1px solid rgba(197, 164, 90, 0.2);
   border-radius: 14px;
   padding: 14px 18px;
 }
@@ -11643,18 +11704,18 @@ html, body {
   font-size: 10.5px;
   font-weight: 700;
   letter-spacing: 0.05em;
-  color: rgba(197, 164, 90, 0.8);
+  color: #8A7045;
   text-transform: uppercase;
 }
 
 .spec-value {
   font-family: var(--font-sans);
   font-size: 12.5px;
-  color: #FFFFFF;
+  color: #122F1E;
 }
 
 .spec-gold {
-  color: #FFDF85;
+  color: #B8883A;
 }
 
 .catalog-highlights {
@@ -11668,7 +11729,7 @@ html, body {
   font-size: 10.5px;
   font-weight: 700;
   letter-spacing: 0.08em;
-  color: #FFDF85;
+  color: #8A7045;
 }
 
 .highlights-checklist {
@@ -11687,17 +11748,17 @@ html, body {
   font-family: var(--font-sans);
   font-size: 12.5px;
   line-height: 145%;
-  color: rgba(243, 233, 211, 0.82);
+  color: #4D6652;
 }
 
 .bullet-gold {
-  color: #10B981;
+  color: #0D7A58;
   font-weight: 700;
 }
 
 .catalog-syllabus-drawer {
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(197, 164, 90, 0.25);
+  background: #F4F8F5;
+  border: 1px solid rgba(197, 164, 90, 0.22);
   border-radius: 16px;
   padding: 20px;
   display: flex;
@@ -11711,7 +11772,7 @@ html, body {
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.08em;
-  color: #FFDF85;
+  color: #8A7045;
 }
 
 .syllabus-timeline {
@@ -11730,9 +11791,9 @@ html, body {
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: rgba(197, 164, 90, 0.2);
-  border: 1px solid rgba(197, 164, 90, 0.45);
-  color: #FFDF85;
+  background: rgba(197, 164, 90, 0.15);
+  border: 1.5px solid #C5A45A;
+  color: #8A7045;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -11752,27 +11813,27 @@ html, body {
   font-family: var(--font-sans);
   font-size: 13px;
   font-weight: 600;
-  color: #FFFFFF;
+  color: #122F1E;
   margin: 0;
 }
 
 .node-focus {
   font-family: var(--font-sans);
   font-size: 12px;
-  color: rgba(243, 233, 211, 0.7);
+  color: #4D6652;
   margin: 0;
 }
 
 .syllabus-audience {
   font-family: var(--font-sans);
   font-size: 12px;
-  color: rgba(243, 233, 211, 0.85);
+  color: #4D6652;
   padding-top: 10px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid rgba(18, 46, 30, 0.1);
 }
 
 .syllabus-audience strong {
-  color: #FFDF85;
+  color: #8A7045;
 }
 
 .catalog-card-footer {
@@ -11782,7 +11843,7 @@ html, body {
   gap: 14px;
   margin-top: auto;
   padding-top: 16px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid rgba(18, 46, 30, 0.1);
 }
 
 .catalog-enroll-btn {
@@ -11796,7 +11857,7 @@ html, body {
   font-family: var(--font-sans);
   font-size: 12.5px;
   font-weight: 600;
-  color: #FFDF85;
+  color: #8A7045;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -11807,7 +11868,8 @@ html, body {
 }
 
 .catalog-syllabus-toggle-btn:hover {
-  background: rgba(255, 223, 133, 0.1);
+  background: rgba(197, 164, 90, 0.1);
+  color: #6B5530;
 }
 
 /* ==========================================================================
@@ -11826,22 +11888,22 @@ html, body {
 }
 
 .faculty-profile-card {
-  background: #07251E;
-  border: 1.5px solid rgba(197, 164, 90, 0.35);
+  background: #FFFFFF;
+  border: 1.5px solid rgba(197, 164, 90, 0.28);
   border-radius: 24px;
   padding: 32px;
   display: flex;
   flex-direction: column;
   gap: 18px;
-  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 4px 24px rgba(10, 36, 18, 0.07);
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .faculty-profile-card:hover {
-  border-color: #34D399;
-  background: #0A3027;
+  border-color: #10B981;
+  background: #F7FBF8;
   transform: translateY(-3px);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55), 0 0 28px rgba(52, 211, 153, 0.22);
+  box-shadow: 0 12px 36px rgba(10, 36, 18, 0.12), 0 0 0 1px rgba(16, 185, 129, 0.15);
 }
 
 .faculty-card-header {
@@ -11856,10 +11918,10 @@ html, body {
   height: 72px;
   border-radius: 50%;
   border: 2px solid #C5A45A;
-  box-shadow: 0 0 16px rgba(197, 164, 90, 0.3);
+  box-shadow: 0 0 12px rgba(197, 164, 90, 0.2);
   flex-shrink: 0;
   overflow: hidden;
-  background: #062A24;
+  background: #EBF4EE;
 }
 
 .faculty-avatar-img {
@@ -11874,14 +11936,14 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #0D4B3E 0%, #062A24 100%);
+  background: linear-gradient(135deg, #D5EAD9 0%, #C1DEC7 100%);
 }
 
 .seal-initials {
   font-family: var(--font-serif);
   font-size: 22px;
   font-weight: 700;
-  color: #FFDF85;
+  color: #2D6A4F;
 }
 
 .faculty-status-dot {
@@ -11891,9 +11953,9 @@ html, body {
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: #34D399;
-  border: 2px solid #062A24;
-  box-shadow: 0 0 8px #34D399;
+  background: #10B981;
+  border: 2px solid #FFFFFF;
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.5);
 }
 
 .faculty-identity-block {
@@ -11905,7 +11967,7 @@ html, body {
 .faculty-arabic-honorific {
   font-family: 'Amiri', 'Traditional Arabic', serif;
   font-size: 15px;
-  color: #C5A45A;
+  color: #B8883A;
   direction: rtl;
 }
 
@@ -11913,7 +11975,7 @@ html, body {
   font-family: var(--font-serif);
   font-size: 22px;
   font-weight: 600;
-  color: #FFFFFF;
+  color: #122F1E;
   margin: 0;
 }
 
@@ -11921,7 +11983,7 @@ html, body {
   font-family: var(--font-sans);
   font-size: 11.5px;
   font-weight: 700;
-  color: #FFDF85;
+  color: #0D7A58;
   letter-spacing: 0.03em;
 }
 
@@ -11931,20 +11993,20 @@ html, body {
   gap: 4px;
   font-family: var(--font-sans);
   font-size: 11px;
-  color: rgba(243, 233, 211, 0.65);
+  color: #6C8572;
 }
 
 .faculty-bio {
   font-family: var(--font-sans);
   font-size: 13.5px;
   line-height: 160%;
-  color: rgba(243, 233, 211, 0.82);
+  color: #4D6652;
   margin: 0;
 }
 
 .faculty-credentials-box {
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: #F4F8F5;
+  border: 1px solid rgba(197, 164, 90, 0.2);
   border-radius: 14px;
   padding: 14px 18px;
   display: flex;
@@ -11965,26 +12027,26 @@ html, body {
   font-family: var(--font-sans);
   font-size: 12px;
   line-height: 140%;
-  color: rgba(243, 233, 211, 0.85);
+  color: #3A5C46;
 }
 
 .credential-label {
-  color: #C5A45A;
+  color: #8A7045;
   font-size: 10.5px;
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
 .sanad-row {
-  background: rgba(197, 164, 90, 0.08);
+  background: rgba(197, 164, 90, 0.1);
   margin: 0 -8px;
   padding: 6px 8px;
   border-radius: 8px;
-  border-left: 2px solid #FFDF85;
+  border-left: 2px solid #C5A45A;
 }
 
 .sanad-highlight {
-  color: #FFDF85;
+  color: #8A7045;
   font-weight: 600;
 }
 
@@ -11999,7 +12061,7 @@ html, body {
   font-size: 10.5px;
   font-weight: 700;
   letter-spacing: 0.08em;
-  color: #FFDF85;
+  color: #8A7045;
 }
 
 .specialties-pills {
@@ -12012,28 +12074,28 @@ html, body {
   font-family: var(--font-sans);
   font-size: 11px;
   font-weight: 600;
-  background: rgba(16, 185, 129, 0.12);
-  border: 1px solid rgba(52, 211, 153, 0.35);
+  background: #EAF5EE;
+  border: 1px solid rgba(16, 185, 129, 0.3);
   border-radius: 9999px;
   padding: 4px 10px;
-  color: #A7F3D0;
+  color: #1A6646;
   transition: all 0.2s ease;
 }
 
 .specialty-pill:hover {
-  border-color: #FFDF85;
-  color: #FFDF85;
-  background: rgba(255, 223, 133, 0.15);
+  border-color: #C5A45A;
+  color: #6B5530;
+  background: rgba(197, 164, 90, 0.12);
 }
 
 .faculty-languages {
   font-family: var(--font-sans);
   font-size: 12px;
-  color: rgba(243, 233, 211, 0.7);
+  color: #4D6652;
 }
 
 .lang-label {
-  color: #C5A45A;
+  color: #8A7045;
   font-weight: 700;
   margin-right: 6px;
 }
@@ -12041,7 +12103,7 @@ html, body {
 .faculty-card-footer {
   margin-top: auto;
   padding-top: 14px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid rgba(18, 46, 30, 0.1);
 }
 
 .faculty-book-btn {
@@ -14491,8 +14553,7 @@ html, body {
   pointer-events: none;
   z-index: 1;
   line-height: 0;
-  opacity: 0.14;
-  filter: sepia(0.8) hue-rotate(5deg) saturate(1.2);
+  opacity: 0.12;
 }
 
 .mosque-silhouette-svg {
@@ -14881,8 +14942,8 @@ html, body {
   }
 
   .book-session-mosque-silhouette {
-    opacity: 0.35;
-    width: 200px;
+    opacity: 0.12;
+    width: 220px;
   }
 
   .session-left-headline {

@@ -227,7 +227,7 @@ export default function CoursesPage() {
                       onClick={() => toggleSyllabus(course.id)}
                     >
                       <span>{isSyllabusOpen ? 'Hide Full Syllabus' : 'View Full Syllabus'}</span>
-                      <Icon name={isSyllabusOpen ? 'chevron-up' : 'chevron-down'} size={14} color="#FFDF85" />
+                      <Icon name={isSyllabusOpen ? 'chevron-up' : 'chevron-down'} size={14} color="#8A7045" />
                     </button>
                   </div>
                 </div>

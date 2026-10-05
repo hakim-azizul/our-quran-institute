@@ -62,21 +62,21 @@ export default function BookFreeSessionSection({ initialCourse = '' }) {
   );
   const waUrl = `https://wa.me/201094714943?text=${waMessage}`;
 
-  // Scalloped Islamic cartouche medallion path
+  // Smooth symmetrical 12-lobed Islamic cartouche medallion path
   const medallionPath =
-    "M 10.0 120.0 L 10.0 120.0 L 18.2 111.4 L 26.4 100.6 L 34.6 87.6 L 42.9 74.7 L 51.1 68.2 L 59.3 63.9 " +
-    "L 67.5 61.8 L 75.7 51.0 L 83.9 40.2 L 92.2 35.9 L 100.4 25.1 L 108.6 14.3 L 116.8 12.2 L 125.0 12.2 " +
-    "L 133.2 12.2 L 141.5 10.0 L 149.7 10.0 L 157.9 10.0 L 166.1 10.0 L 174.3 10.0 L 182.5 10.0 L 190.8 10.0 " +
-    "L 199.0 10.0 L 207.2 10.0 L 215.4 10.0 L 223.6 10.0 L 231.8 10.0 L 240.1 10.0 L 248.3 10.0 L 256.5 10.0 " +
-    "L 264.7 10.0 L 272.9 10.0 L 281.1 10.0 L 289.4 12.2 L 297.6 20.8 L 305.8 35.9 L 314.0 38.0 L 322.2 46.7 " +
-    "L 330.4 59.6 L 338.6 61.8 L 346.9 66.1 L 355.1 72.5 L 363.3 81.2 L 371.5 94.1 L 379.7 109.2 L 387.9 117.8 " +
-    "L 390.0 120.0 L 387.9 124.3 L 379.7 130.8 L 371.5 145.9 L 363.3 158.8 L 355.1 167.5 L 346.9 173.9 " +
-    "L 338.6 178.2 L 330.4 178.2 L 322.2 193.3 L 314.0 202.0 L 305.8 206.3 L 297.6 221.4 L 289.4 227.8 " +
-    "L 281.1 230.0 L 272.9 230.0 L 264.7 230.0 L 256.5 230.0 L 248.3 230.0 L 240.1 230.0 L 231.8 230.0 " +
-    "L 223.6 230.0 L 215.4 230.0 L 207.2 230.0 L 199.0 230.0 L 190.8 230.0 L 182.5 230.0 L 174.3 230.0 " +
-    "L 166.1 230.0 L 157.9 230.0 L 149.7 230.0 L 141.5 230.0 L 133.2 230.0 L 125.0 230.0 L 116.8 230.0 " +
-    "L 108.6 225.7 L 100.4 217.1 L 92.2 204.1 L 83.9 199.8 L 75.7 189.0 L 67.5 178.2 L 59.3 176.1 L 51.1 171.8 " +
-    "L 42.9 165.3 L 34.6 156.7 L 26.4 141.6 L 18.2 128.6 L 10.0 120.0 Z";
+    "M 200 14 " +
+    "C 223.9 3.9, 251.1 14.5, 262 38 " +
+    "C 289.1 33.2, 317.3 49.9, 326 76 " +
+    "C 352.8 74.2, 377.4 93.5, 382 120 " +
+    "C 377.4 146.5, 352.8 165.8, 326 164 " +
+    "C 317.3 190.1, 289.1 206.8, 262 202 " +
+    "C 251.1 225.5, 223.9 236.1, 200 226 " +
+    "C 176.1 236.1, 148.9 225.5, 138 202 " +
+    "C 110.9 206.8, 82.7 190.1, 74 164 " +
+    "C 47.2 165.8, 22.6 146.5, 18 120 " +
+    "C 22.6 93.5, 47.2 74.2, 74 76 " +
+    "C 82.7 49.9, 110.9 33.2, 138 38 " +
+    "C 148.9 14.5, 176.1 3.9, 200 14 Z";
 
   return (
     <section id="book-free-session" className="book-session-outer-wrap">
@@ -133,8 +133,8 @@ export default function BookFreeSessionSection({ initialCourse = '' }) {
                     <path
                       d={medallionPath}
                       fill="#C5A45A"
-                      opacity="0.15"
-                      transform="scale(1.02) translate(-4, -2.4)"
+                      opacity="0.16"
+                      transform="translate(200, 120) scale(1.025) translate(-200, -120)"
                     />
 
                     {/* Mosque Interior Clipped Image */}
@@ -154,8 +154,18 @@ export default function BookFreeSessionSection({ initialCourse = '' }) {
                       d={medallionPath}
                       fill="none"
                       stroke="#C5A45A"
-                      strokeWidth="2.8"
-                      strokeOpacity="0.9"
+                      strokeWidth="2.5"
+                      strokeOpacity="0.95"
+                    />
+
+                    {/* Delicate Inner Golden Fillet Accent */}
+                    <path
+                      d={medallionPath}
+                      fill="none"
+                      stroke="#FFDF85"
+                      strokeWidth="0.85"
+                      strokeOpacity="0.75"
+                      transform="translate(200, 120) scale(0.965) translate(-200, -120)"
                     />
                   </svg>
                 </div>

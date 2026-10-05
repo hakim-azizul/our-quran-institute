@@ -204,6 +204,16 @@ export default function Navigation({
                   <Icon name="whatsapp" size={16} color="#25D366" />
                   <span>Chat Admissions (+20 10 94714943)</span>
                 </a>
+                <a
+                  href="https://www.instagram.com/ourquraninstitute/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mobile-drawer-btn-highlight"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <Icon name="instagram" size={16} color="#FF7A93" />
+                  <span>Instagram (@ourquraninstitute)</span>
+                </a>
               </div>
 
               <div className="mobile-drawer-divider-label">

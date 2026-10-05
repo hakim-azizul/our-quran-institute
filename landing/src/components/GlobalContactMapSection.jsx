@@ -282,9 +282,15 @@ export default function GlobalContactMapSection() {
                 <a href="mailto:admissions@ourquraninstitute.com" className="contact-link primary">
                   admissions@ourquraninstitute.com
                 </a>
-                <a href="https://ourquraninstitute.com" className="contact-link secondary">
-                  www.ourquraninstitute.com
-                </a>
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                  <a href="https://ourquraninstitute.com" className="contact-link secondary">
+                    ourquraninstitute.com
+                  </a>
+                  <span style={{ color: 'rgba(18, 48, 29, 0.3)' }}>•</span>
+                  <a href="https://www.instagram.com/ourquraninstitute/" target="_blank" rel="noopener noreferrer" className="contact-link secondary" style={{ fontWeight: 600, color: '#C5A45A' }}>
+                    @ourquraninstitute
+                  </a>
+                </div>
               </div>
             </div>
 

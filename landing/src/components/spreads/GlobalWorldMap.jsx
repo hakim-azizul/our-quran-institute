@@ -1,11 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Icon } from '../Icons';
 import { WORLD_MAP_PATH, GLOBAL_HUBS } from './WorldMapData';
 
 export default function GlobalWorldMap({ rightPageView = 'map', onToggleView }) {
   const [selectedHub, setSelectedHub] = useState(GLOBAL_HUBS[0]); // default UK
   const [hoveredHub, setHoveredHub] = useState(null);
-  const pillsRowRef = useRef(null);
   const mapContainerRef = useRef(null);
 
   // Scroll detection: runs animation only one time per section visit
@@ -42,47 +40,6 @@ export default function GlobalWorldMap({ rightPageView = 'map', onToggleView }) 
   // Total summary tallies
   const totalStudents = GLOBAL_HUBS.reduce((acc, h) => acc + h.students, 0);
   const totalTeachers = GLOBAL_HUBS.reduce((acc, h) => acc + h.teachers, 0);
-
-  // Smooth mouse-wheel horizontal scroll for regions dock
-  useEffect(() => {
-    const el = pillsRowRef.current;
-    if (!el) return;
-    const handleWheel = (e) => {
-      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
-        e.preventDefault();
-        el.scrollLeft += e.deltaY;
-      }
-    };
-    el.addEventListener('wheel', handleWheel, { passive: false });
-    return () => el.removeEventListener('wheel', handleWheel);
-  }, []);
-
-  // Smooth click & drag to scroll for mouse users
-  const isDragging = useRef(false);
-  const startX = useRef(0);
-  const scrollLeftStart = useRef(0);
-
-  const handleMouseDown = (e) => {
-    isDragging.current = true;
-    startX.current = e.pageX - (pillsRowRef.current?.offsetLeft || 0);
-    scrollLeftStart.current = pillsRowRef.current?.scrollLeft || 0;
-  };
-
-  const handleMouseLeave = () => {
-    isDragging.current = false;
-  };
-
-  const handleMouseUp = () => {
-    isDragging.current = false;
-  };
-
-  const handleMouseMove = (e) => {
-    if (!isDragging.current || !pillsRowRef.current) return;
-    e.preventDefault();
-    const x = e.pageX - pillsRowRef.current.offsetLeft;
-    const walk = (x - startX.current) * 1.5;
-    pillsRowRef.current.scrollLeft = scrollLeftStart.current - walk;
-  };
 
   return (
     <div className="modern-world-map-container" ref={mapContainerRef}>
@@ -124,18 +81,24 @@ export default function GlobalWorldMap({ rightPageView = 'map', onToggleView }) 
         >
           {/* SVG Definitions for Luxury Golden Force / Light Beams & Glows */}
           <defs>
+            {/* Luminous Ocean Gradient */}
+            <linearGradient id="oceanGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#F9FAF7" />
+              <stop offset="100%" stopColor="#EDF5ED" />
+            </linearGradient>
+
             {/* Luminous Golden Beam Gradient from Egypt */}
             <linearGradient id="goldBeamGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#C5A45A" stopOpacity="0.25" />
-              <stop offset="40%" stopColor="#FFDF85" stopOpacity="0.9" />
-              <stop offset="85%" stopColor="#FFF6D1" stopOpacity="1" />
-              <stop offset="100%" stopColor="#FFFFFF" stopOpacity="1" />
+              <stop offset="0%" stopColor="#C5A45A" stopOpacity="0.3" />
+              <stop offset="40%" stopColor="#A87D24" stopOpacity="0.85" />
+              <stop offset="85%" stopColor="#7A5812" stopOpacity="1" />
+              <stop offset="100%" stopColor="#4A3408" stopOpacity="1" />
             </linearGradient>
 
             {/* Golden Bloom Glow Filter */}
             <filter id="goldBeamBloom" x="-40%" y="-40%" width="180%" height="180%">
-              <feGaussianBlur in="SourceGraphic" stdDeviation="2.2" result="blur1" />
-              <feGaussianBlur in="SourceGraphic" stdDeviation="5.5" result="blur2" />
+              <feGaussianBlur in="SourceGraphic" stdDeviation="1.8" result="blur1" />
+              <feGaussianBlur in="SourceGraphic" stdDeviation="4.0" result="blur2" />
               <feMerge>
                 <feMergeNode in="blur2" />
                 <feMergeNode in="blur1" />
@@ -145,10 +108,9 @@ export default function GlobalWorldMap({ rightPageView = 'map', onToggleView }) 
 
             {/* Egypt Radial Aura Beacon */}
             <radialGradient id="egyptRadialAura" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="#FFE082" stopOpacity="0.9" />
-              <stop offset="35%" stopColor="#D4AF37" stopOpacity="0.45" />
-              <stop offset="70%" stopColor="#D4AF37" stopOpacity="0.15" />
-              <stop offset="100%" stopColor="#D4AF37" stopOpacity="0" />
+              <stop offset="0%" stopColor="#C5A45A" stopOpacity="0.45" />
+              <stop offset="40%" stopColor="#C5A45A" stopOpacity="0.2" />
+              <stop offset="100%" stopColor="#C5A45A" stopOpacity="0" />
             </radialGradient>
           </defs>
 
@@ -358,23 +320,24 @@ export default function GlobalWorldMap({ rightPageView = 'map', onToggleView }) 
                 {hub.isScholarsHub ? (
                   /* Holy Sanctuaries Star Node */
                   <g transform={`translate(${hub.x}, ${hub.y})`}>
-                    <circle r={isHighlighted ? 7.5 : 5.8} fill="#FFDF85" filter="drop-shadow(0 0 6px rgba(255, 223, 133, 0.9))" />
+                    <circle r={isHighlighted ? 7.5 : 5.8} fill="#C5A45A" filter="drop-shadow(0 2px 6px rgba(140, 103, 24, 0.45))" />
                     <polygon
                       points="0,-7 2,-2 7,0 2,2 0,7 -2,2 -7,0 -2,-2"
                       fill="#FFFFFF"
-                      stroke="#C5A45A"
+                      stroke="#8C6F2D"
                       strokeWidth="0.8"
                     />
-                    <circle r="2" fill="#061814" />
+                    <circle r="2" fill="#122E1F" />
                   </g>
                 ) : (
                   <circle
                     cx={hub.x}
                     cy={hub.y}
                     r={isHighlighted ? 5.5 : 4}
-                    fill={isHighlighted ? '#FFFFFF' : '#FFDF85'}
-                    stroke="#061814"
-                    strokeWidth="1.6"
+                    fill={isHighlighted ? '#122F1E' : '#C5A45A'}
+                    stroke="#FFFFFF"
+                    strokeWidth="1.8"
+                    filter="drop-shadow(0 2px 4px rgba(10, 36, 18, 0.25))"
                   />
                 )}
 
@@ -401,74 +364,6 @@ export default function GlobalWorldMap({ rightPageView = 'map', onToggleView }) 
             );
           })}
         </svg>
-      </div>
-
-      {/* 3. Modern Clean Telemetry & Quick-Switch Hub Dock */}
-      <div className="map-bottom-dock">
-        {/* Active Selected Hub Card */}
-        <div className="active-hub-card">
-          <div className="active-hub-header">
-            <span className="active-hub-flag">{activeHub.flag}</span>
-            <div className="active-hub-meta">
-              <div className="active-hub-name-row">
-                <h4 className="active-hub-name">{activeHub.name}</h4>
-                <span className="active-hub-tz">{activeHub.timezones}</span>
-              </div>
-              <span className="active-hub-cities">{activeHub.cities}</span>
-            </div>
-          </div>
-
-          <div className="active-hub-metrics">
-            <div className="hub-metric-pill">
-              <Icon name="book-open" size={13} color="#C5A45A" />
-              <span className="metric-val">{activeHub.students}</span>
-              <span className="metric-lbl">Students</span>
-            </div>
-            <div className="hub-metric-pill">
-              <Icon name="shield-check" size={13} color="#10B981" />
-              <span className="metric-val">{activeHub.teachers}</span>
-              <span className="metric-lbl">Scholars</span>
-            </div>
-            <div className="hub-metric-pill">
-              <Icon name="sparkles" size={13} color="#FFDF85" />
-              <span className="metric-val">{activeHub.circles}</span>
-              <span className="metric-lbl">Halqahs</span>
-            </div>
-          </div>
-
-          <div className="active-hub-focus">
-            <span className="focus-label">FOCUS:</span>
-            <span className="focus-text">{activeHub.surahFocus}</span>
-          </div>
-        </div>
-
-        {/* Quick Country Hubs Switcher Bar (Invisible Scrollbar) */}
-        <div className="country-hubs-switcher">
-          <div className="switcher-label-group">
-            <span className="switcher-title">SELECT REGION:</span>
-          </div>
-
-          <div
-            ref={pillsRowRef}
-            className="switcher-pills-row"
-            onMouseDown={handleMouseDown}
-            onMouseLeave={handleMouseLeave}
-            onMouseUp={handleMouseUp}
-            onMouseMove={handleMouseMove}
-          >
-            {GLOBAL_HUBS.map((hub) => (
-              <button
-                key={hub.id}
-                className={`hub-switch-pill ${selectedHub.id === hub.id ? 'is-selected' : ''}`}
-                onClick={() => setSelectedHub(hub)}
-              >
-                <span className="pill-flag">{hub.flag}</span>
-                <span className="pill-name">{hub.shortName || hub.name.split(' ')[0]}</span>
-                <span className="pill-count">{hub.students}</span>
-              </button>
-            ))}
-          </div>
-        </div>
       </div>
     </div>
   );
