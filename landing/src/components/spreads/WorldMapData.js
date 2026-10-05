@@ -48,20 +48,20 @@ export const GLOBAL_HUBS = [
     quote: 'Weekend intensive retention cohorts.'
   },
   {
-    id: 'sa',
-    name: 'Saudi Arabia & Holy Sanctuaries',
-    shortName: 'Makkah',
-    flag: '🇸🇦',
-    x: 488,
-    y: 172,
-    students: 142,
-    teachers: 9,
-    circles: 18,
-    timezones: 'AST (UTC+3)',
-    cities: 'Makkah, Madinah, Riyadh, Jeddah',
-    surahFocus: 'Full Quran Ijazah Sanad Tracks',
+    id: 'eg',
+    name: 'Egypt (Al-Azhar Sanad Sanctuary)',
+    shortName: 'Egypt',
+    flag: '🇪🇬',
+    x: 468,
+    y: 152,
+    students: 260,
+    teachers: 28,
+    circles: 38,
+    timezones: 'EET (UTC+2)',
+    cities: 'Cairo, Alexandria, Tanta, Giza',
+    surahFocus: "Full Quran Ijazah & Ten Qira'at Sanad",
     isScholarsHub: true,
-    quote: "Direct Sanad transmission from the Prophet's Mosque scholars."
+    quote: "Direct Sanad transmission from revered Al-Azhar scholars & Qira'at masters."
   },
   {
     id: 'ae',

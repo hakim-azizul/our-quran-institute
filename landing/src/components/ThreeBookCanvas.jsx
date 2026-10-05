@@ -41,7 +41,6 @@ export default function ThreeBookCanvas({
     // Scene
     const scene = new THREE.Scene();
     sceneRef.current = scene;
-    scene.fog = new THREE.FogExp2(0x041c17, 0.022);
 
     // Camera with dynamic aspect ratio
     const aspect = container.clientWidth / container.clientHeight;
@@ -64,19 +63,19 @@ export default function ThreeBookCanvas({
     rendererRef.current = renderer;
 
     // Studio Ambient & Accent Lights
-    const ambientLight = new THREE.AmbientLight(0xfff6e6, 0.85);
+    const ambientLight = new THREE.AmbientLight(0xfff8ee, 0.95);
     scene.add(ambientLight);
 
-    const dirLight = new THREE.DirectionalLight(0xffeedd, 1.45);
+    const dirLight = new THREE.DirectionalLight(0xffeedd, 1.25);
     dirLight.position.set(6, 12, 10);
     scene.add(dirLight);
 
-    const rimLight = new THREE.DirectionalLight(0xc5a45a, 0.95);
+    const rimLight = new THREE.DirectionalLight(0xc5a45a, 0.85);
     rimLight.position.set(-8, 5, -6);
     scene.add(rimLight);
 
     // Sacred floating golden dust particles
-    const particleCount = 260;
+    const particleCount = 200;
     const particleGeo = new THREE.BufferGeometry();
     const particlePositions = new Float32Array(particleCount * 3);
 
@@ -92,20 +91,20 @@ export default function ThreeBookCanvas({
     pCanvas.height = 32;
     const pCtx = pCanvas.getContext('2d');
     const grad = pCtx.createRadialGradient(16, 16, 0, 16, 16, 16);
-    grad.addColorStop(0, 'rgba(251, 246, 233, 1)');
-    grad.addColorStop(0.35, 'rgba(197, 164, 90, 0.85)');
+    grad.addColorStop(0, 'rgba(197, 164, 90, 0.9)');
+    grad.addColorStop(0.4, 'rgba(197, 164, 90, 0.35)');
     grad.addColorStop(1, 'rgba(197, 164, 90, 0)');
     pCtx.fillStyle = grad;
     pCtx.fillRect(0, 0, 32, 32);
     const particleTexture = new THREE.CanvasTexture(pCanvas);
 
     const particleMat = new THREE.PointsMaterial({
-      size: 0.22,
+      size: 0.16,
       map: particleTexture,
       transparent: true,
-      blending: THREE.AdditiveBlending,
+      blending: THREE.NormalBlending,
       depthWrite: false,
-      opacity: 0.65
+      opacity: 0.32
     });
     const particles = new THREE.Points(particleGeo, particleMat);
     scene.add(particles);

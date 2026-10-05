@@ -1,25 +1,32 @@
+'use client';
+
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { DiamondOrnament, Icon } from './Icons';
 
 export default function Navigation({
   onNavigate,
   activeSpread,
-  onOpenBooking
+  onOpenBooking,
+  onOpenLogin,
+  currentPage = 'home'
 }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navLinks = [
-    { label: 'Method', spread: 1 },
-    { label: 'Daily Flow', spread: 2 },
-    { label: 'Retention', spread: 3 },
-    { label: 'Progress', spread: 4 },
-    { label: 'Mentors', spread: 5 },
-    { label: 'Global Map', spread: 6 },
-    { label: 'Principles', spread: 7 }
+    { label: 'Teachers', spread: 2 },
+    { label: 'Progress', spread: 3 },
+    { label: 'Global Map', spread: 4 },
+    { label: 'Our Vision', spread: 5 },
+    { label: 'Contact', spread: 7 }
   ];
 
   const handleMobileNav = (spread) => {
-    onNavigate(spread);
+    if (onNavigate) {
+      onNavigate(spread);
+    } else {
+      window.location.href = `/#section-${spread}`;
+    }
     setMobileMenuOpen(false);
   };
 
@@ -27,7 +34,16 @@ export default function Navigation({
     <>
       <header className="nav-container sticky-nav">
         {/* Brand */}
-        <div className="nav-brand" onClick={() => onNavigate(0)} style={{ cursor: 'pointer' }}>
+        <Link
+          href="/"
+          className="nav-brand"
+          onClick={(e) => {
+            if (onNavigate) {
+              e.preventDefault();
+              onNavigate(0);
+            }
+          }}
+        >
           <img
             src="/assets/logo_gold.png"
             alt="Our Quran Institute Logo"
@@ -35,17 +51,45 @@ export default function Navigation({
           />
           <div className="nav-brand-text">
             <span className="brand-name">Our Quran Institute</span>
-            <span className="brand-descriptor">HIFZ JOURNEY · A SACRED PATH</span>
+            <span className="brand-descriptor">A COMPLETE ONLINE ISLAMIC LEARNING JOURNEY</span>
           </div>
-        </div>
+        </Link>
 
         {/* Desktop Nav links */}
         <nav className="nav-links">
+          {/* Dedicated Course & Teacher Hub Links */}
+          <Link
+            href="/courses"
+            className={`nav-link nav-highlight-link ${currentPage === 'courses' || (currentPage === 'home' && activeSpread === 1) ? 'active' : ''}`}
+            onClick={(e) => {
+              if (currentPage === 'home' && onNavigate) {
+                e.preventDefault();
+                onNavigate(1);
+              }
+            }}
+          >
+            <span>✦ Courses</span>
+          </Link>
+          <Link
+            href="/teachers"
+            className={`nav-link nav-highlight-link ${currentPage === 'teachers' ? 'active' : ''}`}
+          >
+            <span>✦ Faculty</span>
+          </Link>
+
+          <span className="nav-internal-separator">|</span>
+
           {navLinks.map((link) => (
             <button
               key={link.spread}
               className={`nav-link ${activeSpread === link.spread ? 'active' : ''}`}
-              onClick={() => onNavigate(link.spread)}
+              onClick={() => {
+                if (onNavigate) {
+                  onNavigate(link.spread);
+                } else {
+                  window.location.href = `/#section-${link.spread}`;
+                }
+              }}
             >
               {link.label}
             </button>
@@ -54,10 +98,34 @@ export default function Navigation({
 
         {/* Right Actions */}
         <div className="nav-actions">
-          {/* Primary CTA */}
+          {/* Admissions Phone Link */}
+          <a
+            href="https://wa.me/201094714943"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="nav-whatsapp-link"
+            title="Chat with Admissions on WhatsApp"
+          >
+            <Icon name="whatsapp" size={15} color="#25D366" />
+            <span className="nav-wa-text">+20 10 94714943</span>
+          </a>
+
+          {/* "Log in Button for exist users, students & teachers" (Annotated from Reference Image) */}
+          <button
+            type="button"
+            className="nav-portal-login-btn"
+            onClick={onOpenLogin}
+            title="Log in for existing users, students & teachers"
+          >
+            <span className="login-dot">●</span>
+            <span className="login-btn-text">Portal Login</span>
+          </button>
+
+          {/* Primary CTA: Book Free Session */}
           <button className="nav-cta-btn" onClick={onOpenBooking}>
-            <span className="nav-cta-text">Book a session</span>
-            <Icon name="arrow-up-right" size={15} color="#FBF6E9" />
+            <span className="nav-cta-text desktop-cta-text">Book Free Session</span>
+            <span className="nav-cta-text mobile-cta-text">Book Free</span>
+            <Icon name="arrow-up-right" size={13} color="#FBF6E9" />
           </button>
 
           {/* Mobile Menu Hamburger Toggle */}
@@ -80,7 +148,7 @@ export default function Navigation({
             <div className="mobile-drawer-header">
               <div className="mobile-drawer-brand">
                 <img src="/assets/logo_gold.png" alt="Logo" className="drawer-logo" />
-                <span className="drawer-title">Chapters of the Book</span>
+                <span className="drawer-title">Our Quran Institute</span>
               </div>
               <button
                 className="mobile-drawer-close"
@@ -92,12 +160,79 @@ export default function Navigation({
             </div>
 
             <div className="mobile-drawer-links">
+              {/* Login Button for Existing Users in Mobile Drawer */}
+              <button
+                type="button"
+                className="mobile-drawer-login-btn"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  if (onOpenLogin) onOpenLogin();
+                }}
+              >
+                <div className="drawer-login-icon">🔑</div>
+                <div className="drawer-login-texts">
+                  <span className="drawer-login-title">Student &amp; Teacher Portal Login</span>
+                  <span className="drawer-login-sub">Access Zoom Classroom, LMS &amp; Hifz Tracker</span>
+                </div>
+              </button>
+
+              {/* Primary Pages Links */}
+              <div className="mobile-drawer-primary-group">
+                <Link
+                  href="/courses"
+                  className={`mobile-drawer-btn-highlight ${currentPage === 'courses' ? 'active' : ''}`}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <Icon name="book-open" size={16} color="#FFDF85" />
+                  <span>Explore All Courses &amp; Programs</span>
+                </Link>
+                <Link
+                  href="/teachers"
+                  className={`mobile-drawer-btn-highlight ${currentPage === 'teachers' ? 'active' : ''}`}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <Icon name="users" size={16} color="#FFDF85" />
+                  <span>Meet Al-Azhar Faculty &amp; Scholars</span>
+                </Link>
+                <a
+                  href="https://wa.me/201094714943"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mobile-drawer-btn-highlight wa-drawer-btn"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <Icon name="whatsapp" size={16} color="#25D366" />
+                  <span>Chat Admissions (+20 10 94714943)</span>
+                </a>
+                <a
+                  href="https://www.instagram.com/ourquraninstitute/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mobile-drawer-btn-highlight"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <Icon name="instagram" size={16} color="#FF7A93" />
+                  <span>Instagram (@ourquraninstitute)</span>
+                </a>
+              </div>
+
+              <div className="mobile-drawer-divider-label">
+                <span>CHAPTERS &amp; CURRICULUM</span>
+              </div>
+
               <button
                 className={`mobile-drawer-link ${activeSpread === 0 ? 'active' : ''}`}
                 onClick={() => handleMobileNav(0)}
               >
                 <span className="link-num">00</span>
-                <span className="link-title">Open the Book (Cover &amp; Hero)</span>
+                <span className="link-title">Overview &amp; Welcome</span>
+              </button>
+              <button
+                className={`mobile-drawer-link ${activeSpread === 1 ? 'active' : ''}`}
+                onClick={() => handleMobileNav(1)}
+              >
+                <span className="link-num">01</span>
+                <span className="link-title">Our Courses</span>
               </button>
               {navLinks.map((link) => (
                 <button
@@ -110,11 +245,18 @@ export default function Navigation({
                 </button>
               ))}
               <button
-                className={`mobile-drawer-link ${activeSpread === 8 ? 'active' : ''}`}
-                onClick={() => handleMobileNav(8)}
+                className={`mobile-drawer-link ${activeSpread === 6 ? 'active' : ''}`}
+                onClick={() => handleMobileNav(6)}
               >
-                <span className="link-num">08</span>
-                <span className="link-title">The Sacred Call &amp; Enrollment</span>
+                <span className="link-num">06</span>
+                <span className="link-title">Book Free Session</span>
+              </button>
+              <button
+                className={`mobile-drawer-link ${activeSpread === 7 ? 'active' : ''}`}
+                onClick={() => handleMobileNav(7)}
+              >
+                <span className="link-num">07</span>
+                <span className="link-title">Contact Us &amp; Global Map</span>
               </button>
             </div>
 

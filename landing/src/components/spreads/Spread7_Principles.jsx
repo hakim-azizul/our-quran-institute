@@ -44,7 +44,7 @@ export default function Spread7_Principles({ onNext, side = 'both' }) {
         <div className="principles-header-top-row">
           <div className="section-label">
             <div className="label-rule" />
-            <span className="label-text">CORE PHILOSOPHY · OUR SACRED COVENANT</span>
+            <span className="label-text">OUR VISION</span>
           </div>
           <DiamondOrnament size={36} diamondSize={20} centerColor="#062A24" borderColor="#C5A45A" />
         </div>
@@ -162,7 +162,7 @@ export default function Spread7_Principles({ onNext, side = 'both' }) {
           <div key={idx} className="principle-pillar-card">
             <div className="pillar-card-top">
               <div className="principle-card-icon">
-                <Icon name={item.icon} size={17} color="#FFDF85" />
+                <Icon name={item.icon} size={17} color="#C5A45A" />
               </div>
               <div className="pillar-badge-group">
                 <span className="pillar-num-tag">{item.num}</span>

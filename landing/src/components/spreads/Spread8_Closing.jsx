@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import { DiamondOrnament, Icon } from '../Icons';
 
 export default function Spread8_Closing({ onOpenBooking, onNavigate, side = 'both' }) {
@@ -73,11 +74,11 @@ export default function Spread8_Closing({ onOpenBooking, onNavigate, side = 'bot
         </div>
         <div className="social-channel-pills">
           <a
-            href="https://wa.me/447700900077"
+            href="https://wa.me/201094714943"
             target="_blank"
             rel="noopener noreferrer"
             className="social-pill-btn whatsapp"
-            title="Chat with Us on WhatsApp"
+            title="Chat with Us on WhatsApp (+20 10 94714943)"
           >
             <span className="social-pill-icon whatsapp">
               <Icon name="whatsapp" size={16} />
@@ -99,16 +100,16 @@ export default function Spread8_Closing({ onOpenBooking, onNavigate, side = 'bot
           </a>
 
           <a
-            href="https://facebook.com/ourquraninstitute"
+            href="https://www.instagram.com/ourquraninstitute/"
             target="_blank"
             rel="noopener noreferrer"
-            className="social-pill-btn facebook"
-            title="Join Our Facebook Community"
+            className="social-pill-btn instagram"
+            title="Follow us on Instagram (@ourquraninstitute)"
           >
-            <span className="social-pill-icon facebook">
-              <Icon name="facebook" size={16} />
+            <span className="social-pill-icon instagram">
+              <Icon name="instagram" size={16} />
             </span>
-            <span className="social-pill-text">Facebook</span>
+            <span className="social-pill-text">Instagram</span>
           </a>
         </div>
       </div>
@@ -143,19 +144,23 @@ export default function Spread8_Closing({ onOpenBooking, onNavigate, side = 'bot
           </div>
 
           <div className="footer-links">
-            <button className="footer-link" onClick={() => onNavigate(1)}>Philosophy</button>
+            <Link href="/courses" className="footer-link">Programs</Link>
+            <Link href="/teachers" className="footer-link">Faculty</Link>
             <button className="footer-link" onClick={() => onNavigate(1)}>Method</button>
-            <button className="footer-link" onClick={() => onNavigate(2)}>Curriculum</button>
             <button className="footer-link" onClick={() => onNavigate(5)}>Mentors</button>
-            <button className="footer-link" onClick={() => onNavigate(8)}>Enroll</button>
+            <button className="footer-link" onClick={() => onNavigate(6)}>Programs Showcase</button>
+            <button className="footer-link" onClick={() => onNavigate(7)}>Global Map</button>
           </div>
 
           <div className="footer-social-links">
-            <a href="https://wa.me/447700900077" target="_blank" rel="noopener noreferrer" className="footer-social-btn" title="WhatsApp">
+            <a href="https://wa.me/201094714943" target="_blank" rel="noopener noreferrer" className="footer-social-btn" title="WhatsApp (+20 10 94714943)">
               <Icon name="whatsapp" size={15} />
             </a>
             <a href="https://youtube.com/@ourquraninstitute" target="_blank" rel="noopener noreferrer" className="footer-social-btn" title="YouTube">
               <Icon name="youtube" size={15} />
+            </a>
+            <a href="https://www.instagram.com/ourquraninstitute/" target="_blank" rel="noopener noreferrer" className="footer-social-btn" title="Instagram (@ourquraninstitute)">
+              <Icon name="instagram" size={15} />
             </a>
             <a href="https://facebook.com/ourquraninstitute" target="_blank" rel="noopener noreferrer" className="footer-social-btn" title="Facebook">
               <Icon name="facebook" size={15} />
