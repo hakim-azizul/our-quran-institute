@@ -1,7 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Icon } from './Icons';
+import TimezoneSelect, { ALL_TIMEZONES } from './TimezoneSelect';
+import CustomDatePicker from './CustomDatePicker';
 
 export default function BookFreeSessionSection({ initialCourse = '' }) {
   const [formData, setFormData] = useState({
@@ -19,6 +21,27 @@ export default function BookFreeSessionSection({ initialCourse = '' }) {
 
   // Today's date in YYYY-MM-DD for min date
   const todayStr = new Date().toISOString().split('T')[0];
+
+  // Auto-detect user's local timezone if available
+  useEffect(() => {
+    try {
+      if (typeof window !== 'undefined' && Intl && Intl.DateTimeFormat) {
+        const userTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        if (userTz) {
+          const parts = userTz.toLowerCase().split('/');
+          const cityPart = parts[parts.length - 1].replace(/_/g, ' ');
+          const found = ALL_TIMEZONES.find((tz) =>
+            tz.cities.toLowerCase().includes(cityPart)
+          );
+          if (found) {
+            setFormData((prev) => ({ ...prev, timezone: found.value }));
+          }
+        }
+      }
+    } catch (e) {
+      // Keep default
+    }
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -220,18 +243,18 @@ export default function BookFreeSessionSection({ initialCourse = '' }) {
                         </div>
                       </div>
 
-                      {/* Row 2: [ email ] (Full width) */}
+                      {/* Row 2: [ Email Address ] (Full width) */}
                       <div className="form-grid-row form-grid-1col">
                         <div className="form-input-group">
                           <label htmlFor="field-email" className="form-field-label">
-                            email
+                            Email Address
                           </label>
                           <input
                             id="field-email"
                             type="email"
                             name="email"
                             required
-                            placeholder="email"
+                            placeholder="Enter your email address"
                             value={formData.email}
                             onChange={handleChange}
                             className="session-input"
@@ -264,15 +287,14 @@ export default function BookFreeSessionSection({ initialCourse = '' }) {
                           <label htmlFor="field-date" className="form-field-label">
                             Date select
                           </label>
-                          <input
+                          <CustomDatePicker
                             id="field-date"
-                            type="date"
                             name="preferredDate"
-                            min={todayStr}
-                            required
                             value={formData.preferredDate}
                             onChange={handleChange}
-                            className="session-input date-input"
+                            minDate={todayStr}
+                            placeholder="Select date"
+                            required
                           />
                         </div>
 
@@ -288,13 +310,44 @@ export default function BookFreeSessionSection({ initialCourse = '' }) {
                             onChange={handleChange}
                             className="session-select"
                           >
-                            <option value="">Time select</option>
-                            <option value="08:00 AM - 10:00 AM">08:00 AM - 10:00 AM (Morning)</option>
-                            <option value="10:00 AM - 12:00 PM">10:00 AM - 12:00 PM (Midday)</option>
-                            <option value="02:00 PM - 04:00 PM">02:00 PM - 04:00 PM (Afternoon)</option>
-                            <option value="04:00 PM - 06:00 PM">04:00 PM - 06:00 PM (Late Day)</option>
-                            <option value="06:00 PM - 08:00 PM">06:00 PM - 08:00 PM (Evening)</option>
-                            <option value="08:00 PM - 10:00 PM">08:00 PM - 10:00 PM (Night)</option>
+                            <option value="">Select time slot</option>
+                            <optgroup label="🌅 Morning (07:00 AM – 11:30 AM)">
+                              <option value="07:00 AM - 07:30 AM">07:00 AM - 07:30 AM (Early Morning)</option>
+                              <option value="07:30 AM - 08:00 AM">07:30 AM - 08:00 AM</option>
+                              <option value="08:00 AM - 08:30 AM">08:00 AM - 08:30 AM</option>
+                              <option value="08:30 AM - 09:00 AM">08:30 AM - 09:00 AM</option>
+                              <option value="09:00 AM - 09:30 AM">09:00 AM - 09:30 AM</option>
+                              <option value="09:30 AM - 10:00 AM">09:30 AM - 10:00 AM</option>
+                              <option value="10:00 AM - 10:30 AM">10:00 AM - 10:30 AM</option>
+                              <option value="10:30 AM - 11:00 AM">10:30 AM - 11:00 AM</option>
+                              <option value="11:00 AM - 11:30 AM">11:00 AM - 11:30 AM</option>
+                            </optgroup>
+                            <optgroup label="☀️ Midday & Afternoon (12:00 PM – 05:30 PM)">
+                              <option value="12:00 PM - 12:30 PM">12:00 PM - 12:30 PM (Midday)</option>
+                              <option value="12:30 PM - 01:00 PM">12:30 PM - 01:00 PM</option>
+                              <option value="01:00 PM - 01:30 PM">01:00 PM - 01:30 PM</option>
+                              <option value="01:30 PM - 02:00 PM">01:30 PM - 02:00 PM</option>
+                              <option value="02:00 PM - 02:30 PM">02:00 PM - 02:30 PM</option>
+                              <option value="02:30 PM - 03:00 PM">02:30 PM - 03:00 PM</option>
+                              <option value="03:00 PM - 03:30 PM">03:00 PM - 03:30 PM</option>
+                              <option value="03:30 PM - 04:00 PM">03:30 PM - 04:00 PM</option>
+                              <option value="04:00 PM - 04:30 PM">04:00 PM - 04:30 PM</option>
+                              <option value="04:30 PM - 05:00 PM">04:30 PM - 05:00 PM</option>
+                              <option value="05:00 PM - 05:30 PM">05:00 PM - 05:30 PM</option>
+                            </optgroup>
+                            <optgroup label="🌙 Evening & Night (06:00 PM – 11:30 PM)">
+                              <option value="06:00 PM - 06:30 PM">06:00 PM - 06:30 PM (Evening)</option>
+                              <option value="06:30 PM - 07:00 PM">06:30 PM - 07:00 PM</option>
+                              <option value="07:00 PM - 07:30 PM">07:00 PM - 07:30 PM</option>
+                              <option value="07:30 PM - 08:00 PM">07:30 PM - 08:00 PM</option>
+                              <option value="08:00 PM - 08:30 PM">08:00 PM - 08:30 PM (Prime)</option>
+                              <option value="08:30 PM - 09:00 PM">08:30 PM - 09:00 PM</option>
+                              <option value="09:00 PM - 09:30 PM">09:00 PM - 09:30 PM</option>
+                              <option value="09:30 PM - 10:00 PM">09:30 PM - 10:00 PM</option>
+                              <option value="10:00 PM - 10:30 PM">10:00 PM - 10:30 PM (Night)</option>
+                              <option value="10:30 PM - 11:00 PM">10:30 PM - 11:00 PM</option>
+                              <option value="11:00 PM - 11:30 PM">11:00 PM - 11:30 PM</option>
+                            </optgroup>
                           </select>
                         </div>
 
@@ -302,30 +355,11 @@ export default function BookFreeSessionSection({ initialCourse = '' }) {
                           <label htmlFor="field-timezone" className="form-field-label">
                             Time zone select
                           </label>
-                          <select
+                          <TimezoneSelect
                             id="field-timezone"
-                            name="timezone"
-                            required
                             value={formData.timezone}
                             onChange={handleChange}
-                            className="session-select"
-                          >
-                            <option value="UTC-8 (US/Canada PST)">UTC-8 (US/Canada PST)</option>
-                            <option value="UTC-7 (US/Canada MST)">UTC-7 (US/Canada MST)</option>
-                            <option value="UTC-6 (US/Canada CST)">UTC-6 (US/Canada CST)</option>
-                            <option value="UTC-5 (US/Canada EST)">UTC-5 (US/Canada EST)</option>
-                            <option value="UTC+0 (London, GMT)">UTC+0 (London, GMT)</option>
-                            <option value="UTC+1 (Paris, Berlin, CET)">UTC+1 (Paris, Berlin, CET)</option>
-                            <option value="UTC+2 (Cairo, CAT)">UTC+2 (Cairo, CAT)</option>
-                            <option value="UTC+3 (Makkah, Riyadh, AST)">UTC+3 (Makkah, Riyadh, AST)</option>
-                            <option value="UTC+4 (Dubai, GST)">UTC+4 (Dubai, GST)</option>
-                            <option value="UTC+5 (Pakistan, PKT)">UTC+5 (Pakistan, PKT)</option>
-                            <option value="UTC+5:30 (India, IST)">UTC+5:30 (India, IST)</option>
-                            <option value="UTC+6 (Bangladesh, BST)">UTC+6 (Bangladesh, BST)</option>
-                            <option value="UTC+7 (Jakarta, WIB)">UTC+7 (Jakarta, WIB)</option>
-                            <option value="UTC+8 (Singapore / KL)">UTC+8 (Singapore / KL)</option>
-                            <option value="UTC+10 (Sydney, AEST)">UTC+10 (Sydney, AEST)</option>
-                          </select>
+                          />
                         </div>
                       </div>
 

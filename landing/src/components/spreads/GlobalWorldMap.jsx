@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { WORLD_MAP_PATH, GLOBAL_HUBS } from './WorldMapData';
 
 export default function GlobalWorldMap({ rightPageView = 'map', onToggleView }) {
-  const [selectedHub, setSelectedHub] = useState(GLOBAL_HUBS[0]); // default UK
+  const [selectedHub, setSelectedHub] = useState(null); // No country selected by default
   const [hoveredHub, setHoveredHub] = useState(null);
   const mapContainerRef = useRef(null);
 
@@ -53,23 +53,6 @@ export default function GlobalWorldMap({ rightPageView = 'map', onToggleView }) 
             <strong>{totalStudents.toLocaleString()}+</strong> Students &bull; <strong>{totalTeachers}</strong> Scholars Worldwide
           </span>
         </div>
-
-        {onToggleView && (
-          <div className="map-view-pills">
-            <button
-              className={`view-pill-btn ${rightPageView === 'map' ? 'active' : ''}`}
-              onClick={() => onToggleView('map')}
-            >
-              <span>✦ World Map</span>
-            </button>
-            <button
-              className={`view-pill-btn ${rightPageView === 'stories' ? 'active' : ''}`}
-              onClick={() => onToggleView('stories')}
-            >
-              <span>✦ Student Voices</span>
-            </button>
-          </div>
-        )}
       </div>
 
       {/* 2. Modern Solid-Color World Map SVG (Expanded Viewport & Clean Vector Styling) */}
@@ -167,7 +150,7 @@ export default function GlobalWorldMap({ rightPageView = 'map', onToggleView }) 
               <g className="golden-connecting-system">
                 {/* Always-visible subtle resting cartographic filaments */}
                 {destHubs.map((hub) => {
-                  const isActive = activeHub.id === hub.id;
+                  const isActive = activeHub?.id === hub.id;
                   const ox = scholarsHub.x;
                   const oy = scholarsHub.y;
                   const tx = hub.x;
@@ -198,7 +181,7 @@ export default function GlobalWorldMap({ rightPageView = 'map', onToggleView }) 
                 {isInView && (
                   <g key={`golden-anim-system-${animCycle}`} className="golden-dynamic-pulses">
                     {destHubs.map((hub) => {
-                      const isActive = activeHub.id === hub.id;
+                      const isActive = activeHub?.id === hub.id;
                       const ox = scholarsHub.x;
                       const oy = scholarsHub.y;
                       const tx = hub.x;
@@ -280,9 +263,65 @@ export default function GlobalWorldMap({ rightPageView = 'map', onToggleView }) 
             );
           })()}
 
+          {/* Always-visible active highlighted beam when a hub is clicked or hovered */}
+          {(() => {
+            const scholarsHub = GLOBAL_HUBS.find((h) => h.isScholarsHub) || GLOBAL_HUBS.find((h) => h.id === 'eg') || GLOBAL_HUBS[0];
+            if (activeHub && activeHub.id !== scholarsHub.id) {
+              const ox = scholarsHub.x;
+              const oy = scholarsHub.y;
+              const tx = activeHub.x;
+              const ty = activeHub.y;
+              const midX = (ox + tx) / 2;
+              let arch = 32;
+              if (activeHub.id === 'us') arch = 58;
+              else if (activeHub.id === 'ca') arch = 64;
+              else if (activeHub.id === 'uk') arch = 40;
+              else if (activeHub.id === 'eu') arch = 30;
+              else if (activeHub.id === 'my') arch = 26;
+              else if (activeHub.id === 'au') arch = 20;
+
+              const midY = Math.min(oy, ty) - arch;
+              const arcD = `M${ox},${oy} Q${midX},${midY} ${tx},${ty}`;
+
+              return (
+                <g className="highlighted-corridor-beam" pointerEvents="none">
+                  {/* Outer Golden Glow */}
+                  <path
+                    d={arcD}
+                    fill="none"
+                    stroke="#C5A45A"
+                    strokeWidth="4.5"
+                    strokeLinecap="round"
+                    opacity="0.65"
+                    filter="url(#goldBeamBloom)"
+                  />
+                  {/* Inner Solid Luminous Line */}
+                  <path
+                    d={arcD}
+                    fill="none"
+                    stroke="#8C6718"
+                    strokeWidth="2.2"
+                    strokeLinecap="round"
+                  />
+                  {/* Destination Pulse Wave */}
+                  <circle
+                    cx={activeHub.x}
+                    cy={activeHub.y}
+                    r="18"
+                    fill="none"
+                    stroke="#8C6718"
+                    strokeWidth="1.8"
+                    className="active-corridor-pulse"
+                  />
+                </g>
+              );
+            }
+            return null;
+          })()}
+
           {/* Interactive Global Hub Pins & Clean Solid Micro-Pills */}
           {GLOBAL_HUBS.map((hub) => {
-            const isSelected = selectedHub.id === hub.id;
+            const isSelected = selectedHub?.id === hub.id;
             const isHovered = hoveredHub && hoveredHub.id === hub.id;
             const isHighlighted = isSelected || isHovered;
 
@@ -295,7 +334,7 @@ export default function GlobalWorldMap({ rightPageView = 'map', onToggleView }) 
               <g
                 key={hub.id}
                 className={`solid-hub-group ${hub.isScholarsHub ? 'is-scholars-hub' : ''} ${isHighlighted ? 'active' : ''}`}
-                onClick={() => setSelectedHub(hub)}
+                onClick={() => setSelectedHub((prev) => (prev?.id === hub.id ? null : hub))}
                 onMouseEnter={() => setHoveredHub(hub)}
                 onMouseLeave={() => setHoveredHub(null)}
                 style={{ cursor: 'pointer' }}
@@ -364,6 +403,103 @@ export default function GlobalWorldMap({ rightPageView = 'map', onToggleView }) 
             );
           })}
         </svg>
+      </div>
+
+      {/* 3. Interactive Hub Metrics & Country Count Deck Below Map */}
+      <div className="map-hub-counts-section">
+        <div className="hub-counts-header">
+          <div className="hub-counts-title-group">
+            <span className="hub-counts-kicker">REGIONAL TRANSMISSION HUBS</span>
+            <h4 className="hub-counts-heading">Active Students &amp; Scholars Across Corridors</h4>
+          </div>
+          <span className="hub-counts-instruction">
+            <span>✦ Click or hover any hub to highlight corridor on map</span>
+          </span>
+        </div>
+
+        {/* Global Summary Metric Pills */}
+        <div className="global-metrics-strip">
+          <div className="global-metric-pill">
+            <span className="metric-val">{totalStudents.toLocaleString()}+</span>
+            <span className="metric-lbl">Active Students</span>
+          </div>
+          <div className="global-metric-pill">
+            <span className="metric-val">{totalTeachers}+</span>
+            <span className="metric-lbl">Al-Azhar Scholars</span>
+          </div>
+          <div className="global-metric-pill">
+            <span className="metric-val">42</span>
+            <span className="metric-lbl">Countries Active</span>
+          </div>
+          <div className="global-metric-pill">
+            <span className="metric-val">100%</span>
+            <span className="metric-lbl">Live 1-on-1 Sessions</span>
+          </div>
+        </div>
+
+        {/* Regional Hub Cards Grid */}
+        <div className="hub-cards-grid">
+          {GLOBAL_HUBS.map((hub) => {
+            const isSelected = selectedHub?.id === hub.id;
+            const isHovered = hoveredHub && hoveredHub.id === hub.id;
+            const isHighlighted = isSelected || isHovered;
+
+            return (
+              <div
+                key={hub.id}
+                className={`hub-count-card ${isHighlighted ? 'is-highlighted active' : ''} ${hub.isScholarsHub ? 'is-sanctuary-hub' : ''}`}
+                onClick={() => setSelectedHub((prev) => (prev?.id === hub.id ? null : hub))}
+                onMouseEnter={() => setHoveredHub(hub)}
+                onMouseLeave={() => setHoveredHub(null)}
+                role="button"
+                tabIndex={0}
+                aria-pressed={isSelected}
+              >
+                <div className="hub-flag-name">
+                  <span className="hub-card-flag">{hub.flag}</span>
+                  <span className="hub-card-name">{hub.name.split('(')[0].trim()}</span>
+                </div>
+
+                <div className="hub-stat-right">
+                  <span className="card-stat-count">{hub.students.toLocaleString()}+</span>
+                  {hub.isScholarsHub ? (
+                    <span className="hub-badge-sanctuary">Sanad Hub</span>
+                  ) : (
+                    <span className={`hub-live-pulse-dot ${isHighlighted ? 'active' : ''}`} title="Active Corridor" />
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Selected Hub Spotlight Bar */}
+        {activeHub && (
+          <div className="selected-hub-spotlight-bar">
+            <div className="spotlight-left">
+              <span className="spotlight-pin-icon">{activeHub.flag}</span>
+              <div className="spotlight-text-group">
+                <div className="spotlight-title-row">
+                  <strong className="spotlight-hub-title">{activeHub.name}</strong>
+                  <span className="spotlight-sub-pill">{activeHub.students} Students Enrolled &bull; {activeHub.teachers} Al-Azhar Instructors</span>
+                </div>
+                <p className="spotlight-desc">
+                  {activeHub.quote || `Comprehensive Quran recitation, memorization, and tajweed study circles with dedicated scheduling.`}
+                </p>
+              </div>
+            </div>
+            <div className="spotlight-right">
+              <button
+                type="button"
+                className="spotlight-focus-btn"
+                onClick={() => setSelectedHub(activeHub)}
+              >
+                <span>Corridor Active</span>
+                <span className="spotlight-arrow">↗</span>
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
