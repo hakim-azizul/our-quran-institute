@@ -179,7 +179,8 @@ html, body {
   background-color: #FAFAF8;
   background-image: radial-gradient(circle at 50% 0%, rgba(197, 164, 90, 0.04) 0%, rgba(250, 250, 248, 0) 65%);
   color: #122E1F;
-  overflow-x: hidden;
+  overflow-x: clip;
+  overflow-y: visible;
 }
 
 /* Landing Hero Section */
@@ -409,6 +410,7 @@ html, body {
   cursor: pointer;
   padding: 6px 4px;
   position: relative;
+  white-space: nowrap;
   transition: color 0.2s ease;
 }
 
@@ -4787,6 +4789,7 @@ a.btn-cream-pill:active {
   justify-content: center;
   padding: 20px;
   animation: fadeIn 0.25s ease;
+  overflow-y: auto;
 }
 
 @keyframes fadeIn {
@@ -4806,6 +4809,37 @@ a.btn-cream-pill:active {
   box-shadow: 0 28px 72px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.95);
   padding: 36px 32px;
   animation: slideUp 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.modal-card.booking-modal-card {
+  max-width: 620px;
+  padding: 32px 30px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 245, 238, 0.95) 100%);
+  border: 1.5px solid rgba(197, 164, 90, 0.45);
+}
+
+.modal-header-desc {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  color: #4A6553;
+  margin: 3px 0 0 0;
+  line-height: 1.4;
+}
+
+.booking-modal-card .session-wireframe-form {
+  gap: 13px;
+}
+
+@media (max-width: 640px) {
+  .modal-card.booking-modal-card {
+    padding: 24px 18px;
+    max-width: 96vw;
+  }
+  .booking-modal-card .form-grid-2col,
+  .booking-modal-card .form-grid-3col {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
 }
 
 @keyframes slideUp {
@@ -9720,7 +9754,7 @@ a.btn-cream-pill:active {
 
 /* --- 1. Global Viewport Overflow Protection --- */
 html, body {
-  overflow-x: hidden !important;
+  overflow-x: clip !important;
   max-width: 100vw !important;
   width: 100% !important;
   box-sizing: border-box !important;
@@ -9731,7 +9765,8 @@ html, body {
 }
 
 .vertical-landing-root {
-  overflow-x: hidden !important;
+  overflow-x: clip !important;
+  overflow-y: visible !important;
   width: 100% !important;
   max-width: 100vw !important;
 }
@@ -12382,19 +12417,79 @@ html, body {
   align-items: center;
 }
 
-/* Mosque Panoramic Background Image */
+/* Mosque Panoramic Background Image with Mouse Parallax */
 .mosque-hero-bg {
   position: absolute;
-  inset: 0;
+  inset: -14px;
   background-size: cover;
   background-position: center 36%;
   background-repeat: no-repeat;
-  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.25s cubic-bezier(0.2, 0.9, 0.4, 1);
+  transform: translate(var(--mouse-px, 0px), var(--mouse-py, 0px)) scale(1.03);
   z-index: 1;
+  will-change: transform;
 }
 
 .mosque-hero-card:hover .mosque-hero-bg {
-  transform: scale(1.02);
+  transform: translate(var(--mouse-px, 0px), var(--mouse-py, 0px)) scale(1.05);
+}
+
+/* Ambient Noor Sunbeam Sweep Overlay */
+.mosque-noor-sweep-overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle 800px at 70% 30%, rgba(255, 235, 175, 0.16) 0%, rgba(156, 184, 130, 0.08) 45%, transparent 75%);
+  pointer-events: none;
+  z-index: 2;
+  mix-blend-mode: screen;
+  animation: noorBreathe 8s ease-in-out infinite alternate;
+}
+
+@keyframes noorBreathe {
+  0% {
+    opacity: 0.55;
+    transform: scale(0.98) translate(-10px, -5px);
+  }
+  100% {
+    opacity: 0.95;
+    transform: scale(1.03) translate(10px, 5px);
+  }
+}
+
+/* Floating Sacred Noor Golden Particles Deck */
+.mosque-noor-particles-deck {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 4;
+  overflow: hidden;
+}
+
+.noor-particle {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, #FFF2CE 20%, rgba(212, 175, 95, 0.8) 60%, transparent 100%);
+  box-shadow: 0 0 10px rgba(255, 223, 133, 0.8);
+  animation-name: noorFloatUp;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}
+
+@keyframes noorFloatUp {
+  0% {
+    transform: translateY(0) translateX(0) scale(0.85);
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 0.9;
+    transform: translateY(-24px) translateX(12px) scale(1.2);
+    box-shadow: 0 0 14px rgba(255, 223, 133, 0.95);
+  }
+  100% {
+    transform: translateY(-50px) translateX(-8px) scale(0.9);
+    opacity: 0.3;
+  }
 }
 
 /* Vignette Gradients for Legibility & Architectural Mood */
@@ -12425,7 +12520,7 @@ html, body {
   pointer-events: none;
 }
 
-/* Palm Leaves Overlay (Top-Right of Hero) */
+/* Palm Leaves Overlay with Smooth Sway */
 .mosque-palm-overlay {
   position: absolute;
   top: -20px;
@@ -12435,7 +12530,7 @@ html, body {
   z-index: 5;
   pointer-events: none;
   filter: drop-shadow(0 14px 28px rgba(0, 15, 10, 0.55));
-  animation: palmSway 9s ease-in-out infinite alternate;
+  animation: palmBreezeSway 8s ease-in-out infinite alternate;
   transform-origin: top right;
 }
 
@@ -12445,12 +12540,15 @@ html, body {
   display: block;
 }
 
-@keyframes palmSway {
+@keyframes palmBreezeSway {
   0% {
-    transform: rotate(0deg) translate(0, 0);
+    transform: rotate(0deg) scale(1) translate(0, 0);
+  }
+  50% {
+    transform: rotate(2.8deg) scale(1.02) translate(6px, -4px);
   }
   100% {
-    transform: rotate(2.2deg) translate(4px, -3px);
+    transform: rotate(1.2deg) scale(0.99) translate(2px, -2px);
   }
 }
 
@@ -12474,7 +12572,7 @@ html, body {
   align-items: flex-start;
 }
 
-/* Bismillah Tag Pill */
+/* Bismillah Tag Pill with Twinkling Star */
 .mosque-bismillah-pill {
   display: inline-flex;
   align-items: center;
@@ -12497,6 +12595,24 @@ html, body {
 .bismillah-ornament {
   color: #C5A45A;
   font-size: 12px;
+}
+
+.spinning-star {
+  display: inline-block;
+  color: #C5A45A;
+  font-size: 13px;
+  animation: starTwinkle 3.5s ease-in-out infinite;
+}
+
+@keyframes starTwinkle {
+  0%, 100% {
+    transform: scale(1) rotate(0deg);
+    filter: drop-shadow(0 0 2px rgba(197, 164, 90, 0.4));
+  }
+  50% {
+    transform: scale(1.25) rotate(45deg);
+    filter: drop-shadow(0 0 8px rgba(255, 223, 133, 0.9));
+  }
 }
 
 .bismillah-arabic {
@@ -12525,6 +12641,36 @@ html, body {
   font-style: italic;
 }
 
+/* Liquid Gold Shimmer Text Animation */
+.gold-shimmer-text {
+  background: linear-gradient(
+    115deg,
+    #F8E8C0 0%,
+    #FFF4D9 25%,
+    #C5A45A 45%,
+    #FFE399 55%,
+    #D4AF37 70%,
+    #F8E8C0 100%
+  );
+  background-size: 240% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: goldLiquidShine 6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  display: inline-block;
+}
+
+@keyframes goldLiquidShine {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
 /* Description Subtext */
 .mosque-hero-description {
   font-family: var(--font-sans);
@@ -12541,11 +12687,11 @@ html, body {
   display: flex;
   align-items: center;
   gap: 16px;
-  margin-bottom: 24px;
+  margin-bottom: 32px;
   flex-wrap: wrap;
 }
 
-/* Primary Button: "Book Free Session" */
+/* Primary Button: "Book Free Session" with Sheen Sweep */
 .btn-mosque-primary {
   display: inline-flex;
   align-items: center;
@@ -12561,12 +12707,41 @@ html, body {
   box-shadow: 0 8px 24px rgba(0, 20, 10, 0.35);
   cursor: pointer;
   transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
 }
 
 .btn-mosque-primary:hover {
   transform: translateY(-2px);
   background: linear-gradient(135deg, #A8C78B 0%, #8FB072 100%);
   box-shadow: 0 12px 28px rgba(0, 20, 10, 0.45);
+}
+
+.btn-primary-pulsing::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -60%;
+  width: 50%;
+  height: 200%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.35) 50%,
+    transparent 100%
+  );
+  transform: rotate(25deg);
+  animation: btnSheenSweep 5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes btnSheenSweep {
+  0%, 65% {
+    left: -60%;
+  }
+  85%, 100% {
+    left: 140%;
+  }
 }
 
 .btn-icon-circle {
@@ -12578,6 +12753,48 @@ html, body {
   align-items: center;
   justify-content: center;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Secondary Button Wrapper & Soundwave Ripple Rings */
+.btn-secondary-wrapper {
+  position: relative;
+  display: inline-flex;
+}
+
+.audio-ripple-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 9999px;
+  border: 1.5px solid rgba(37, 211, 102, 0.6);
+  pointer-events: none;
+  animation: audioRippleOut 2.2s cubic-bezier(0.1, 0.8, 0.3, 1) infinite;
+}
+
+.audio-ripple-ring.ring-1 {
+  width: 100%;
+  height: 100%;
+  animation-delay: 0s;
+}
+
+.audio-ripple-ring.ring-2 {
+  width: 100%;
+  height: 100%;
+  animation-delay: 1.1s;
+}
+
+@keyframes audioRippleOut {
+  0% {
+    transform: translate(-50%, -50%) scale(0.95);
+    opacity: 0.85;
+    border-color: rgba(37, 211, 102, 0.8);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.35, 1.6);
+    opacity: 0;
+    border-color: rgba(197, 164, 90, 0.1);
+  }
 }
 
 /* Secondary Button: "Listen The Quran" */
@@ -12595,6 +12812,8 @@ html, body {
   font-family: var(--font-sans);
   cursor: pointer;
   transition: all 0.25s ease;
+  position: relative;
+  z-index: 2;
 }
 
 .btn-mosque-secondary:hover {
@@ -12715,12 +12934,21 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: promptPulse 2s ease-in-out infinite;
 }
 
-@keyframes promptPulse {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(3px); }
+.pulsing-ring {
+  animation: promptRingPulse 2.4s ease-in-out infinite;
+}
+
+@keyframes promptRingPulse {
+  0%, 100% {
+    transform: translateY(0);
+    box-shadow: 0 0 0 0 rgba(197, 164, 90, 0.4);
+  }
+  50% {
+    transform: translateY(4px);
+    box-shadow: 0 0 12px 2px rgba(197, 164, 90, 0.5);
+  }
 }
 
 .scroll-prompt-text-group {
@@ -12761,6 +12989,13 @@ html, body {
   padding: 4px 12px;
   border-radius: 9999px;
   border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: transform 0.25s ease, background-color 0.25s ease, border-color 0.25s ease;
+}
+
+.trust-chip:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(197, 164, 90, 0.4);
 }
 
 .chip-bullet {
@@ -12768,11 +13003,17 @@ html, body {
   font-size: 10px;
 }
 
-/* Right Column: Dome Arched Inset Portal (From reference image) */
+/* Right Column: Dome Arched Inset Portal with Parallax and Levitation */
 .mosque-hero-right {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.animated-portal-column {
+  transform: translate(var(--mouse-inv-px, 0px), var(--mouse-inv-py, 0px));
+  transition: transform 0.2s cubic-bezier(0.2, 0.9, 0.4, 1);
+  will-change: transform;
 }
 
 .dome-portal-container {
@@ -12782,17 +13023,74 @@ html, body {
   position: relative;
 }
 
+.animated-arch-levitate {
+  animation: archPortalLevitate 6.5s ease-in-out infinite alternate;
+}
+
+@keyframes archPortalLevitate {
+  0% {
+    transform: translateY(0px);
+  }
+  100% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Rotating Sacred Islamic Star Mandala Halo */
+.portal-mandala-halo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -55%);
+  width: 440px;
+  height: 440px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.rotating-islamic-star {
+  width: 100%;
+  height: 100%;
+  animation: rotateStarMandala 90s linear infinite;
+  filter: drop-shadow(0 0 12px rgba(197, 164, 90, 0.3));
+}
+
+@keyframes rotateStarMandala {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Ambient Glowing Contour Aura */
 .dome-portal-contour-glow {
   position: absolute;
   top: 10%;
   left: 50%;
   transform: translateX(-50%);
-  width: 280px;
-  height: 320px;
-  background: radial-gradient(ellipse at center, rgba(168, 199, 139, 0.35) 0%, rgba(197, 164, 90, 0.15) 50%, transparent 70%);
+  width: 300px;
+  height: 340px;
+  background: radial-gradient(ellipse at center, rgba(168, 199, 139, 0.38) 0%, rgba(197, 164, 90, 0.2) 50%, transparent 70%);
   filter: blur(35px);
   pointer-events: none;
   z-index: 1;
+}
+
+.pulsing-contour-glow {
+  animation: contourAuraBreathe 5s ease-in-out infinite alternate;
+}
+
+@keyframes contourAuraBreathe {
+  0% {
+    opacity: 0.65;
+    transform: translateX(-50%) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1.15);
+  }
 }
 
 .dome-portal-arch-outer {
@@ -12860,8 +13158,8 @@ html, body {
   transform: translateX(-50%);
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  background: rgba(6, 42, 36, 0.85);
+  gap: 8px;
+  background: rgba(6, 42, 36, 0.88);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border: 1px solid rgba(197, 164, 90, 0.5);
@@ -12870,15 +13168,40 @@ html, body {
   white-space: nowrap;
 }
 
-.portal-badge-dot {
-  color: #25D366;
-  font-size: 8px;
-  animation: pulseDot 2s infinite;
+.portal-badge-beacon {
+  position: relative;
+  width: 8px;
+  height: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
-@keyframes pulseDot {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
+.beacon-core {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #25D366;
+}
+
+.beacon-ping {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background-color: rgba(37, 211, 102, 0.6);
+  animation: beaconPingAnim 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes beaconPingAnim {
+  0% {
+    transform: scale(0.6);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
 }
 
 .portal-badge-text {
@@ -13590,6 +13913,8 @@ html, body {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .charity-filter-btn:hover {
@@ -13900,24 +14225,166 @@ html, body {
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
 }
 
-/* Mobile & Tablet Responsiveness */
+/* Teacher Showcase Specific Styling */
+.teacher-kicker-pill {
+  border-color: rgba(197, 164, 90, 0.4);
+}
+
+.teacher-card-item {
+  border: 1px solid rgba(197, 164, 90, 0.22);
+}
+
+.teacher-card-item:hover {
+  border-color: rgba(197, 164, 90, 0.55);
+}
+
+.teacher-badge-overlay {
+  background: rgba(10, 44, 29, 0.92);
+  color: #FFDF85;
+  border-color: rgba(197, 164, 90, 0.4);
+}
+
+.teacher-category-pill {
+  background: #F4F8EC;
+  border-color: rgba(120, 165, 47, 0.28);
+  color: #2D4C17;
+}
+
+.teacher-arabic-honorific {
+  font-family: 'Amiri', serif;
+  font-size: 14.5px;
+  color: #8C6D23;
+  margin-bottom: 4px;
+  line-height: 1.3;
+  display: block;
+  letter-spacing: 0.01em;
+}
+
+.teacher-name-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.15rem;
+  color: #0E2E25;
+  margin-bottom: 6px;
+  min-height: auto;
+}
+
+.teacher-role-desc {
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: #4C655D;
+  margin-bottom: 12px;
+  min-height: 38px;
+}
+
+.teacher-progress-fill {
+  background: linear-gradient(90deg, #C5A45A 0%, #10B981 100%);
+}
+
+.teacher-book-btn {
+  background: #0E2E25;
+  border: 1px solid rgba(197, 164, 90, 0.35);
+}
+
+.teacher-book-btn:hover {
+  background: #061F18;
+  border-color: rgba(197, 164, 90, 0.7);
+}
+
+/* Mobile & Tablet Responsiveness for Course & Teacher Showcases */
+@media (max-width: 860px) {
+  .charity-controls-bar {
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    margin-top: 22px;
+  }
+
+  .charity-filter-pills {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .charity-nav-arrows {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+  }
+}
+
 @media (max-width: 640px) {
-  .charity-course-card {
-    width: 290px;
-    min-width: 290px;
-    padding: 14px 14px 16px 14px;
+  .charity-courses-header {
+    padding: 0 16px;
+    margin-bottom: 20px;
+  }
+
+  .charity-courses-title {
+    font-size: clamp(1.65rem, 6.4vw, 2.2rem);
+    line-height: 1.22;
+    margin-bottom: 10px;
+  }
+
+  .charity-courses-subtitle {
+    font-size: 0.92rem;
+    line-height: 1.5;
+  }
+
+  .charity-controls-bar {
+    margin-top: 16px;
+    gap: 12px;
+    width: 100%;
+  }
+
+  /* Single-row scrollable pill track on mobile - Prevents awkward 3-row wrapping */
+  .charity-filter-pills {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    width: calc(100% + 32px);
+    margin-left: -16px;
+    margin-right: -16px;
+    padding: 6px 16px 12px 16px;
+    gap: 8px;
+    justify-content: flex-start;
+    box-sizing: border-box;
+    scroll-snap-type: x proximity;
+  }
+
+  .charity-filter-pills::-webkit-scrollbar {
+    display: none;
+  }
+
+  .charity-filter-btn {
+    white-space: nowrap;
+    flex-shrink: 0;
+    padding: 7px 15px;
+    font-size: 12.5px;
+    scroll-snap-align: center;
+  }
+
+  .charity-cards-track {
+    padding: 12px 16px 28px 16px;
+    gap: 16px;
+  }
+
+  .charity-course-card,
+  .teacher-card-item {
+    width: min(300px, 84vw);
+    min-width: min(300px, 84vw);
+    padding: 14px 14px 18px 14px;
+    border-radius: 22px;
   }
 
   .card-image-box {
     height: 175px;
   }
 
-  .charity-controls-bar {
-    justify-content: center;
-  }
-
   .charity-nav-arrows {
-    display: none;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
   }
 }
 
@@ -14758,6 +15225,748 @@ html, body {
   cursor: pointer;
   appearance: auto;
 }
+
+/* Custom Searchable Timezone Combobox */
+.tz-combobox-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.tz-combobox-trigger {
+  width: 100%;
+  background-color: #FAFAF8;
+  border: 1.5px solid rgba(14, 46, 33, 0.18);
+  border-radius: 12px;
+  padding: 13px 14px;
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  color: #0E2E21;
+  font-weight: 500;
+  outline: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.tz-combobox-trigger:hover {
+  background-color: #FFFFFF;
+  border-color: rgba(14, 56, 39, 0.4);
+}
+
+.tz-combobox-trigger.is-open,
+.tz-combobox-trigger:focus {
+  background-color: #FFFFFF;
+  border-color: #0E3827;
+  box-shadow: 0 0 0 3px rgba(14, 56, 39, 0.12);
+}
+
+.tz-trigger-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
+}
+
+.tz-trigger-flag {
+  font-size: 16px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.tz-trigger-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 13px;
+  font-weight: 600;
+  color: #0E2E21;
+}
+
+.tz-trigger-right {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.tz-chevron-icon {
+  font-size: 13px;
+  color: #557261;
+  transition: transform 0.2s ease;
+  display: inline-block;
+  line-height: 1;
+}
+
+.tz-chevron-icon.rotate {
+  transform: rotate(180deg);
+  color: #0E3827;
+}
+
+/* Timezone Dropdown Panel */
+.tz-dropdown-panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  width: max(100%, 350px);
+  max-width: 440px;
+  background: #FFFFFF;
+  border: 1.5px solid rgba(14, 56, 39, 0.22);
+  border-radius: 16px;
+  box-shadow: 0 18px 45px rgba(10, 36, 18, 0.18), 0 4px 12px rgba(0, 0, 0, 0.05);
+  z-index: 150;
+  overflow: hidden;
+  animation: tzFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes tzFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tz-dropdown-panel.open-upward {
+  top: auto;
+  bottom: calc(100% + 6px);
+  box-shadow: 0 -18px 45px rgba(10, 36, 18, 0.18), 0 -4px 12px rgba(0, 0, 0, 0.05);
+  animation: tzFadeInUp 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes tzFadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Search Header */
+.tz-search-header {
+  padding: 12px 14px 10px;
+  background: #FDFEFC;
+  border-bottom: 1px solid rgba(14, 56, 39, 0.09);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tz-search-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.tz-search-icon {
+  position: absolute;
+  left: 11px;
+  font-size: 13px;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.tz-search-input {
+  width: 100%;
+  background: #FAFAF8;
+  border: 1.5px solid rgba(14, 56, 39, 0.16);
+  border-radius: 10px;
+  padding: 9px 32px 9px 34px;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  color: #0E2E21;
+  outline: none;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.tz-search-input:focus {
+  background: #FFFFFF;
+  border-color: #0E3827;
+  box-shadow: 0 0 0 2px rgba(14, 56, 39, 0.1);
+}
+
+.tz-search-clear {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 12px;
+  color: #7A9184;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  line-height: 1;
+}
+
+.tz-search-clear:hover {
+  color: #0E2E21;
+  background: rgba(14, 56, 39, 0.08);
+}
+
+/* Quick Filter Pills */
+.tz-region-pills-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: none;
+}
+
+.tz-region-pills-row::-webkit-scrollbar {
+  display: none;
+}
+
+.tz-region-pill {
+  border: 1px solid rgba(14, 56, 39, 0.14);
+  background: #FFFFFF;
+  color: #4A6553;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 9999px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.tz-region-pill:hover {
+  background: #F4F8F0;
+  color: #0E2E21;
+  border-color: #78A52F;
+}
+
+.tz-region-pill.active {
+  background: #0E2E21;
+  color: #FFFFFF;
+  border-color: #0E2E21;
+}
+
+/* Scroll List System */
+.tz-options-scroll-list {
+  max-height: 250px;
+  overflow-y: auto;
+  padding: 6px 0;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+}
+
+.tz-options-scroll-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.tz-options-scroll-list::-webkit-scrollbar-track {
+  background: #F8FAF7;
+}
+
+.tz-options-scroll-list::-webkit-scrollbar-thumb {
+  background: #CFDACB;
+  border-radius: 4px;
+}
+
+.tz-options-scroll-list::-webkit-scrollbar-thumb:hover {
+  background: #9DB499;
+}
+
+/* Option Items */
+.tz-option-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  border-bottom: 1px solid rgba(14, 56, 39, 0.04);
+}
+
+.tz-option-item:last-child {
+  border-bottom: none;
+}
+
+.tz-option-item:hover {
+  background: #F4F8F0;
+}
+
+.tz-option-item.is-selected {
+  background: #EDF5E7;
+}
+
+.tz-item-left {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+
+.tz-item-flag {
+  font-size: 16px;
+  line-height: 1.3;
+  flex-shrink: 0;
+}
+
+.tz-item-text-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.tz-item-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tz-item-offset {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 700;
+  color: #0E2E21;
+}
+
+.tz-item-region-badge {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  color: #638441;
+  background: rgba(120, 165, 47, 0.14);
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.tz-item-cities {
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  color: #557261;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 270px;
+}
+
+.tz-item-check {
+  color: #0E3827;
+  font-weight: 800;
+  font-size: 14px;
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+
+/* No Results */
+.tz-no-results {
+  padding: 24px 16px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.tz-no-results-icon {
+  font-size: 24px;
+}
+
+.tz-no-results-text {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  color: #557261;
+  margin: 0;
+}
+
+.tz-reset-search-btn {
+  background: none;
+  border: 1px solid rgba(14, 56, 39, 0.2);
+  border-radius: 8px;
+  padding: 4px 12px;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  color: #0E2E21;
+  cursor: pointer;
+  margin-top: 4px;
+  transition: all 0.15s ease;
+}
+
+.tz-reset-search-btn:hover {
+  background: #F4F8F0;
+  border-color: #0E2E21;
+}
+
+/* Dropdown Footer */
+.tz-dropdown-footer {
+  padding: 7px 14px;
+  background: #FBFDF9;
+  border-top: 1px solid rgba(14, 56, 39, 0.08);
+  font-family: var(--font-sans);
+  font-size: 10.5px;
+  color: #7A9184;
+  text-align: center;
+}
+
+/* Custom Luxury Date Picker */
+.custom-calendar-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.custom-calendar-trigger {
+  width: 100%;
+  background-color: #FAFAF8;
+  border: 1.5px solid rgba(14, 46, 33, 0.18);
+  border-radius: 12px;
+  padding: 13px 14px;
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  color: #0E2E21;
+  font-weight: 500;
+  outline: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.custom-calendar-trigger:hover {
+  background-color: #FFFFFF;
+  border-color: rgba(14, 56, 39, 0.4);
+}
+
+.custom-calendar-trigger.is-open,
+.custom-calendar-trigger:focus {
+  background-color: #FFFFFF;
+  border-color: #0E3827;
+  box-shadow: 0 0 0 3px rgba(14, 56, 39, 0.12);
+}
+
+.cal-trigger-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
+}
+
+.cal-trigger-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.cal-svg-icon {
+  display: block;
+  transition: transform 0.2s ease;
+}
+
+.custom-calendar-trigger:hover .cal-svg-icon {
+  transform: translateY(-1px);
+}
+
+.cal-trigger-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 13px;
+  font-weight: 600;
+  color: #0E2E21;
+}
+
+.cal-placeholder {
+  color: #557261;
+  font-weight: 400;
+}
+
+.cal-trigger-right {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.cal-chevron-icon {
+  font-size: 13px;
+  color: #557261;
+  transition: transform 0.2s ease;
+  display: inline-block;
+  line-height: 1;
+}
+
+.cal-chevron-icon.rotate {
+  transform: rotate(180deg);
+  color: #0E3827;
+}
+
+.cal-clear-btn {
+  font-size: 11px;
+  color: #7A9184;
+  cursor: pointer;
+  padding: 3px 6px;
+  border-radius: 50%;
+  line-height: 1;
+  transition: all 0.15s ease;
+}
+
+.cal-clear-btn:hover {
+  color: #0E2E21;
+  background: rgba(14, 56, 39, 0.08);
+}
+
+/* Luxury Calendar Popup Dialog */
+.custom-calendar-popup {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  width: 310px;
+  max-width: 95vw;
+  background: #FFFFFF;
+  border: 1.5px solid rgba(14, 56, 39, 0.22);
+  border-radius: 18px;
+  box-shadow: 0 18px 45px rgba(10, 36, 18, 0.18), 0 4px 12px rgba(0, 0, 0, 0.05);
+  z-index: 160;
+  padding: 16px 14px 12px;
+  animation: tzFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+}
+
+.custom-calendar-popup.open-upward {
+  top: auto;
+  bottom: calc(100% + 6px);
+  box-shadow: 0 -18px 45px rgba(10, 36, 18, 0.18), 0 -4px 12px rgba(0, 0, 0, 0.05);
+  animation: tzFadeInUp 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Header */
+.cal-popup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.cal-month-year-title {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.cal-month-name {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: #0E2E21;
+}
+
+.cal-year-num {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 700;
+  color: #78A52F;
+}
+
+.cal-nav-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid rgba(14, 56, 39, 0.15);
+  background: #FAFAF8;
+  font-size: 18px;
+  font-weight: 600;
+  color: #0E2E21;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  line-height: 1;
+}
+
+.cal-nav-btn:hover:not(:disabled) {
+  background: #0E3827;
+  color: #FFFFFF;
+  border-color: #0E3827;
+}
+
+.cal-nav-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* Quick Date Shortcuts */
+.cal-quick-shortcuts {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 12px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.cal-quick-shortcuts::-webkit-scrollbar {
+  display: none;
+}
+
+.cal-quick-pill {
+  border: 1px solid rgba(14, 56, 39, 0.14);
+  background: #F8FAF6;
+  color: #4A6553;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.cal-quick-pill:hover {
+  background: #0E3827;
+  color: #FFFFFF;
+  border-color: #0E3827;
+}
+
+/* Weekday Labels */
+.cal-weekdays-row {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+.cal-weekday-label {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 700;
+  color: #6E8878;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.cal-weekday-label.is-friday {
+  color: #8C6718;
+  font-weight: 800;
+}
+
+/* Days Grid */
+.cal-days-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+  row-gap: 4px;
+}
+
+.cal-day-cell {
+  width: 35px;
+  height: 35px;
+  border-radius: 9px;
+  border: none;
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  color: #0E2E21;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  margin: 0 auto;
+  padding: 0;
+}
+
+.cal-day-cell:hover:not(.is-past):not(.is-selected) {
+  background: #F0F7EB;
+  color: #0E2E21;
+  transform: scale(1.08);
+}
+
+.cal-day-cell.is-outside-month {
+  color: #CFD8D2;
+  cursor: default;
+}
+
+.cal-day-cell.is-past {
+  color: #C5CEC8;
+  cursor: not-allowed;
+  opacity: 0.4;
+  text-decoration: line-through;
+}
+
+.cal-day-cell.is-today {
+  border: 1.5px solid #C5A45A;
+  font-weight: 700;
+}
+
+.cal-today-dot {
+  position: absolute;
+  bottom: 2px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #C5A45A;
+}
+
+.cal-day-cell.is-selected {
+  background: #0E3827 !important;
+  color: #FFFFFF !important;
+  font-weight: 800 !important;
+  box-shadow: 0 4px 12px rgba(14, 56, 39, 0.35);
+  transform: scale(1.05);
+}
+
+.cal-day-cell.is-friday:not(.is-selected):not(.is-past) {
+  color: #8C6718;
+}
+
+/* Footer */
+.cal-popup-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(14, 56, 39, 0.08);
+  font-family: var(--font-sans);
+  font-size: 10.5px;
+  color: #7A9184;
+}
+
+.cal-footer-clear-btn {
+  background: none;
+  border: none;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 700;
+  color: #C53030;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.cal-footer-clear-btn:hover {
+  background: rgba(197, 48, 48, 0.08);
+}
+
 
 /* Submit Button */
 .btn-submit-session {
@@ -16317,38 +17526,1044 @@ html, body {
   background: #E5ECE0;
 }
 
-/* Responsive adjustments */
-@media (max-width: 960px) {
-  .contact-map-cards-row {
+/* ==========================================================================
+   SPIRITUAL HOME & OUR VISION SECTION (REFERENCE DESIGN ALIGNED)
+   10-Lobed Islamic Scalloped Arches, Scholar Portrait, Tabs, Bracket Quote Box
+   ========================================================================== */
+
+.spiritual-home-section {
+  position: relative;
+  width: 100%;
+  padding: 8px 0;
+  background: transparent;
+  overflow: visible;
+  border: none;
+}
+
+.spiritual-home-bg-decor {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.spiritual-glow-left {
+  position: absolute;
+  top: 10%;
+  left: -60px;
+  width: 380px;
+  height: 380px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(120, 165, 47, 0.10) 0%, rgba(120, 165, 47, 0) 70%);
+  filter: blur(50px);
+}
+
+.spiritual-glow-right {
+  position: absolute;
+  bottom: 5%;
+  right: -60px;
+  width: 420px;
+  height: 420px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(197, 164, 90, 0.10) 0%, rgba(197, 164, 90, 0) 70%);
+  filter: blur(60px);
+}
+
+.spiritual-curve-backdrop {
+  position: absolute;
+  bottom: -150px;
+  right: -100px;
+  width: 800px;
+  height: 400px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0) 70%);
+  pointer-events: none;
+}
+
+.spiritual-home-container {
+  position: relative;
+  z-index: 1;
+  max-width: 100%;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1.15fr;
+  align-items: center;
+  gap: 40px;
+}
+
+/* Left Column: Composite Multi-Cusped Islamic Arches */
+.spiritual-arches-stage {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 560px;
+}
+
+.spiritual-arches-composition {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  height: 550px;
+}
+
+.spiritual-palm-leaves-wrap {
+  position: absolute;
+  bottom: -20px;
+  left: -20px;
+  width: 250px;
+  z-index: 1;
+  pointer-events: none;
+  filter: drop-shadow(0 16px 26px rgba(10, 44, 20, 0.18));
+  animation: palmSway 8s ease-in-out infinite alternate;
+}
+
+@keyframes palmSway {
+  0% {
+    transform: rotate(-10deg) translateY(0);
+  }
+  100% {
+    transform: rotate(-7deg) translateY(-6px);
+  }
+}
+
+.spiritual-palm-leaves-img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.large-scalloped-arch-frame {
+  position: absolute;
+  top: 0;
+  left: 16px;
+  width: 440px;
+  height: 510px;
+  z-index: 2;
+  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.large-scalloped-arch-frame:hover {
+  transform: translateY(-4px);
+}
+
+.large-arch-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+
+.scholar-scalloped-overlay-frame {
+  position: absolute;
+  bottom: 24px;
+  right: -10px;
+  width: 215px;
+  height: 250px;
+  z-index: 5;
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.scholar-scalloped-overlay-frame:hover {
+  transform: translateY(-6px) scale(1.02);
+}
+
+.scholar-arch-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+
+/* Right Column: Copy, Tabs, Bracket Quote Box, CTA */
+.spiritual-copy-column {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 22px;
+}
+
+.spiritual-welcome-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 18px;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 9999px;
+  box-shadow: 0 2px 12px rgba(10, 44, 20, 0.05), inset 0 1px 1px rgba(255, 255, 255, 0.9);
+}
+
+.welcome-badge-dot {
+  color: #78A52F;
+  font-size: 11px;
+}
+
+.welcome-badge-text {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #38541E;
+  letter-spacing: 0.01em;
+}
+
+.spiritual-main-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(34px, 4vw, 50px);
+  line-height: 1.15;
+  font-weight: 600;
+  color: #102C1D;
+  margin: 0;
+  letter-spacing: -0.015em;
+}
+
+.spiritual-lead-desc {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  line-height: 1.7;
+  color: #445946;
+  margin: 0;
+  max-width: 580px;
+}
+
+/* Tab Switcher */
+.spiritual-tabs-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.spiritual-tab-btn {
+  padding: 10px 24px;
+  border-radius: 9999px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(10, 44, 20, 0.06);
+}
+
+.spiritual-tab-btn.tab-mission {
+  background: #C4E34A;
+  color: #0A2E20;
+  border-color: #B2D338;
+}
+
+.spiritual-tab-btn.tab-vision {
+  background: #0A2E20;
+  color: #FFFFFF;
+  border-color: #0A2E20;
+}
+
+/* Interactive Active Highlight State matching reference */
+.spiritual-tab-btn.tab-mission.is-active {
+  background: #C4E34A;
+  color: #0A2E20;
+  box-shadow: 0 4px 14px rgba(196, 227, 74, 0.45);
+}
+
+.spiritual-tab-btn.tab-mission:not(.is-active) {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: #38541E;
+  border-color: rgba(120, 165, 47, 0.28);
+  box-shadow: 0 2px 8px rgba(10, 44, 20, 0.04), inset 0 1px 1px rgba(255, 255, 255, 0.85);
+}
+
+.spiritual-tab-btn.tab-vision.is-active {
+  background: #0A2E20;
+  color: #FFFFFF;
+  box-shadow: 0 4px 14px rgba(10, 46, 32, 0.35);
+}
+
+.spiritual-tab-btn.tab-vision:not(.is-active) {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: #38541E;
+  border-color: rgba(120, 165, 47, 0.28);
+  box-shadow: 0 2px 8px rgba(10, 44, 20, 0.04), inset 0 1px 1px rgba(255, 255, 255, 0.85);
+}
+
+/* Bracket Quote Card Container with ambient glass glow */
+.spiritual-quote-box-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 550px;
+}
+
+/* Atmospheric Ambient Backlight Glow directly behind the Frosted Glass Card */
+.spiritual-quote-box-wrap::before {
+  content: '';
+  position: absolute;
+  top: -16px;
+  left: -16px;
+  right: -16px;
+  bottom: -16px;
+  background: radial-gradient(circle at 30% 30%, rgba(120, 165, 47, 0.24) 0%, rgba(197, 164, 90, 0.16) 45%, rgba(255, 255, 255, 0) 72%);
+  border-radius: 36px;
+  filter: blur(24px);
+  pointer-events: none;
+  z-index: 0;
+  transition: opacity 0.4s ease;
+}
+
+.spiritual-quote-box-wrap:hover::before {
+  opacity: 0.95;
+  background: radial-gradient(circle at 35% 35%, rgba(120, 165, 47, 0.30) 0%, rgba(197, 164, 90, 0.22) 50%, rgba(255, 255, 255, 0) 75%);
+}
+
+/* Ultra-Premium Glassmorphic Sanctuary Mission/Vision Card */
+.spiritual-sanctuary-card {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  /* Multi-layered Frosted Translucent Glass Foundation */
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.82) 0%,
+    rgba(247, 251, 240, 0.65) 50%,
+    rgba(255, 255, 255, 0.78) 100%
+  );
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-radius: 26px;
+  padding: 26px 28px 24px 28px;
+  /* Double-edge glass border with top-specular reflection */
+  border: 1px solid rgba(255, 255, 255, 0.88);
+  box-shadow: 
+    0 20px 48px -8px rgba(10, 44, 20, 0.10),
+    0 8px 20px -4px rgba(120, 165, 47, 0.08),
+    inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -1px 1px 0 rgba(120, 165, 47, 0.12),
+    inset 0 0 28px rgba(255, 255, 255, 0.35);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s ease, border-color 0.35s ease, background 0.35s ease;
+  box-sizing: border-box;
+}
+
+/* Specular Light Reflection Sheen on Top of Glass */
+.spiritual-sanctuary-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 48%;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.45) 0%,
+    rgba(255, 255, 255, 0.08) 70%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  border-radius: 26px 26px 0 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Diagonal Micro-Prism Glint */
+.spiritual-sanctuary-card::after {
+  content: '';
+  position: absolute;
+  top: -60px;
+  right: -60px;
+  width: 140px;
+  height: 140px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, rgba(212, 238, 142, 0.25) 40%, rgba(255, 255, 255, 0) 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(12px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.spiritual-sanctuary-card:hover {
+  transform: translateY(-5px);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.90) 0%,
+    rgba(249, 253, 244, 0.72) 50%,
+    rgba(255, 255, 255, 0.84) 100%
+  );
+  border-color: rgba(255, 255, 255, 0.98);
+  box-shadow: 
+    0 28px 60px -8px rgba(10, 44, 20, 0.15),
+    0 12px 28px -4px rgba(120, 165, 47, 0.14),
+    inset 0 2px 1.5px 0 rgba(255, 255, 255, 1),
+    inset 0 -1px 1px 0 rgba(120, 165, 47, 0.18),
+    inset 0 0 36px rgba(255, 255, 255, 0.5);
+}
+
+.spiritual-sanctuary-card:hover::after {
+  transform: translate(-10px, 10px) scale(1.15);
+  opacity: 1;
+}
+
+.spiritual-card-header,
+.spiritual-card-body {
+  position: relative;
+  z-index: 1;
+}
+
+.spiritual-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.spiritual-card-tag-pill {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(120, 165, 47, 0.15);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(120, 165, 47, 0.32);
+  border-radius: 9999px;
+  padding: 5px 13px;
+  color: #2D4C17;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.8), 0 2px 6px rgba(10, 44, 20, 0.04);
+}
+
+.spiritual-card-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 9999px;
+  padding: 4px 12px;
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #1F3625;
+  box-shadow: 0 2px 8px rgba(10, 44, 20, 0.04), inset 0 1px 1px rgba(255, 255, 255, 0.9);
+}
+
+.card-badge-dot {
+  color: #78A52F;
+  font-size: 8px;
+}
+
+.spiritual-card-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.spiritual-card-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0A2E20;
+  line-height: 1.35;
+  margin: 0 0 10px 0;
+  animation: fadeInText 0.35s ease-out;
+}
+
+.spiritual-card-desc {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: #3C503F;
+  margin: 0 0 16px 0;
+  animation: fadeInText 0.35s ease-out;
+}
+
+.spiritual-card-pillars {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.card-pillar-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.68);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(120, 165, 47, 0.24);
+  border-radius: 9999px;
+  padding: 5px 12px;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  color: #243D15;
+  box-shadow: 0 2px 6px rgba(10, 44, 20, 0.03), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  transition: all 0.2s ease;
+}
+
+.card-pillar-item:hover {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(120, 165, 47, 0.45);
+  transform: translateY(-1px);
+}
+
+.pillar-check {
+  color: #78A52F;
+  font-size: 10px;
+}
+
+.spiritual-card-footer {
+  margin-top: 4px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(120, 165, 47, 0.16);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.spiritual-card-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  color: #556D5B;
+}
+
+.meta-stat {
+  font-weight: 700;
+  color: #243D15;
+  background: rgba(120, 165, 47, 0.16);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(120, 165, 47, 0.28);
+  padding: 3px 9px;
+  border-radius: 6px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+@keyframes fadeInText {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Discover More CTA Button matching reference */
+.spiritual-cta-row {
+  margin-top: 10px;
+}
+
+.spiritual-discover-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 28px;
+  background: #C4E34A;
+  color: #0A2E20;
+  border: 1px solid #B2D338;
+  border-radius: 9999px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+  box-shadow: 0 8px 24px rgba(196, 227, 74, 0.38);
+}
+
+.spiritual-discover-btn:hover {
+  transform: translateY(-2px);
+  background: #CEEB54;
+  box-shadow: 0 12px 28px rgba(196, 227, 74, 0.5);
+}
+
+.discover-btn-label {
+  letter-spacing: 0.01em;
+}
+
+.discover-btn-arrow-circle {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(10, 44, 20, 0.12);
+  transition: transform 0.25s ease;
+}
+
+.spiritual-discover-btn:hover .discover-btn-arrow-circle {
+  transform: translate(2px, -2px);
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 1040px) {
+  .spiritual-home-container {
     grid-template-columns: 1fr;
-    gap: 24px;
+    gap: 48px;
   }
 
-  .contact-map-banner-card {
-    padding: 32px 20px;
+  .spiritual-arches-stage {
+    min-height: 480px;
   }
 
-  .contact-bottom-floating-bar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 18px;
-    padding: 22px 20px;
+  .spiritual-arches-composition {
+    max-width: 440px;
+    height: 490px;
   }
 
-  .contact-bar-separator {
-    display: none;
+  .large-scalloped-arch-frame {
+    width: 390px;
+    height: 450px;
+  }
+
+  .scholar-scalloped-overlay-frame {
+    width: 190px;
+    height: 220px;
+    bottom: 16px;
+    right: 0;
+  }
+
+  .spiritual-palm-leaves-wrap {
+    width: 220px;
+    bottom: -24px;
+    left: -32px;
+  }
+
+  .spiritual-copy-column {
+    align-items: center;
+    text-align: center;
+  }
+
+  .spiritual-lead-desc {
+    text-align: center;
+  }
+
+  .spiritual-quote-box-wrap {
+    text-align: center;
   }
 }
 
 @media (max-width: 600px) {
-  .lime-form-2col {
+  .spiritual-home-section {
+    padding: 0;
+  }
+
+  .spiritual-arches-stage {
+    min-height: 380px;
+  }
+
+  .spiritual-arches-composition {
+    max-width: 320px;
+    height: 370px;
+  }
+
+  .large-scalloped-arch-frame {
+    width: 290px;
+    height: 335px;
+    left: 8px;
+  }
+
+  .scholar-scalloped-overlay-frame {
+    width: 145px;
+    height: 170px;
+    bottom: 8px;
+    right: -6px;
+  }
+
+  .spiritual-palm-leaves-wrap {
+    width: 160px;
+    bottom: -16px;
+    left: -20px;
+  }
+
+  .spiritual-main-title {
+    font-size: 30px;
+  }
+
+  .desktop-br {
+    display: none;
+  }
+
+  .spiritual-tabs-row {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .bracket-card-container {
+    padding: 20px 18px;
+  }
+}
+
+/* ==========================================================================
+   INTERACTIVE MAP REGIONAL COUNTS & SPOTLIGHT DECK
+   Bi-directional corridor highlighting between count cards and map
+   ========================================================================== */
+
+.map-hub-counts-section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 14px;
+}
+
+.hub-counts-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.hub-counts-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hub-counts-kicker {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #78A52F;
+  text-transform: uppercase;
+}
+
+.hub-counts-heading {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: #102C1D;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.hub-counts-instruction {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #405822;
+  background: rgba(120, 165, 47, 0.12);
+  border: 1px solid rgba(120, 165, 47, 0.25);
+  padding: 5px 14px;
+  border-radius: 9999px;
+}
+
+/* Global Summary Metric Strip */
+.global-metrics-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+.global-metric-pill {
+  background: #FFFFFF;
+  border: 1px solid rgba(197, 164, 90, 0.25);
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 2px;
+  box-shadow: 0 2px 8px rgba(10, 44, 20, 0.04);
+}
+
+.global-metric-pill .metric-val {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: #102C1D;
+  line-height: 1.1;
+}
+
+.global-metric-pill .metric-lbl {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #5C7461;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Regional Hub Cards Grid */
+.hub-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+.hub-count-card {
+  position: relative;
+  background: #FFFFFF;
+  border: 1.5px solid rgba(197, 164, 90, 0.22);
+  border-radius: 14px;
+  padding: 12px 16px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+  box-shadow: 0 2px 10px rgba(10, 44, 20, 0.04);
+  outline: none;
+}
+
+.hub-count-card:hover {
+  transform: translateY(-3px);
+  border-color: #78A52F;
+  box-shadow: 0 8px 20px rgba(10, 44, 20, 0.1), 0 0 0 2px rgba(120, 165, 47, 0.25);
+}
+
+.hub-count-card.is-highlighted,
+.hub-count-card.active {
+  background: #FAFDF7;
+  border-color: #102C1D;
+  box-shadow: 0 10px 24px rgba(16, 44, 29, 0.14), 0 0 0 2px #78A52F;
+  transform: translateY(-4px);
+}
+
+.hub-count-card.is-sanctuary-hub {
+  background: linear-gradient(180deg, #FFFFFF 0%, #FAF8F0 100%);
+  border-color: rgba(197, 164, 90, 0.45);
+}
+
+.hub-count-card.is-sanctuary-hub.is-highlighted {
+  border-color: #8C6718;
+  box-shadow: 0 10px 24px rgba(140, 103, 24, 0.18), 0 0 0 2px #C5A45A;
+}
+
+.hub-flag-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.hub-card-flag {
+  font-size: 18px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.hub-card-name {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #102C1D;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hub-stat-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.card-stat-count {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  color: #102C1D;
+  background: #F4F8F0;
+  padding: 4px 10px;
+  border-radius: 8px;
+  line-height: 1;
+  border: 1px solid rgba(120, 165, 47, 0.18);
+  transition: all 0.2s ease;
+}
+
+.hub-count-card.is-highlighted .card-stat-count,
+.hub-count-card:hover .card-stat-count {
+  background: #102C1D;
+  color: #FFFFFF;
+  border-color: #102C1D;
+}
+
+.hub-badge-sanctuary {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  color: #8C6718;
+  background: rgba(197, 164, 90, 0.2);
+  border: 1px solid rgba(197, 164, 90, 0.4);
+  padding: 2px 7px;
+  border-radius: 9999px;
+  letter-spacing: 0.02em;
+}
+
+.hub-live-pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10B981;
+  box-shadow: 0 0 8px #10B981;
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.hub-live-pulse-dot.active {
+  transform: scale(1.3);
+  box-shadow: 0 0 12px #10B981;
+}
+
+/* Selected Hub Spotlight Bar */
+.selected-hub-spotlight-bar {
+  background: #FFFFFF;
+  border: 1.5px solid rgba(120, 165, 47, 0.35);
+  border-radius: 14px;
+  padding: 16px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  box-shadow: 0 6px 20px rgba(10, 44, 20, 0.06);
+}
+
+.spotlight-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+}
+
+.spotlight-pin-icon {
+  font-size: 28px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.spotlight-text-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.spotlight-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.spotlight-hub-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 21px;
+  font-weight: 700;
+  color: #102C1D;
+}
+
+.spotlight-sub-pill {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: #38541E;
+  background: #F0F6E8;
+  padding: 3px 10px;
+  border-radius: 9999px;
+}
+
+.spotlight-desc {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: #4A604D;
+  margin: 0;
+}
+
+.spotlight-focus-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: #102C1D;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 9999px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+}
+
+.spotlight-focus-btn:hover {
+  background: #1A442E;
+  box-shadow: 0 4px 14px rgba(16, 44, 29, 0.25);
+  transform: translateY(-2px);
+}
+
+.spotlight-arrow {
+  color: #C4E34A;
+  font-weight: 900;
+}
+
+/* Active Corridor Pulse on SVG Map */
+.active-corridor-pulse {
+  animation: corridorPulseAnim 1.8s infinite ease-out;
+  transform-origin: center;
+}
+
+@keyframes corridorPulseAnim {
+  0% {
+    r: 8px;
+    opacity: 0.9;
+  }
+  100% {
+    r: 28px;
+    opacity: 0;
+  }
+}
+
+/* Responsive adjustments for counts deck */
+@media (max-width: 1040px) {
+  .hub-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .global-metrics-strip {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .selected-hub-spotlight-bar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 600px) {
+  .hub-cards-grid {
     grid-template-columns: 1fr;
   }
 
-  .contact-left-title {
-    font-size: 28px;
+  .global-metrics-strip {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
+
+
 
 
 

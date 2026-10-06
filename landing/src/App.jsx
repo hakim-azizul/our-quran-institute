@@ -18,23 +18,20 @@ const ThreeBookCanvas = dynamic(() => import('./components/ThreeBookCanvas'), {
   ssr: false
 });
 
-// Spreads (The System, Daily Rhythm, Spaced Repetition removed per request)
-import Spread4_Progress from './components/spreads/Spread4_Progress';
-import Spread5_Teacher from './components/spreads/Spread5_Teacher';
+import SpiritualHomeSection from './components/SpiritualHomeSection';
+import TeacherShowcase from './components/TeacherShowcase';
 import Spread6_Stories from './components/spreads/Spread6_Stories';
-import Spread7_Principles from './components/spreads/Spread7_Principles';
 import CourseShowcase from './components/CourseShowcase';
 
-// Section IDs mapped to spread indices
+// Section IDs mapped to indices:
 const SECTION_IDS = [
-  'section-hero',        // 0 — Hero Sanctuary
-  'section-courses',     // 1 — Academic Courses
-  'section-mentors',     // 2 — Lead Mentors & Scholars
-  'section-progress',    // 3 — Progress Tracking & Milestones
-  'section-map',         // 4 — Global Map & Student Stories
-  'section-vision',      // 5 — Our Vision & Pedagogical Pillars
-  'section-booking',     // 6 — Book a Free Session
-  'section-contact'      // 7 — Contact Us & Updates
+  'section-hero',           // 0 — Grand Mosque Sanctuary Hero
+  'section-vision',         // 1 — Your Spiritual Home / Welcome to the Islamic Center
+  'section-courses',        // 2 — Academic Programs & Sacred Disciplines
+  'section-teachers',       // 3 — Lead Mentorship & Certified Al-Azhar Scholars
+  'section-map',            // 4 — Global Sanctuary & Worldwide Map
+  'section-latest-updates', // 5 — Latest Updates / Blog Journal
+  'section-booking'         // 6 — Book / Reserve Your Free Session
 ];
 
 export default function App() {
@@ -285,10 +282,23 @@ export default function App() {
   // Vertical glassmorphism sections specification
   const SECTIONS = [
     {
-      id: 'section-courses',
+      id: 'section-vision',
       index: 1,
+      title: 'Your Spiritual Home Guided by the Qur\'an and Sunnah',
+      kicker: 'OUR VISION',
+      glowColor: 'gold',
+      component: (
+        <SpiritualHomeSection
+          onOpenBooking={() => handleOpenBooking()}
+          onDiscoverMore={() => scrollToSection(2)}
+        />
+      )
+    },
+    {
+      id: 'section-courses',
+      index: 2,
       title: 'Academic Programs & Sacred Disciplines',
-      kicker: 'CERTIFIED CURRICULUM',
+      kicker: 'OUR COURSES',
       glowColor: 'emerald',
       component: (
         <CourseShowcase
@@ -298,27 +308,15 @@ export default function App() {
       )
     },
     {
-      id: 'section-mentors',
-      index: 2,
-      title: 'Lead Mentorship & Guidance',
-      kicker: 'SANAD SCHOLARS',
+      id: 'section-teachers',
+      index: 3,
+      title: 'Guidance That Listens Before It Corrects',
+      kicker: 'CERTIFIED SCHOLARS & MENTORS',
       glowColor: 'amber',
       component: (
-        <Spread5_Teacher
-          onNext={() => scrollToSection(3)}
-          onOpenBooking={() => handleOpenBooking()}
-        />
-      )
-    },
-    {
-      id: 'section-progress',
-      index: 3,
-      title: 'Effort & Progress Tracking',
-      kicker: 'MEASURABLE MILESTONES',
-      glowColor: 'emerald',
-      component: (
-        <Spread4_Progress
-          onNext={() => scrollToSection(4)}
+        <TeacherShowcase
+          onOpenBooking={handleOpenBooking}
+          onSelectTeacher={(t) => handleOpenBooking(`Session with ${t.name}`)}
         />
       )
     },
@@ -326,7 +324,7 @@ export default function App() {
       id: 'section-map',
       index: 4,
       title: 'Global Sanctuary & Worldwide Map',
-      kicker: '42 COUNTRIES ACTIVE',
+      kicker: 'WORLD MAP • 42 COUNTRIES ACTIVE',
       glowColor: 'emerald',
       component: (
         <Spread6_Stories
@@ -335,15 +333,16 @@ export default function App() {
       )
     },
     {
-      id: 'section-vision',
+      id: 'section-latest-updates',
       index: 5,
-      title: 'Our Vision & Core Principles',
-      kicker: 'OUR VISION',
-      glowColor: 'amber',
+      title: 'Latest Updates from Our Islamic Center',
+      kicker: 'INSTITUTE JOURNAL',
+      glowColor: 'gold',
+      isCustomCard: true,
       component: (
-        <Spread7_Principles
-          onNext={() => scrollToSection(6)}
-        />
+        <div className="section-standalone-wrap">
+          <LatestUpdatesSection />
+        </div>
       )
     },
     {
@@ -351,69 +350,11 @@ export default function App() {
       index: 6,
       title: 'Book / Reserve Your Free Session',
       kicker: 'FREE ASSESSMENT',
-      glowColor: 'gold',
+      glowColor: 'emerald',
       isCustomCard: true,
       component: (
         <div className="section-standalone-wrap">
           <BookFreeSessionSection initialCourse={selectedCourseForBooking} />
-        </div>
-      )
-    },
-    {
-      id: 'section-contact',
-      index: 7,
-      title: 'Contact Us & Global Centers',
-      kicker: 'GET IN TOUCH',
-      glowColor: 'emerald',
-      isCustomCard: true,
-      component: (
-        <div className="contact-and-footer-wrapper">
-          {/* Contact with Us & Global World Map */}
-          <GlobalContactMapSection />
-
-          {/* Latest Updates from Our Islamic Center */}
-          <LatestUpdatesSection />
-
-          {/* Social Channels & Institute Footer */}
-          <footer className="spread-footer institute-main-footer">
-            <div className="footer-brand" onClick={() => scrollToSection(0)} style={{ cursor: 'pointer' }}>
-              <img src="/assets/logo_gold.png" alt="Our Quran Institute" className="footer-brand-logo" />
-              <div className="footer-brand-text">
-                <span className="footer-brand-name">Our Quran Institute</span>
-                <span className="footer-brand-tagline">Authentic Al-Azhar Quranic Studies</span>
-              </div>
-            </div>
-
-            <div className="footer-links">
-              <Link href="/courses" className="footer-link">Programs</Link>
-              <Link href="/teachers" className="footer-link">Faculty</Link>
-              <Link href="/about" className="footer-link">About Us</Link>
-              <button className="footer-link" onClick={() => scrollToSection(1)}>Our Courses</button>
-              <button className="footer-link" onClick={() => scrollToSection(2)}>Our Teachers</button>
-              <button className="footer-link" onClick={() => scrollToSection(3)}>Progress</button>
-              <button className="footer-link" onClick={() => scrollToSection(4)}>Global Map</button>
-              <button className="footer-link" onClick={() => scrollToSection(5)}>Our Vision</button>
-              <button className="footer-link" onClick={() => scrollToSection(6)}>Book a Session</button>
-              <button className="footer-link" onClick={() => scrollToSection(7)}>Contact Us</button>
-            </div>
-
-            <div className="footer-social-links">
-              <a href="https://wa.me/201094714943" target="_blank" rel="noopener noreferrer" className="footer-social-btn" title="WhatsApp (+20 10 94714943)">
-                <Icon name="whatsapp" size={15} />
-              </a>
-              <a href="https://youtube.com/@ourquraninstitute" target="_blank" rel="noopener noreferrer" className="footer-social-btn" title="YouTube">
-                <Icon name="youtube" size={15} />
-              </a>
-              <a href="https://www.instagram.com/ourquraninstitute/" target="_blank" rel="noopener noreferrer" className="footer-social-btn" title="Instagram (@ourquraninstitute)">
-                <Icon name="instagram" size={15} />
-              </a>
-              <a href="https://facebook.com/ourquraninstitute" target="_blank" rel="noopener noreferrer" className="footer-social-btn" title="Facebook">
-                <Icon name="facebook" size={15} />
-              </a>
-            </div>
-
-            <span className="footer-copyright">© 2026 Our Quran Institute • All Rights Reserved</span>
-          </footer>
         </div>
       )
     }
@@ -438,7 +379,7 @@ export default function App() {
         onOpenLogin={() => setIsLoginModalOpen(true)}
       />
 
-      {/* 3. Hero Section - Grand Mosque Sanctuary (Entirely updated from reference image) */}
+      {/* 3. Hero Section - Grand Mosque Sanctuary */}
       <section id="section-hero" className="landing-mosque-hero-section">
         <MosqueHero
           onOpenBooking={() => handleOpenBooking()}
@@ -447,7 +388,7 @@ export default function App() {
         />
       </section>
 
-      {/* 4. Vertical Glassmorphism Sections (As in reference image) */}
+      {/* 4. Vertical Glassmorphism Sections */}
       <main className="landing-vertical-flow">
         {SECTIONS.map((sec) => (
           <section
@@ -473,6 +414,46 @@ export default function App() {
           </section>
         ))}
       </main>
+
+      {/* 5. Institute Main Footer */}
+      <footer className="spread-footer institute-main-footer" id="section-footer">
+        <div className="footer-brand" onClick={() => scrollToSection(0)} style={{ cursor: 'pointer' }}>
+          <img src="/assets/logo_gold.png" alt="Our Quran Institute" className="footer-brand-logo" />
+          <div className="footer-brand-text">
+            <span className="footer-brand-name">Our Quran Institute</span>
+            <span className="footer-brand-tagline">Authentic Al-Azhar Quranic Studies</span>
+          </div>
+        </div>
+
+        <div className="footer-links">
+          <Link href="/courses" className="footer-link">Programs</Link>
+          <Link href="/teachers" className="footer-link">Faculty</Link>
+          <Link href="/about" className="footer-link">About Us</Link>
+          <button className="footer-link" onClick={() => scrollToSection(1)}>Our Vision</button>
+          <button className="footer-link" onClick={() => scrollToSection(2)}>Our Courses</button>
+          <button className="footer-link" onClick={() => scrollToSection(3)}>Faculty</button>
+          <button className="footer-link" onClick={() => scrollToSection(4)}>World Map</button>
+          <button className="footer-link" onClick={() => scrollToSection(5)}>Journal</button>
+          <button className="footer-link" onClick={() => scrollToSection(6)}>Book Session</button>
+        </div>
+
+        <div className="footer-social-links">
+          <a href="https://wa.me/201094714943" target="_blank" rel="noopener noreferrer" className="footer-social-btn" title="WhatsApp (+20 10 94714943)">
+            <Icon name="whatsapp" size={15} />
+          </a>
+          <a href="https://youtube.com/@ourquraninstitute" target="_blank" rel="noopener noreferrer" className="footer-social-btn" title="YouTube">
+            <Icon name="youtube" size={15} />
+          </a>
+          <a href="https://www.instagram.com/ourquraninstitute/" target="_blank" rel="noopener noreferrer" className="footer-social-btn" title="Instagram (@ourquraninstitute)">
+            <Icon name="instagram" size={15} />
+          </a>
+          <a href="https://facebook.com/ourquraninstitute" target="_blank" rel="noopener noreferrer" className="footer-social-btn" title="Facebook">
+            <Icon name="facebook" size={15} />
+          </a>
+        </div>
+
+        <span className="footer-copyright">© 2026 Our Quran Institute • All Rights Reserved</span>
+      </footer>
 
       {/* 5. Floating Quick Action Button (Bottom Right) */}
       {activeSection > 0 && (

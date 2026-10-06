@@ -14,11 +14,9 @@ export default function Navigation({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navLinks = [
-    { label: 'Teachers', spread: 2 },
-    { label: 'Progress', spread: 3 },
-    { label: 'Global Map', spread: 4 },
-    { label: 'Our Vision', spread: 5 },
-    { label: 'Contact', spread: 7 }
+    { label: 'Our Vision', spread: 1 },
+    { label: 'World Map', spread: 4 },
+    { label: 'Journal', spread: 5 }
   ];
 
   const handleMobileNav = (spread) => {
@@ -60,13 +58,7 @@ export default function Navigation({
           {/* Dedicated Course & Teacher Hub Links */}
           <Link
             href="/courses"
-            className={`nav-link nav-highlight-link ${currentPage === 'courses' || (currentPage === 'home' && activeSpread === 1) ? 'active' : ''}`}
-            onClick={(e) => {
-              if (currentPage === 'home' && onNavigate) {
-                e.preventDefault();
-                onNavigate(1);
-              }
-            }}
+            className={`nav-link nav-highlight-link ${currentPage === 'courses' ? 'active' : ''}`}
           >
             <span>✦ Courses</span>
           </Link>
@@ -98,18 +90,6 @@ export default function Navigation({
 
         {/* Right Actions */}
         <div className="nav-actions">
-          {/* Admissions Phone Link */}
-          <a
-            href="https://wa.me/201094714943"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="nav-whatsapp-link"
-            title="Chat with Admissions on WhatsApp"
-          >
-            <Icon name="whatsapp" size={15} color="#25D366" />
-            <span className="nav-wa-text">+20 10 94714943</span>
-          </a>
-
           {/* "Log in Button for exist users, students & teachers" (Annotated from Reference Image) */}
           <button
             type="button"
@@ -232,31 +212,42 @@ export default function Navigation({
                 onClick={() => handleMobileNav(1)}
               >
                 <span className="link-num">01</span>
+                <span className="link-title">Our Vision</span>
+              </button>
+              <button
+                className={`mobile-drawer-link ${activeSpread === 2 ? 'active' : ''}`}
+                onClick={() => handleMobileNav(2)}
+              >
+                <span className="link-num">02</span>
                 <span className="link-title">Our Courses</span>
               </button>
-              {navLinks.map((link) => (
-                <button
-                  key={link.spread}
-                  className={`mobile-drawer-link ${activeSpread === link.spread ? 'active' : ''}`}
-                  onClick={() => handleMobileNav(link.spread)}
-                >
-                  <span className="link-num">0{link.spread}</span>
-                  <span className="link-title">{link.label}</span>
-                </button>
-              ))}
+              <button
+                className={`mobile-drawer-link ${activeSpread === 3 ? 'active' : ''}`}
+                onClick={() => handleMobileNav(3)}
+              >
+                <span className="link-num">03</span>
+                <span className="link-title">Faculty &amp; Mentors</span>
+              </button>
+              <button
+                className={`mobile-drawer-link ${activeSpread === 4 ? 'active' : ''}`}
+                onClick={() => handleMobileNav(4)}
+              >
+                <span className="link-num">04</span>
+                <span className="link-title">World Map</span>
+              </button>
+              <button
+                className={`mobile-drawer-link ${activeSpread === 5 ? 'active' : ''}`}
+                onClick={() => handleMobileNav(5)}
+              >
+                <span className="link-num">05</span>
+                <span className="link-title">Journal</span>
+              </button>
               <button
                 className={`mobile-drawer-link ${activeSpread === 6 ? 'active' : ''}`}
                 onClick={() => handleMobileNav(6)}
               >
                 <span className="link-num">06</span>
                 <span className="link-title">Book Free Session</span>
-              </button>
-              <button
-                className={`mobile-drawer-link ${activeSpread === 7 ? 'active' : ''}`}
-                onClick={() => handleMobileNav(7)}
-              >
-                <span className="link-num">07</span>
-                <span className="link-title">Contact Us &amp; Global Map</span>
               </button>
             </div>
 
