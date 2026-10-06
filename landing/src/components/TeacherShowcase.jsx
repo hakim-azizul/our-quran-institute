@@ -3,9 +3,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { Icon } from './Icons';
-import { COURSES_DATA, COURSE_CATEGORIES } from '../data/coursesData';
+import { MALE_TEACHERS_DATA, MALE_TEACHER_CATEGORIES } from '../data/teachersData';
 
-export default function CourseShowcase({ onOpenBooking, onSelectCourse }) {
+export default function TeacherShowcase({ onOpenBooking, onSelectTeacher }) {
   const [activeCategory, setActiveCategory] = useState('all');
   const [isPaused, setIsPaused] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -16,14 +16,14 @@ export default function CourseShowcase({ onOpenBooking, onSelectCourse }) {
   const animFrameRef = useRef(null);
   const resumeTimeoutRef = useRef(null);
 
-  const filteredCourses = activeCategory === 'all'
-    ? COURSES_DATA
-    : COURSES_DATA.filter((c) => c.category === activeCategory);
+  const filteredTeachers = activeCategory === 'all'
+    ? MALE_TEACHERS_DATA
+    : MALE_TEACHERS_DATA.filter((t) => t.category === activeCategory);
 
   // Repeat items for seamless horizontal loop
   const displayItems = activeCategory === 'all'
-    ? [...filteredCourses, ...filteredCourses, ...filteredCourses]
-    : [...filteredCourses, ...filteredCourses];
+    ? [...filteredTeachers, ...filteredTeachers, ...filteredTeachers]
+    : [...filteredTeachers, ...filteredTeachers, ...filteredTeachers];
 
   // Smooth continuous horizontal scrolling animation
   useEffect(() => {
@@ -41,7 +41,7 @@ export default function CourseShowcase({ onOpenBooking, onSelectCourse }) {
         el.scrollLeft += speed * (delta / 16.67);
 
         // Infinite wrap logic
-        const singleSetWidth = el.scrollWidth / (activeCategory === 'all' ? 3 : 2);
+        const singleSetWidth = el.scrollWidth / 3;
         if (el.scrollLeft >= singleSetWidth * 2) {
           el.scrollLeft -= singleSetWidth;
         }
@@ -90,33 +90,33 @@ export default function CourseShowcase({ onOpenBooking, onSelectCourse }) {
     setIsDragging(false);
   };
 
-  const handleCourseEnroll = (course) => {
-    if (onSelectCourse) onSelectCourse(course);
-    if (onOpenBooking) onOpenBooking(course.title);
+  const handleTeacherBooking = (teacher) => {
+    if (onSelectTeacher) onSelectTeacher(teacher);
+    if (onOpenBooking) onOpenBooking(`Session with ${teacher.name}`);
   };
 
   return (
-    <div className="charity-courses-section" id="courses-section">
-      {/* 1. Centered Header (Matching Reference Design: "Empowering Lives Through...") */}
+    <div className="charity-courses-section teacher-showcase-section" id="teachers-section">
+      {/* 1. Centered Header */}
       <div className="charity-courses-header">
-        <div className="charity-kicker-pill">
-          <span className="kicker-green-dot">●</span>
-          <span className="kicker-pill-text">Our Courses</span>
+        <div className="charity-kicker-pill teacher-kicker-pill">
+          <span className="kicker-green-dot" style={{ color: '#C5A45A' }}>●</span>
+          <span className="kicker-pill-text">Lead Scholars &amp; Mentors</span>
         </div>
 
         <h2 className="charity-courses-title">
-          Empowering Lives Through<br />
-          <span className="title-serif-highlight">Sacred Quranic Education</span>
+          Guidance That Listens<br />
+          <span className="title-serif-highlight">Before It Corrects</span>
         </h2>
 
         <p className="charity-courses-subtitle">
-          Structured 1-on-1 journeys designed for all ages worldwide — guided with patience by certified scholars from Al-Azhar.
+          Learn 1-on-1 with certified male scholars from Al-Azhar who nurture confidence, cultivate beautiful Tajweed, and embody deep patience.
         </p>
 
         {/* Filter Categories and Navigation Arrows */}
         <div className="charity-controls-bar">
           <div className="charity-filter-pills">
-            {COURSE_CATEGORIES.map((cat) => (
+            {MALE_TEACHER_CATEGORIES.map((cat) => (
               <button
                 key={cat.id}
                 className={`charity-filter-btn ${activeCategory === cat.id ? 'active' : ''}`}
@@ -139,7 +139,7 @@ export default function CourseShowcase({ onOpenBooking, onSelectCourse }) {
               className="charity-arrow-btn"
               onClick={() => handleManualScroll(-380)}
               aria-label="Scroll left"
-              title="Previous Course"
+              title="Previous Mentor"
             >
               <Icon name="chevron-left" size={16} color="#062A24" />
             </button>
@@ -148,7 +148,7 @@ export default function CourseShowcase({ onOpenBooking, onSelectCourse }) {
               className="charity-arrow-btn"
               onClick={() => handleManualScroll(380)}
               aria-label="Scroll right"
-              title="Next Course"
+              title="Next Mentor"
             >
               <Icon name="chevron-right" size={16} color="#062A24" />
             </button>
@@ -156,7 +156,7 @@ export default function CourseShowcase({ onOpenBooking, onSelectCourse }) {
         </div>
       </div>
 
-      {/* 2. Horizontal Scrolling Carousel Track (Continuous Animation + Pause on Hover) */}
+      {/* 2. Horizontal Scrolling Carousel Track */}
       <div
         className="charity-carousel-viewport"
         onMouseEnter={() => setIsPaused(true)}
@@ -172,72 +172,77 @@ export default function CourseShowcase({ onOpenBooking, onSelectCourse }) {
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
         >
-          {displayItems.map((course, idx) => (
+          {displayItems.map((teacher, idx) => (
             <div
-              key={`${course.id}-${idx}`}
-              className="charity-course-card"
+              key={`${teacher.id}-${idx}`}
+              className="charity-course-card teacher-card-item"
             >
               {/* Card Image with Rounded Corners */}
-              <div className="card-image-box">
+              <div className="card-image-box teacher-image-box">
                 <img
-                  src={course.image}
-                  alt={course.title}
-                  className="card-cover-photo"
+                  src={teacher.image || '/assets/teacher_portrait.jpg'}
+                  alt={teacher.name}
+                  className="card-cover-photo teacher-cover-photo"
                   loading="lazy"
                 />
-                <div className="card-badge-overlay">
-                  <span>✦ {course.badge}</span>
+                <div className="card-badge-overlay teacher-badge-overlay">
+                  <span>✦ {teacher.badge || 'Certified Sanad'}</span>
                 </div>
               </div>
 
-              {/* Card Body */}
+              {/* Card Content Body */}
               <div className="card-content-body">
                 {/* Category Tag Pill */}
-                <div className="card-category-pill">
-                  <span>{course.categoryLabel}</span>
+                <div className="card-category-pill teacher-category-pill">
+                  <span>{teacher.categoryLabel || 'AL-AZHAR SCHOLAR'}</span>
                 </div>
 
-                {/* Course Title */}
-                <h3 className="card-course-title" title={course.title}>
-                  {course.title}
+                {/* Arabic Honorific */}
+                <span className="teacher-arabic-honorific">
+                  {teacher.honorific}
+                </span>
+
+                {/* Teacher Name */}
+                <h3 className="card-course-title teacher-name-title" title={teacher.name}>
+                  {teacher.name}
                 </h3>
 
-                {/* Subtitle / Description */}
-                <p className="card-course-desc">
-                  {course.shortDesc}
+                {/* Role / Description Subtext */}
+                <p className="card-course-desc teacher-role-desc">
+                  {teacher.role}
                 </p>
 
-                {/* Progress Metric Bar (From Reference Image) */}
+                {/* Progress / Sanad Transmission Bar */}
                 <div className="card-progress-section">
                   <div className="card-progress-bar-bg">
                     <div
-                      className="card-progress-bar-fill"
-                      style={{ width: `${course.progressPercent}%` }}
+                      className="card-progress-bar-fill teacher-progress-fill"
+                      style={{ width: `${teacher.progressPercent || 95}%` }}
                     >
                       <div className="progress-fill-glow-dot" />
                     </div>
                   </div>
                 </div>
 
-                {/* Stats Row with Dots (From Reference Image: Raised / Goal equivalent) */}
+                {/* Stats Row with Dots */}
                 <div className="card-stats-row">
                   <div className="card-stat-item">
-                    <span className="stat-dot">●</span>
-                    <span className="stat-label">{course.stat1}</span>
+                    <span className="stat-dot" style={{ color: '#C5A45A' }}>●</span>
+                    <span className="stat-label">{teacher.stat1 || '12+ Yrs Exp'}</span>
                   </div>
                   <div className="card-stat-item">
-                    <span className="stat-dot">●</span>
-                    <span className="stat-label">{course.stat2}</span>
+                    <span className="stat-dot" style={{ color: '#10B981' }}>●</span>
+                    <span className="stat-label">{teacher.stat2 || 'Sanad Verified'}</span>
                   </div>
                 </div>
 
-                {/* Dark Emerald Pill CTA Button (From Reference Image: "Donate Now" -> "Enroll Now") */}
+                {/* CTA Button: Book 1-on-1 with Mentor */}
                 <button
                   type="button"
-                  className="card-enroll-btn"
-                  onClick={() => handleCourseEnroll(course)}
+                  className="card-enroll-btn teacher-book-btn"
+                  onClick={() => handleTeacherBooking(teacher)}
                 >
-                  <span>Enroll Now</span>
+                  <span>Book with Mentor</span>
                   <div className="enroll-btn-icon">
                     <Icon name="arrow-right" size={13} color="#FFFFFF" />
                   </div>
@@ -248,10 +253,10 @@ export default function CourseShowcase({ onOpenBooking, onSelectCourse }) {
         </div>
       </div>
 
-      {/* 3. Bottom Hub Link */}
+      {/* 3. Bottom Faculty Hub Link */}
       <div className="charity-courses-footer">
-        <Link href="/courses" className="charity-view-all-link">
-          <span>View All Detailed Curriculum &amp; Syllabi</span>
+        <Link href="/teachers" className="charity-view-all-link">
+          <span>Explore All 120+ Al-Azhar Scholars &amp; Faculty Directory</span>
           <Icon name="arrow-up-right" size={14} color="#062A24" />
         </Link>
       </div>
