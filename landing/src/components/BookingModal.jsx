@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Icon } from './Icons';
 import TimezoneSelect, { ALL_TIMEZONES } from './TimezoneSelect';
 import CustomDatePicker from './CustomDatePicker';
+import CustomTimePicker from './CustomTimePicker';
 
 export default function BookingModal({ isOpen, onClose, initialCourse = '' }) {
   const [formData, setFormData] = useState({
@@ -145,7 +146,7 @@ export default function BookingModal({ isOpen, onClose, initialCourse = '' }) {
                     type="tel"
                     name="whatsapp"
                     required
-                    placeholder="Whatsapp no (with country code)"
+                    placeholder="Whatsapp with country code"
                     value={formData.whatsapp}
                     onChange={handleChange}
                     className="session-input"
@@ -183,7 +184,7 @@ export default function BookingModal({ isOpen, onClose, initialCourse = '' }) {
                     type="text"
                     name="currentAddress"
                     required
-                    placeholder="Current address (City, State / Country)"
+                    placeholder="City, State / Country"
                     value={formData.currentAddress}
                     onChange={handleChange}
                     className="session-input"
@@ -212,53 +213,14 @@ export default function BookingModal({ isOpen, onClose, initialCourse = '' }) {
                   <label htmlFor="modal-time" className="form-field-label">
                     Time select
                   </label>
-                  <select
+                  <CustomTimePicker
                     id="modal-time"
                     name="preferredTime"
                     required
                     value={formData.preferredTime}
                     onChange={handleChange}
-                    className="session-select"
-                  >
-                    <option value="">Select time slot</option>
-                    <optgroup label="🌅 Morning (07:00 AM – 11:30 AM)">
-                      <option value="07:00 AM - 07:30 AM">07:00 AM - 07:30 AM (Early Morning)</option>
-                      <option value="07:30 AM - 08:00 AM">07:30 AM - 08:00 AM</option>
-                      <option value="08:00 AM - 08:30 AM">08:00 AM - 08:30 AM</option>
-                      <option value="08:30 AM - 09:00 AM">08:30 AM - 09:00 AM</option>
-                      <option value="09:00 AM - 09:30 AM">09:00 AM - 09:30 AM</option>
-                      <option value="09:30 AM - 10:00 AM">09:30 AM - 10:00 AM</option>
-                      <option value="10:00 AM - 10:30 AM">10:00 AM - 10:30 AM</option>
-                      <option value="10:30 AM - 11:00 AM">10:30 AM - 11:00 AM</option>
-                      <option value="11:00 AM - 11:30 AM">11:00 AM - 11:30 AM</option>
-                    </optgroup>
-                    <optgroup label="☀️ Midday & Afternoon (12:00 PM – 05:30 PM)">
-                      <option value="12:00 PM - 12:30 PM">12:00 PM - 12:30 PM (Midday)</option>
-                      <option value="12:30 PM - 01:00 PM">12:30 PM - 01:00 PM</option>
-                      <option value="01:00 PM - 01:30 PM">01:00 PM - 01:30 PM</option>
-                      <option value="01:30 PM - 02:00 PM">01:30 PM - 02:00 PM</option>
-                      <option value="02:00 PM - 02:30 PM">02:00 PM - 02:30 PM</option>
-                      <option value="02:30 PM - 03:00 PM">02:30 PM - 03:00 PM</option>
-                      <option value="03:00 PM - 03:30 PM">03:00 PM - 03:30 PM</option>
-                      <option value="03:30 PM - 04:00 PM">03:30 PM - 04:00 PM</option>
-                      <option value="04:00 PM - 04:30 PM">04:00 PM - 04:30 PM</option>
-                      <option value="04:30 PM - 05:00 PM">04:30 PM - 05:00 PM</option>
-                      <option value="05:00 PM - 05:30 PM">05:00 PM - 05:30 PM</option>
-                    </optgroup>
-                    <optgroup label="🌙 Evening & Night (06:00 PM – 11:30 PM)">
-                      <option value="06:00 PM - 06:30 PM">06:00 PM - 06:30 PM (Evening)</option>
-                      <option value="06:30 PM - 07:00 PM">06:30 PM - 07:00 PM</option>
-                      <option value="07:00 PM - 07:30 PM">07:00 PM - 07:30 PM</option>
-                      <option value="07:30 PM - 08:00 PM">07:30 PM - 08:00 PM</option>
-                      <option value="08:00 PM - 08:30 PM">08:00 PM - 08:30 PM (Prime)</option>
-                      <option value="08:30 PM - 09:00 PM">08:30 PM - 09:00 PM</option>
-                      <option value="09:00 PM - 09:30 PM">09:00 AM - 09:30 PM</option>
-                      <option value="09:30 PM - 10:00 PM">09:30 PM - 10:00 PM</option>
-                      <option value="10:00 PM - 10:30 PM">10:00 PM - 10:30 PM (Night)</option>
-                      <option value="10:30 PM - 11:00 PM">10:30 PM - 11:00 PM</option>
-                      <option value="11:00 PM - 11:30 PM">11:00 PM - 11:30 PM</option>
-                    </optgroup>
-                  </select>
+                    placeholder="Select time slot"
+                  />
                 </div>
 
                 <div className="form-input-group">
@@ -286,7 +248,7 @@ export default function BookingModal({ isOpen, onClose, initialCourse = '' }) {
                     <>
                       <span>Book Free Session Now</span>
                       <div className="btn-submit-icon">
-                        <Icon name="arrow-right" size={15} color="#FFFFFF" />
+                        <Icon name="arrow-right" size={13} color="#062820" />
                       </div>
                     </>
                   )}
