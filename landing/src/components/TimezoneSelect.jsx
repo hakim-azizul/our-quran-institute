@@ -357,13 +357,9 @@ export default function TimezoneSelect({ value, onChange, id = 'field-timezone' 
     if (isOpen) {
       if (dropdownRef.current) {
         const rect = dropdownRef.current.getBoundingClientRect();
-        const parentCard = dropdownRef.current.closest('.book-session-card') || dropdownRef.current.closest('.session-form-card') || dropdownRef.current.closest('.modal-card');
-        let spaceBelow = window.innerHeight - rect.bottom;
-        if (parentCard) {
-          const parentRect = parentCard.getBoundingClientRect();
-          spaceBelow = Math.min(spaceBelow, parentRect.bottom - rect.bottom);
-        }
-        setOpenUpward(spaceBelow < 320);
+        const spaceBelow = window.innerHeight - rect.bottom;
+        const spaceAbove = rect.top;
+        setOpenUpward(spaceBelow < 300 && spaceAbove > spaceBelow);
       }
 
       setTimeout(() => {

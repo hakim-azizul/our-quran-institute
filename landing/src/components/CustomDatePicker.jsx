@@ -98,13 +98,9 @@ export default function CustomDatePicker({
   useEffect(() => {
     if (isOpen && containerRef.current) {
       const rect = containerRef.current.getBoundingClientRect();
-      const parentCard = containerRef.current.closest('.book-session-card') || containerRef.current.closest('.session-form-card') || containerRef.current.closest('.modal-card');
-      let spaceBelow = window.innerHeight - rect.bottom;
-      if (parentCard) {
-        const parentRect = parentCard.getBoundingClientRect();
-        spaceBelow = Math.min(spaceBelow, parentRect.bottom - rect.bottom);
-      }
-      setOpenUpward(spaceBelow < 340);
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const spaceAbove = rect.top;
+      setOpenUpward(spaceBelow < 320 && spaceAbove > spaceBelow);
     }
   }, [isOpen]);
 
