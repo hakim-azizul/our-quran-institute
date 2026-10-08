@@ -458,15 +458,17 @@ export default function App() {
       {/* 5. Floating Quick Action Button (Bottom Right) */}
       {activeSection > 0 && (
         <div className="floating-quick-dock">
-          <button
-            className="floating-action-pill"
-            onClick={() => handleOpenBooking()}
-            title="Book Free Assessment"
-          >
-            <DiamondOrnament size={18} diamondSize={10} centerColor="#062A24" borderColor="#C5A45A" />
-            <span>Book Free Session</span>
-            <Icon name="arrow-up-right" size={14} color="#062A24" />
-          </button>
+          {activeSection !== 6 && (
+            <button
+              className="floating-action-pill"
+              onClick={() => handleOpenBooking()}
+              title="Book Free Assessment"
+            >
+              <DiamondOrnament size={18} diamondSize={10} centerColor="#062A24" borderColor="#C5A45A" />
+              <span>Book Free Session</span>
+              <Icon name="arrow-up-right" size={14} color="#062A24" />
+            </button>
+          )}
           <a
             href="https://wa.me/201094714943"
             target="_blank"
