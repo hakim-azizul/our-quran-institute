@@ -24,7 +24,7 @@ export default function LoginPage() {
       const params = new URLSearchParams(window.location.search);
       if (params.get('pendingApproval') === 'true' || params.get('pending') === 'true') {
         setInfoMsg(
-          '⏳ Scholar Application Submitted: Your teacher account has been registered and is currently under review by the Institute Governing Council. Once an Administrator approves your credentials and Sanad, you will be able to log in.'
+          'Teacher Application Submitted: Your account has been registered and is awaiting administrator approval. You will be able to log in once approved.'
         );
         setRole('teacher');
       }
@@ -41,6 +41,10 @@ export default function LoginPage() {
     } else if (selectedRole === 'teacher') {
       setRole('teacher');
       setEmail('dr.ahmad@quraninstitute.org');
+      setPassword('password123');
+    } else if (selectedRole === 'parent') {
+      setRole('parent');
+      setEmail('parent@quraninstitute.org');
       setPassword('password123');
     } else if (selectedRole === 'admin') {
       setEmail('admin@quraninstitute.org');
@@ -74,14 +78,14 @@ export default function LoginPage() {
         return;
       }
 
-      setSuccessMsg(`Welcome back, ${data.user.name}! Opening your sanctuary workspace...`);
+      setSuccessMsg(`Welcome back, ${data.user.name}! Opening your dashboard...`);
       const targetDestination = data.redirectUrl || (data.user.role === 'admin' ? '/admin' : '/dashboard');
       setTimeout(() => {
         router.push(targetDestination);
       }, 700);
     } catch (err) {
       console.error(err);
-      setErrorMsg('Network error. Could not connect to the sanctuary authentication server.');
+      setErrorMsg('Network error. Could not connect to the authentication server.');
       setIsSubmitting(false);
     }
   };
@@ -103,11 +107,11 @@ export default function LoginPage() {
           <div className="auth-card-header">
             <div className="auth-card-badge">
               <Icon name="sparkles" size={13} color="#0D4A38" />
-              <span>Sanctuary Portal Access</span>
+              <span>Student &amp; Teacher Portal</span>
             </div>
             <h1 className="auth-card-title">Welcome to Your Portal</h1>
             <p className="auth-card-subtitle">
-              Secure classroom, Sanad verification &amp; Hifz tracking for enrolled students &amp; certified scholars.
+              Live Quran classes, progress tracking, and daily reports for students and parents.
             </p>
           </div>
 
@@ -116,34 +120,47 @@ export default function LoginPage() {
 
           {/* Quick Demo Pre-Fill Box */}
           <div className="demo-helper-box">
-            <div className="demo-helper-text">
-              <span>Quick Test Access:</span>
+            <div className="demo-helper-top">
+              <div className="demo-helper-text">
+                <span className="demo-helper-sparkle">
+                  <Icon name="zap" size={13} />
+                </span>
+                <span>Quick Test Access:</span>
+              </div>
+              <span className="demo-helper-hint">Click role to auto-fill</span>
             </div>
-            <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+            <div className="demo-helper-btn-grid">
               <button
                 type="button"
                 className="demo-helper-btn"
                 onClick={() => handleDemoFill('student')}
-                title="Fill Tariq Al-Mansoor credentials"
+                title="Fill Tariq Al-Mansoor (Student)"
               >
-                🎓 Student
+                <Icon name="student" size={14} style={{ marginRight: 6 }} /> Student
               </button>
               <button
                 type="button"
                 className="demo-helper-btn"
                 onClick={() => handleDemoFill('teacher')}
-                title="Fill Dr. Sheikh Ahmad Al-Azhari credentials"
+                title="Fill Dr. Sheikh Ahmad Al-Azhari (Scholar)"
               >
-                🕌 Scholar
+                <Icon name="scholar" size={14} style={{ marginRight: 6 }} /> Scholar
               </button>
               <button
                 type="button"
                 className="demo-helper-btn"
-                style={{ background: '#062A1F', borderColor: '#D4AF37' }}
-                onClick={() => handleDemoFill('admin')}
-                title="Fill Database-Provisioned Admin credentials"
+                onClick={() => handleDemoFill('parent')}
+                title="Fill Hajji Mansoor Rahman (Parent)"
               >
-                👑 Admin
+                <Icon name="parent" size={14} style={{ marginRight: 6 }} /> Parent
+              </button>
+              <button
+                type="button"
+                className="demo-helper-btn demo-helper-btn-admin"
+                onClick={() => handleDemoFill('admin')}
+                title="Fill Database-Provisioned Admin"
+              >
+                <Icon name="shield-user" size={14} style={{ marginRight: 6 }} /> Admin
               </button>
             </div>
           </div>
@@ -161,21 +178,23 @@ export default function LoginPage() {
                 lineHeight: '1.5',
               }}
             >
-              <span>{infoMsg}</span>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                <Icon name="clock" size={16} /> {infoMsg}
+              </span>
             </div>
           )}
 
           {/* Alert feedback */}
           {errorMsg && (
             <div className="auth-alert-box auth-alert-error">
-              <span>⚠️</span>
+              <Icon name="alert-circle" size={16} />
               <span>{errorMsg}</span>
             </div>
           )}
 
           {successMsg && (
             <div className="auth-alert-box auth-alert-success">
-              <span>✅</span>
+              <Icon name="check-circle" size={16} />
               <span>{successMsg}</span>
             </div>
           )}
@@ -186,7 +205,9 @@ export default function LoginPage() {
               <label className="form-label" htmlFor="portal-email-input">
                 {role === 'student'
                   ? 'Student Email or Institute ID (QI-STU-8842)'
-                  : 'Faculty Scholar Email or ID (QI-FAC-014)'}
+                  : role === 'teacher'
+                  ? 'Faculty Scholar Email or ID (QI-FAC-014)'
+                  : 'Guardian Email or Parent ID (parent@quraninstitute.org)'}
               </label>
               <div className="form-input-container">
                 <span className="form-input-icon">
@@ -201,7 +222,9 @@ export default function LoginPage() {
                   placeholder={
                     role === 'student'
                       ? 'student@quraninstitute.org or QI-STU-8842'
-                      : 'faculty@quraninstitute.org or QI-FAC-014'
+                      : role === 'teacher'
+                      ? 'faculty@quraninstitute.org or QI-FAC-014'
+                      : 'parent@quraninstitute.org or QI-PAR-101'
                   }
                   className="form-input"
                   autoComplete="username"
@@ -237,7 +260,7 @@ export default function LoginPage() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter your sanctuary portal password"
+                  placeholder="Enter your password"
                   className="form-input"
                   autoComplete="current-password"
                 />
@@ -271,11 +294,16 @@ export default function LoginPage() {
               className="btn-auth-submit"
             >
               {isSubmitting ? (
-                <span>Verifying Credentials...</span>
+                <span>Signing In...</span>
               ) : (
                 <>
                   <span>
-                    Sign In to {role === 'student' ? 'Student Sanctuary' : 'Faculty Scholar Portal'}
+                    Sign In to{' '}
+                    {role === 'student'
+                      ? 'Student Portal'
+                      : role === 'teacher'
+                      ? 'Teacher Portal'
+                      : 'Parent Portal'}
                   </span>
                   <Icon name="arrow-right" size={16} color="#FFDF85" />
                 </>
@@ -286,7 +314,7 @@ export default function LoginPage() {
           {/* Footer */}
           <div className="auth-card-footer">
             <p className="auth-footer-prompt">
-              New learner or seeking Sanad enrollment?
+              New student or parent?
               <Link href="/register" className="auth-footer-link">
                 Register New Account
               </Link>

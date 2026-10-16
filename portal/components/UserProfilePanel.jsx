@@ -12,18 +12,33 @@ export default function UserProfilePanel({
   onNavigateToCatalog,
 }) {
   const [name, setName] = useState(user?.name || '');
-  const [tajweedLevel, setTajweedLevel] = useState(user?.tajweedLevel || 'Intermediate');
+  const [tajweedLevel, setTajweedLevel] = useState(user?.tajweedLevel || 'Advanced Hifz Candidate');
   const [targetGoal, setTargetGoal] = useState(
-    user?.targetGoal || 'Master Quran Reading & Tajweed Rules'
+    user?.targetGoal || 'Complete 30 Juz Hifz with Ijazah certification by 2027'
   );
   const [phone, setPhone] = useState(user?.phone || '+1 (555) 382-9014');
+  const [language, setLanguage] = useState(user?.preferredLanguage || 'English & Bengali');
+  const [emailAlerts, setEmailAlerts] = useState(true);
+  const [smsAlerts, setSmsAlerts] = useState(true);
+
   const [saving, setSaving] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [unenrollLoading, setUnenrollLoading] = useState(false);
+  const [copiedId, setCopiedId] = useState(false);
 
   const isStudent = user?.role === 'student';
   const isTeacher = user?.role === 'teacher';
+  const isParent = user?.role === 'parent';
+  const isAdmin = user?.role === 'admin';
+
+  const handleCopyId = () => {
+    if (user?.id) {
+      navigator.clipboard.writeText(user.id);
+      setCopiedId(true);
+      setTimeout(() => setCopiedId(false), 2000);
+    }
+  };
 
   const handleSaveProfile = async (e) => {
     e.preventDefault();
@@ -40,6 +55,7 @@ export default function UserProfilePanel({
           tajweedLevel,
           targetGoal,
           phone,
+          preferredLanguage: language,
         }),
       });
 
@@ -48,7 +64,7 @@ export default function UserProfilePanel({
         throw new Error(data.error || 'Failed to update profile.');
       }
 
-      setSuccessMsg('Profile updated successfully!');
+      setSuccessMsg('Profile settings updated successfully!');
       if (onProfileUpdated) {
         onProfileUpdated(data.user);
       }
@@ -60,7 +76,11 @@ export default function UserProfilePanel({
   };
 
   const handleUnenroll = async () => {
-    if (!window.confirm('Are you sure you want to unenroll from this course? You can re-enroll with any teacher anytime.')) {
+    if (
+      !window.confirm(
+        'Are you sure you want to unenroll from this course? You can re-enroll with any teacher anytime.'
+      )
+    ) {
       return;
     }
 
@@ -86,87 +106,364 @@ export default function UserProfilePanel({
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      {/* Top Profile Summary Card */}
-      <div className="dash-panel" style={{ padding: '24px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '22px' }}>
+      {/* =========================================================================
+          TOP HERO PROFILE BANNER (HIGH SIGNAL / SAAS MODERN)
+          ========================================================================= */}
+      <div
+        style={{
+          background: 'linear-gradient(135deg, #062A1F 0%, #0D4A38 60%, #175F4A 100%)',
+          borderRadius: '20px',
+          padding: '28px 32px',
+          color: '#FFFFFF',
+          position: 'relative',
+          overflow: 'hidden',
+          boxShadow: '0 8px 30px rgba(13, 74, 56, 0.25)',
+          border: '1.5px solid rgba(197, 164, 90, 0.35)',
+        }}
+      >
+        {/* Subtle decorative background pattern */}
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            bottom: 0,
+            width: '45%',
+            backgroundImage:
+              'radial-gradient(circle at right, rgba(197, 164, 90, 0.15) 0%, transparent 70%)',
+            pointerEvents: 'none',
+          }}
+        />
+
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '20px',
+            position: 'relative',
+            zIndex: 1,
+          }}
+        >
+          {/* User Avatar + Main Identity */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
             <div
               style={{
-                width: '64px',
-                height: '64px',
+                width: '74px',
+                height: '74px',
                 borderRadius: '50%',
-                background: 'var(--color-green-primary)',
-                color: '#FFDF85',
+                background: 'rgba(255, 255, 255, 0.12)',
+                border: '2.5px solid #FFDF85',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: '28px',
-                border: '2px solid var(--color-gold-primary)',
+                fontSize: '34px',
+                boxShadow: '0 4px 18px rgba(0, 0, 0, 0.35)',
+                position: 'relative',
+                flexShrink: 0,
               }}
             >
-              {user?.avatar || (isTeacher ? '🕌' : '🎓')}
+              {isTeacher ? (
+                <Icon name="scholar" size={32} />
+              ) : isAdmin ? (
+                <Icon name="shield-user" size={32} />
+              ) : isParent ? (
+                <Icon name="parent" size={32} />
+              ) : (
+                <Icon name="student" size={32} />
+              )}
+              <span
+                style={{
+                  position: 'absolute',
+                  bottom: '2px',
+                  right: '2px',
+                  width: '14px',
+                  height: '14px',
+                  borderRadius: '50%',
+                  background: '#10B981',
+                  border: '2.5px solid #062A1F',
+                }}
+                title="Account Status: Active"
+              />
             </div>
 
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <h1 style={{ margin: 0, fontSize: '26px', fontWeight: '800', color: 'var(--color-green-deep)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                <h1
+                  style={{
+                    margin: 0,
+                    fontSize: '26px',
+                    fontWeight: '800',
+                    fontFamily: 'var(--font-serif)',
+                    letterSpacing: '-0.02em',
+                  }}
+                >
                   {user?.name}
                 </h1>
                 <span
                   style={{
-                    background: 'var(--color-green-surface)',
-                    color: 'var(--color-green-primary)',
-                    padding: '4px 12px',
+                    background: '#FFDF85',
+                    color: '#062A1F',
+                    padding: '3px 12px',
                     borderRadius: '999px',
-                    fontSize: '12.5px',
-                    fontWeight: '700',
-                    border: '1px solid rgba(13,74,56,0.2)',
+                    fontSize: '11.5px',
+                    fontWeight: '800',
+                    letterSpacing: '0.04em',
+                    textTransform: 'uppercase',
                   }}
                 >
-                  {isTeacher ? 'Faculty Scholar' : 'Registered Student'}
+                  {isTeacher
+                    ? 'Verified Scholar'
+                    : isAdmin
+                    ? 'Superuser Admin'
+                    : isParent
+                    ? 'Guardian Account'
+                    : 'Hifz Candidate'}
                 </span>
               </div>
-              <p style={{ margin: '6px 0 0 0', fontSize: '14.5px', color: 'var(--text-muted)' }}>
-                Institute ID: <strong>{user?.id}</strong> • {user?.email}
+
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  marginTop: '8px',
+                  fontSize: '13px',
+                  color: 'rgba(255, 255, 255, 0.85)',
+                  flexWrap: 'wrap',
+                }}
+              >
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                  <Icon name="shield" size={13} />
+                  <strong>{user?.id}</strong>
+                  <button
+                    type="button"
+                    onClick={handleCopyId}
+                    style={{
+                      background: 'rgba(255, 255, 255, 0.15)',
+                      border: '1px solid rgba(255, 255, 255, 0.3)',
+                      color: '#FFF',
+                      fontSize: '10.5px',
+                      padding: '2px 7px',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    {copiedId ? (
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3 }}>
+                        <Icon name="check-circle" size={11} color="#FFFFFF" /> Copied
+                      </span>
+                    ) : (
+                      'Copy'
+                    )}
+                  </button>
+                </span>
+                <span>•</span>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+                  <Icon name="mail" size={13} /> {user?.email}
+                </span>
+                <span>•</span>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+                  <Icon name="mosque" size={13} /> Online Quran Institute
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Quick High-Signal Badge */}
+          <div
+            style={{
+              background: 'rgba(0, 0, 0, 0.25)',
+              border: '1px solid rgba(197, 164, 90, 0.4)',
+              borderRadius: '14px',
+              padding: '12px 18px',
+              textAlign: 'right',
+            }}
+          >
+            <span style={{ fontSize: '11px', color: '#FFDF85', textTransform: 'uppercase', fontWeight: '700' }}>
+              Institute Credential
+            </span>
+            <div style={{ fontSize: '16px', fontWeight: '800', marginTop: '2px' }}>
+              {isTeacher
+                ? 'Certified Quran Teacher'
+                : isAdmin
+                ? 'Administrator'
+                : isParent
+                ? 'Registered Parent'
+                : 'Quran Student'}
+            </div>
+          </div>
+        </div>
+
+        {/* High-Signal Metrics Strip */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+            gap: '12px',
+            marginTop: '22px',
+            paddingTop: '18px',
+            borderTop: '1px solid rgba(255, 255, 255, 0.15)',
+          }}
+        >
+          {isStudent && (
+            <>
+              <div style={{ background: 'rgba(255, 255, 255, 0.08)', padding: '10px 14px', borderRadius: '10px' }}>
+                <span style={{ fontSize: '11px', color: '#FFDF85' }}>Hifz Progress</span>
+                <div style={{ fontSize: '18px', fontWeight: '800' }}>12 / 30 Juz (40%)</div>
+              </div>
+              <div style={{ background: 'rgba(255, 255, 255, 0.08)', padding: '10px 14px', borderRadius: '10px' }}>
+                <span style={{ fontSize: '11px', color: '#FFDF85' }}>Attendance Rate</span>
+                <div style={{ fontSize: '18px', fontWeight: '800', color: '#34D399' }}>96% Consistent</div>
+              </div>
+              <div style={{ background: 'rgba(255, 255, 255, 0.08)', padding: '10px 14px', borderRadius: '10px' }}>
+                <span style={{ fontSize: '11px', color: '#FFDF85' }}>Current Sabaq</span>
+                <div style={{ fontSize: '18px', fontWeight: '800' }}>Surah Yusuf</div>
+              </div>
+              <div style={{ background: 'rgba(255, 255, 255, 0.08)', padding: '10px 14px', borderRadius: '10px' }}>
+                <span style={{ fontSize: '11px', color: '#FFDF85' }}>Target Completion</span>
+                <div style={{ fontSize: '18px', fontWeight: '800' }}>June 2027</div>
+              </div>
+            </>
+          )}
+
+          {isParent && (
+            <>
+              <div style={{ background: 'rgba(255, 255, 255, 0.08)', padding: '10px 14px', borderRadius: '10px' }}>
+                <span style={{ fontSize: '11px', color: '#FFDF85' }}>Children Enrolled</span>
+                <div style={{ fontSize: '18px', fontWeight: '800' }}>2 Students</div>
+              </div>
+              <div style={{ background: 'rgba(255, 255, 255, 0.08)', padding: '10px 14px', borderRadius: '10px' }}>
+                <span style={{ fontSize: '11px', color: '#FFDF85' }}>Tuition Status</span>
+                <div style={{ fontSize: '18px', fontWeight: '800', color: '#34D399' }}>100% Paid (Current)</div>
+              </div>
+              <div style={{ background: 'rgba(255, 255, 255, 0.08)', padding: '10px 14px', borderRadius: '10px' }}>
+                <span style={{ fontSize: '11px', color: '#FFDF85' }}>Family Reference</span>
+                <div style={{ fontSize: '18px', fontWeight: '800' }}>FAM-8821</div>
+              </div>
+              <div style={{ background: 'rgba(255, 255, 255, 0.08)', padding: '10px 14px', borderRadius: '10px' }}>
+                <span style={{ fontSize: '11px', color: '#FFDF85' }}>Classroom Feedback</span>
+                <div style={{ fontSize: '18px', fontWeight: '800' }}>Daily Live Feed</div>
+              </div>
+            </>
+          )}
+
+          {isTeacher && (
+            <>
+              <div style={{ background: 'rgba(255, 255, 255, 0.08)', padding: '10px 14px', borderRadius: '10px' }}>
+                <span style={{ fontSize: '11px', color: '#FFDF85' }}>Active Students</span>
+                <div style={{ fontSize: '18px', fontWeight: '800' }}>18 Enrolled</div>
+              </div>
+              <div style={{ background: 'rgba(255, 255, 255, 0.08)', padding: '10px 14px', borderRadius: '10px' }}>
+                <span style={{ fontSize: '11px', color: '#FFDF85' }}>Teaching Experience</span>
+                <div style={{ fontSize: '18px', fontWeight: '800' }}>14+ Years</div>
+              </div>
+              <div style={{ background: 'rgba(255, 255, 255, 0.08)', padding: '10px 14px', borderRadius: '10px' }}>
+                <span style={{ fontSize: '11px', color: '#FFDF85' }}>Hourly Honorarium</span>
+                <div style={{ fontSize: '18px', fontWeight: '800', color: '#34D399' }}>$30 / Hour</div>
+              </div>
+              <div style={{ background: 'rgba(255, 255, 255, 0.08)', padding: '10px 14px', borderRadius: '10px' }}>
+                <span style={{ fontSize: '11px', color: '#FFDF85' }}>Council Status</span>
+                <div style={{ fontSize: '18px', fontWeight: '800' }}>Verified Al-Azhar</div>
+              </div>
+            </>
+          )}
+
+          {isAdmin && (
+            <>
+              <div style={{ background: 'rgba(255, 255, 255, 0.08)', padding: '10px 14px', borderRadius: '10px' }}>
+                <span style={{ fontSize: '11px', color: '#FFDF85' }}>Access Level</span>
+                <div style={{ fontSize: '18px', fontWeight: '800' }}>Superuser Tier 1</div>
+              </div>
+              <div style={{ background: 'rgba(255, 255, 255, 0.08)', padding: '10px 14px', borderRadius: '10px' }}>
+                <span style={{ fontSize: '11px', color: '#FFDF85' }}>Database Status</span>
+                <div style={{ fontSize: '18px', fontWeight: '800', color: '#34D399' }}>Connected &amp; Synced</div>
+              </div>
+              <div style={{ background: 'rgba(255, 255, 255, 0.08)', padding: '10px 14px', borderRadius: '10px' }}>
+                <span style={{ fontSize: '11px', color: '#FFDF85' }}>Audit Compliance</span>
+                <div style={{ fontSize: '18px', fontWeight: '800' }}>100% Passed</div>
+              </div>
+              <div style={{ background: 'rgba(255, 255, 255, 0.08)', padding: '10px 14px', borderRadius: '10px' }}>
+                <span style={{ fontSize: '11px', color: '#FFDF85' }}>Council Authority</span>
+                <div style={{ fontSize: '18px', fontWeight: '800' }}>Global Oversight</div>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* =========================================================================
+          MAIN 2-COLUMN HIGH-SIGNAL CONTENT GRID
+          ========================================================================= */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '22px' }}>
+        {/* Left Column: Account Settings & Contact Editor */}
+        <div
+          style={{
+            background: '#FFFFFF',
+            border: '1.5px solid var(--border-light)',
+            borderRadius: '16px',
+            padding: '24px',
+            boxShadow: 'var(--shadow-sm)',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '18px' }}>
+            <Icon name="settings" size={20} />
+            <div>
+              <h2 style={{ margin: 0, fontSize: '17px', fontWeight: '800', color: 'var(--color-green-deep)' }}>
+                Account Settings &amp; Preferences
+              </h2>
+              <p style={{ margin: '2px 0 0 0', fontSize: '12.5px', color: 'var(--text-muted)' }}>
+                Keep your profile and communication channels up to date
               </p>
             </div>
           </div>
 
-          <div style={{ textAlign: 'right' }}>
-            <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>Institute Status:</span>
-            <div style={{ fontSize: '15px', fontWeight: '700', color: enrollment ? '#166534' : '#B45309', marginTop: '2px' }}>
-              {enrollment ? '● Active Course Enrollment' : '○ Not Enrolled in Course'}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Grid: Profile Form + Enrollment Status Panel */}
-      <div className="dashboard-grid">
-        {/* Left Panel: Profile Settings Form */}
-        <div className="dash-panel">
-          <h2 className="dash-panel-title">
-            <Icon name="user" size={18} color="#0D4A38" />
-            <span>Academic Profile &amp; Preferences</span>
-          </h2>
-
           {successMsg && (
-            <div className="auth-alert auth-alert-success" style={{ margin: '0 0 16px 0' }}>
-              <span>✨ {successMsg}</span>
+            <div
+              style={{
+                background: '#DCFCE7',
+                border: '1px solid #86EFAC',
+                color: '#166534',
+                padding: '10px 14px',
+                borderRadius: '8px',
+                fontSize: '13px',
+                marginBottom: '16px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+              }}
+            >
+              <Icon name="check-circle" size={16} />
+              <span>{successMsg}</span>
             </div>
           )}
 
           {errorMsg && (
-            <div className="auth-alert auth-alert-error" style={{ margin: '0 0 16px 0' }}>
-              <span>⚠️ {errorMsg}</span>
+            <div
+              style={{
+                background: '#FEE2E2',
+                border: '1px solid #FCA5A5',
+                color: '#991B1B',
+                padding: '10px 14px',
+                borderRadius: '8px',
+                fontSize: '13px',
+                marginBottom: '16px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+              }}
+            >
+              <Icon name="alert-circle" size={16} />
+              <span>{errorMsg}</span>
             </div>
           )}
 
           <form onSubmit={handleSaveProfile} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <div>
               <label className="form-label" style={{ marginBottom: '6px' }}>
-                Full Name
+                Full Legal / Registered Name
               </label>
               <input
                 type="text"
@@ -179,48 +476,60 @@ export default function UserProfilePanel({
 
             <div>
               <label className="form-label" style={{ marginBottom: '6px' }}>
-                Email Address
+                Registered Email (Official)
               </label>
               <input
                 type="email"
                 className="form-input"
                 value={user?.email || ''}
                 disabled
-                style={{ background: '#F9FAFB', cursor: 'not-allowed' }}
+                style={{ background: '#F8FAFC', cursor: 'not-allowed', color: 'var(--text-muted)' }}
               />
-              <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
-                Email is locked to your official institute credentials.
+              <span style={{ fontSize: '11px', color: 'var(--text-dim)', marginTop: '4px', display: 'block' }}>
+                Locked to your verified Institute ID credentials.
               </span>
+            </div>
+
+            <div>
+              <label className="form-label" style={{ marginBottom: '6px' }}>
+                Contact Phone / WhatsApp Notification
+              </label>
+              <input
+                type="text"
+                className="form-input"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="+880 1784-413139 or +1 (555) 000-0000"
+              />
             </div>
 
             {isStudent && (
               <>
                 <div>
                   <label className="form-label" style={{ marginBottom: '6px' }}>
-                    Current Tajweed / Recitation Level
+                    Tajweed / Recitation Target Track
                   </label>
                   <select
                     className="form-input"
                     value={tajweedLevel}
                     onChange={(e) => setTajweedLevel(e.target.value)}
                   >
-                    <option value="Beginner">Beginner (Learning Arabic letters &amp; Harakat)</option>
-                    <option value="Intermediate">Intermediate (Practicing Noon/Meem Sakinah &amp; Mudood)</option>
-                    <option value="Advanced">Advanced (Fluency, Sifaat &amp; Waqf Rules)</option>
-                    <option value="Hifz Candidate">Hifz Candidate (Full Quran Memorization)</option>
+                    <option value="Beginner">Beginner (Arabic Letters &amp; Makharij)</option>
+                    <option value="Intermediate">Intermediate (Noon Sakinah, Meem &amp; Mudood)</option>
+                    <option value="Advanced">Advanced (Sifaat, Waqf &amp; Fluency)</option>
+                    <option value="Advanced Hifz Candidate">Advanced Hifz Candidate (30-Juz Track)</option>
                   </select>
                 </div>
 
                 <div>
                   <label className="form-label" style={{ marginBottom: '6px' }}>
-                    Personal Learning Goal
+                    Personal Spiritual Goal
                   </label>
                   <input
                     type="text"
                     className="form-input"
                     value={targetGoal}
                     onChange={(e) => setTargetGoal(e.target.value)}
-                    placeholder="e.g. Master Quran reading with authentic Tajweed rules"
                   />
                 </div>
               </>
@@ -228,14 +537,49 @@ export default function UserProfilePanel({
 
             <div>
               <label className="form-label" style={{ marginBottom: '6px' }}>
-                Contact Phone / WhatsApp
+                Preferred Interface Language
               </label>
-              <input
-                type="text"
+              <select
                 className="form-input"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-              />
+                value={language}
+                onChange={(e) => setLanguage(e.target.value)}
+              >
+                <option value="English">English (Default)</option>
+                <option value="Arabic">العربية (Arabic)</option>
+              </select>
+            </div>
+
+            {/* Notification Toggles */}
+            <div
+              style={{
+                background: '#F8FAFC',
+                borderRadius: '10px',
+                padding: '12px 14px',
+                border: '1px solid #E2E8F0',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '8px',
+              }}
+            >
+              <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--color-green-deep)' }}>
+                Automated Class &amp; Progress Notifications
+              </span>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12.5px', cursor: 'pointer' }}>
+                <input
+                  type="checkbox"
+                  checked={emailAlerts}
+                  onChange={(e) => setEmailAlerts(e.target.checked)}
+                />
+                <span>Email me daily Sabaq and Attendance summaries</span>
+              </label>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12.5px', cursor: 'pointer' }}>
+                <input
+                  type="checkbox"
+                  checked={smsAlerts}
+                  onChange={(e) => setSmsAlerts(e.target.checked)}
+                />
+                <span>WhatsApp reminder 15 minutes before class session</span>
+              </label>
             </div>
 
             <button
@@ -243,11 +587,10 @@ export default function UserProfilePanel({
               disabled={saving}
               className="btn-auth-submit"
               style={{
-                marginTop: '10px',
-                width: '100%',
+                marginTop: '6px',
                 display: 'flex',
-                justifyContent: 'center',
                 alignItems: 'center',
+                justifyContent: 'center',
                 gap: '8px',
               }}
             >
@@ -257,19 +600,47 @@ export default function UserProfilePanel({
           </form>
         </div>
 
-        {/* Right Panel: Active Enrollment or Course Status */}
-        <div className="dash-panel">
-          <h2 className="dash-panel-title">
-            <Icon name="book" size={18} color="#0D4A38" />
-            <span>Course Enrollment Status</span>
-          </h2>
+        {/* Right Column: Role-Specific High-Signal Workspace Card */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          {/* ====================================================================
+              STUDENT VIEW: Active Academic Enrollment Card
+              ==================================================================== */}
+          {isStudent && (
+            <div
+              style={{
+                background: '#FFFFFF',
+                border: '1.5px solid var(--border-light)',
+                borderRadius: '16px',
+                padding: '24px',
+                boxShadow: 'var(--shadow-sm)',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <Icon name="book-open" size={20} color="var(--color-green-primary)" />
+                  <h3 style={{ margin: 0, fontSize: '17px', fontWeight: '800', color: 'var(--color-green-deep)' }}>
+                    Enrolled Course &amp; Teacher
+                  </h3>
+                </div>
+                <span
+                  style={{
+                    background: '#DCFCE7',
+                    color: '#166534',
+                    padding: '3px 10px',
+                    borderRadius: '999px',
+                    fontSize: '11px',
+                    fontWeight: '700',
+                  }}
+                >
+                  ● Enrolled
+                </span>
+              </div>
 
-          {isStudent && enrollment ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {/* Course Detail Card */}
               <div
                 style={{
                   background: 'var(--color-green-surface)',
-                  border: '1px solid rgba(13,74,56,0.15)',
+                  border: '1px solid rgba(13, 74, 56, 0.15)',
                   borderRadius: '12px',
                   padding: '18px',
                   display: 'flex',
@@ -277,139 +648,332 @@ export default function UserProfilePanel({
                   gap: '12px',
                 }}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '11px', fontWeight: '700', textTransform: 'uppercase', color: 'var(--color-green-primary)' }}>
-                    Active Enrollment
+                <div>
+                  <span style={{ fontSize: '11px', textTransform: 'uppercase', color: 'var(--color-gold-primary)', fontWeight: '700' }}>
+                    Primary Discipline
                   </span>
-                  <span style={{ fontSize: '12px', background: '#DCFCE7', color: '#166534', padding: '2px 8px', borderRadius: '999px', fontWeight: '700' }}>
-                    ID: {enrollment.id}
-                  </span>
+                  <h4 style={{ margin: '2px 0 0 0', fontSize: '16px', fontWeight: '800', color: 'var(--color-green-deep)' }}>
+                    {course?.title || 'Quran Reading Foundation & Tajweed Mastery'}
+                  </h4>
                 </div>
 
-                <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '800', color: 'var(--color-green-deep)' }}>
-                  {course?.title || 'Quran Reading Foundation & Tajweed Mastery'}
-                </h3>
-
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12.5px', color: 'var(--text-body)' }}>
-                  <span>Assigned Lead Scholar:</span>
-                  <strong style={{ color: 'var(--color-green-primary)' }}>{enrollment.teacherName || 'Dr. Sheikh Ahmad Al-Azhari'}</strong>
-                </div>
-
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12.5px', color: 'var(--text-body)' }}>
-                  <span>Overall Course Progress:</span>
-                  <strong style={{ color: '#166534' }}>{enrollment.progressPercent || 0}% Completed</strong>
-                </div>
-
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12.5px', color: 'var(--text-muted)' }}>
-                  <span>Enrolled On:</span>
-                  <span>{new Date(enrollment.enrolledAt).toLocaleDateString()}</span>
-                </div>
-              </div>
-
-              {/* Progress Bar */}
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', marginBottom: '6px' }}>
-                  <span style={{ fontWeight: '600', color: 'var(--text-body)' }}>Curriculum Completion</span>
-                  <span style={{ fontWeight: '700', color: 'var(--color-green-primary)' }}>{enrollment.progressPercent || 0}%</span>
-                </div>
-                <div style={{ width: '100%', height: '8px', background: '#E5E7EB', borderRadius: '999px', overflow: 'hidden' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 0', borderTop: '1px solid rgba(13, 74, 56, 0.1)' }}>
                   <div
                     style={{
-                      height: '100%',
-                      width: `${enrollment.progressPercent || 0}%`,
-                      background: 'linear-gradient(90deg, #0D4A38, #C5A45A)',
-                      borderRadius: '999px',
-                      transition: 'width 0.4s ease',
+                      width: '42px',
+                      height: '42px',
+                      borderRadius: '50%',
+                      background: 'var(--color-green-primary)',
+                      color: '#FFDF85',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '20px',
                     }}
-                  />
+                  >
+                    <Icon name="scholar" size={20} />
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>Assigned Mentor Scholar:</span>
+                    <div style={{ fontSize: '14px', fontWeight: '700', color: 'var(--color-green-deep)' }}>
+                      {enrollment?.teacherName || 'Dr. Sheikh Ahmad Al-Azhari'}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Progress Visual */}
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', marginBottom: '6px' }}>
+                    <span style={{ fontWeight: '600' }}>Curriculum Completion</span>
+                    <strong style={{ color: 'var(--color-green-primary)' }}>{enrollment?.progressPercent || 40}%</strong>
+                  </div>
+                  <div style={{ width: '100%', height: '8px', background: '#E2E8F0', borderRadius: '999px', overflow: 'hidden' }}>
+                    <div
+                      style={{
+                        height: '100%',
+                        width: `${enrollment?.progressPercent || 40}%`,
+                        background: 'linear-gradient(90deg, #0D4A38, #C5A45A)',
+                        borderRadius: '999px',
+                      }}
+                    />
+                  </div>
                 </div>
               </div>
 
-              {/* Unenroll / Change Teacher Action */}
-              <div style={{ borderTop: '1px solid var(--border-light)', paddingTop: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
-                  Need to switch scholars or change courses?
-                </span>
+              {/* Actions */}
+              <div style={{ display: 'flex', gap: '10px', marginTop: '16px' }}>
+                <button
+                  type="button"
+                  onClick={onNavigateToCatalog}
+                  className="btn-quick-top-action"
+                  style={{ flex: 1, justifyContent: 'center', display: 'inline-flex', alignItems: 'center', gap: '8px' }}
+                >
+                  <Icon name="sparkles" size={15} color="var(--color-gold-deep)" />
+                  <span>Explore Other Courses</span>
+                </button>
                 <button
                   type="button"
                   onClick={handleUnenroll}
                   disabled={unenrollLoading}
                   style={{
-                    background: '#FEF2F2',
-                    border: '1px solid #F87171',
-                    color: '#991B1B',
                     padding: '8px 14px',
                     borderRadius: '8px',
-                    fontSize: '12.5px',
+                    background: '#FEF2F2',
+                    border: '1px solid #FCA5A5',
+                    color: '#991B1B',
+                    fontSize: '12px',
                     fontWeight: '700',
                     cursor: unenrollLoading ? 'not-allowed' : 'pointer',
                   }}
                 >
-                  {unenrollLoading ? 'Processing...' : 'Withdraw / Switch Teacher'}
+                  {unenrollLoading ? '...' : 'Switch Teacher'}
                 </button>
               </div>
             </div>
-          ) : isStudent ? (
+          )}
+
+          {/* ====================================================================
+              PARENT VIEW: Family & Children Dossier
+              ==================================================================== */}
+          {isParent && (
             <div
               style={{
-                background: 'var(--color-gold-light)',
-                border: '1.5px dashed var(--color-gold-primary)',
-                borderRadius: '12px',
+                background: '#FFFFFF',
+                border: '1.5px solid var(--border-light)',
+                borderRadius: '16px',
                 padding: '24px',
-                textAlign: 'center',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: '12px',
+                boxShadow: 'var(--shadow-sm)',
               }}
             >
-              <span style={{ fontSize: '32px' }}>📖</span>
-              <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '800', color: 'var(--color-green-deep)' }}>
-                No Active Course Enrollment
-              </h3>
-              <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-body)', lineHeight: '1.5' }}>
-                You have not yet enrolled in the Quran Reading &amp; Tajweed Mastery course. Choose a teacher to unlock interactive Uthmani Mushaf recitation, module video lessons, and live feedback.
-              </p>
-              <button
-                type="button"
-                onClick={onNavigateToCatalog}
-                className="btn-auth-submit"
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <Icon name="users" size={20} />
+                  <h3 style={{ margin: 0, fontSize: '17px', fontWeight: '800', color: 'var(--color-green-deep)' }}>
+                    Registered Children (Family Roster)
+                  </h3>
+                </div>
+                <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--color-green-primary)' }}>
+                  Family ID: FAM-8821
+                </span>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {/* Child Card 1 */}
+                <div
+                  style={{
+                    background: '#F8FAFC',
+                    border: '1px solid #E2E8F0',
+                    borderRadius: '12px',
+                    padding: '14px 16px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <Icon name="student" size={22} />
+                    <div>
+                      <div style={{ fontWeight: '700', fontSize: '14.5px', color: 'var(--color-green-deep)' }}>
+                        Tariq Al-Mansoor (QI-STU-8842)
+                      </div>
+                      <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+                        Para 12 (40%) • Mentor: Dr. Sheikh Ahmad Al-Azhari
+                      </span>
+                    </div>
+                  </div>
+                  <span style={{ background: '#DCFCE7', color: '#166534', fontSize: '11px', fontWeight: '800', padding: '3px 8px', borderRadius: '6px' }}>
+                    96% ATTENDANCE
+                  </span>
+                </div>
+
+                {/* Child Card 2 */}
+                <div
+                  style={{
+                    background: '#F8FAFC',
+                    border: '1px solid #E2E8F0',
+                    borderRadius: '12px',
+                    padding: '14px 16px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <Icon name="student" size={22} />
+                    <div>
+                      <div style={{ fontWeight: '700', fontSize: '14.5px', color: 'var(--color-green-deep)' }}>
+                        Zaid bin Harith (QI-STU-7721)
+                      </div>
+                      <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+                        Para 6 (20%) • Mentor: Ustadh Mahmoud Al-Misri
+                      </span>
+                    </div>
+                  </div>
+                  <span style={{ background: '#DCFCE7', color: '#166534', fontSize: '11px', fontWeight: '800', padding: '3px 8px', borderRadius: '6px' }}>
+                    92% ATTENDANCE
+                  </span>
+                </div>
+              </div>
+
+              <div
                 style={{
-                  margin: '8px 0 0 0',
-                  padding: '10px 20px',
-                  fontSize: '13.5px',
-                  width: 'auto',
+                  marginTop: '16px',
+                  background: 'var(--color-gold-light)',
+                  border: '1px solid rgba(197, 164, 90, 0.4)',
+                  borderRadius: '10px',
+                  padding: '12px 14px',
+                  fontSize: '12.5px',
+                  color: 'var(--color-green-deep)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
                 }}
               >
-                <span>Browse Course &amp; Enroll</span>
-              </button>
-            </div>
-          ) : (
-            <div
-              style={{
-                background: 'var(--color-green-surface)',
-                border: '1px solid rgba(13,74,56,0.15)',
-                borderRadius: '12px',
-                padding: '20px',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '10px',
-              }}
-            >
-              <h3 style={{ margin: 0, fontSize: '15px', fontWeight: '800', color: 'var(--color-green-deep)' }}>
-                Faculty Credentials
-              </h3>
-              <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-body)' }}>
-                <strong>Certification:</strong> {user?.sanadCertification || '10 Qira’at Mutawatirah'}
-              </p>
-              <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-body)' }}>
-                <strong>Specialization:</strong> {user?.specialization || 'Tajweed & Advanced Hifz'}
-              </p>
-              <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-body)' }}>
-                <strong>Experience:</strong> {user?.yearsExperience || '14+ years'}
-              </p>
+                <Icon name="zap" size={16} color="var(--color-gold-deep)" />
+                <span>
+                  All child progress records sync automatically to your Guardian Progress Dashboard tab.
+                </span>
+              </div>
             </div>
           )}
+
+          {/* ====================================================================
+              TEACHER VIEW: Faculty Scholar Accreditation Card
+              ==================================================================== */}
+          {isTeacher && (
+            <div
+              style={{
+                background: '#FFFFFF',
+                border: '1.5px solid var(--border-light)',
+                borderRadius: '16px',
+                padding: '24px',
+                boxShadow: 'var(--shadow-sm)',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <Icon name="award" size={20} color="var(--color-gold-deep)" />
+                  <h3 style={{ margin: 0, fontSize: '17px', fontWeight: '800', color: 'var(--color-green-deep)' }}>
+                    Teacher Credentials &amp; Certifications
+                  </h3>
+                </div>
+                <span style={{ background: '#FEF3C7', color: '#92400E', padding: '3px 10px', borderRadius: '999px', fontSize: '11px', fontWeight: '700' }}>
+                  Verified Teacher
+                </span>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div style={{ background: '#F8FAFC', padding: '12px 14px', borderRadius: '10px', border: '1px solid #E2E8F0' }}>
+                  <span style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>Certification / Ijazah:</span>
+                  <div style={{ fontWeight: '700', fontSize: '13.5px', color: 'var(--color-green-deep)' }}>
+                    {user?.sanadCertification || '10 Qira’at Mutawatirah Certification'}
+                  </div>
+                </div>
+
+                <div style={{ background: '#F8FAFC', padding: '12px 14px', borderRadius: '10px', border: '1px solid #E2E8F0' }}>
+                  <span style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>Specialization:</span>
+                  <div style={{ fontWeight: '700', fontSize: '13.5px', color: 'var(--color-green-deep)' }}>
+                    {user?.specialization || 'Tajweed & Quran Memorization'}
+                  </div>
+                </div>
+
+                <div style={{ background: '#F8FAFC', padding: '12px 14px', borderRadius: '10px', border: '1px solid #E2E8F0' }}>
+                  <span style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>Next Scheduled Session:</span>
+                  <div style={{ fontWeight: '700', fontSize: '13.5px', color: '#0D4A38' }}>
+                    {user?.nextSession || 'Today at 5:00 PM with Tariq Al-Mansoor'}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ====================================================================
+              ADMIN VIEW: Security & Audit Tier
+              ==================================================================== */}
+          {isAdmin && (
+            <div
+              style={{
+                background: '#FFFFFF',
+                border: '1.5px solid var(--border-light)',
+                borderRadius: '16px',
+                padding: '24px',
+                boxShadow: 'var(--shadow-sm)',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <Icon name="shield-check" size={20} />
+                  <h3 style={{ margin: 0, fontSize: '17px', fontWeight: '800', color: 'var(--color-green-deep)' }}>
+                    Superuser Security Matrix
+                  </h3>
+                </div>
+                <span style={{ background: '#0D4A38', color: '#FFDF85', padding: '3px 10px', borderRadius: '999px', fontSize: '11px', fontWeight: '800' }}>
+                  TIER-1 ACCESS
+                </span>
+              </div>
+
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                {['Database Provisioning', 'Faculty Verification', 'Audit Log Access', 'Fee Approvals', 'Salary Disbursement', 'Global Announcements'].map((perm) => (
+                  <span
+                    key={perm}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      background: '#EBF5F0',
+                      color: '#0D4A38',
+                      border: '1px solid rgba(13, 74, 56, 0.2)',
+                      padding: '6px 12px',
+                      borderRadius: '8px',
+                      fontSize: '12px',
+                      fontWeight: '700',
+                    }}
+                  >
+                    <Icon name="check-circle" size={12} color="#0D4A38" />
+                    <span>{perm}</span>
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Quick Support Card */}
+          <div
+            style={{
+              background: '#FFFFFF',
+              border: '1.5px solid var(--border-light)',
+              borderRadius: '16px',
+              padding: '20px',
+              boxShadow: 'var(--shadow-sm)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}
+          >
+            <div>
+              <div style={{ fontWeight: '800', fontSize: '14.5px', color: 'var(--color-green-deep)' }}>
+                Need Academic Support or Assistance?
+              </div>
+              <span style={{ fontSize: '12.5px', color: 'var(--text-muted)' }}>
+                Institute Registrar: support@ourquran.com • +880 1784-413139
+              </span>
+            </div>
+            <a
+              href="mailto:support@ourquran.com"
+              style={{
+                background: 'var(--color-green-primary)',
+                color: '#FFDF85',
+                padding: '8px 14px',
+                borderRadius: '8px',
+                textDecoration: 'none',
+                fontWeight: '700',
+                fontSize: '12px',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              Contact Registrar
+            </a>
+          </div>
         </div>
       </div>
     </div>

@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { findUserByEmail, createUser } from '../../../../lib/db';
 import { createSessionToken, setSessionCookie } from '../../../../lib/auth';
 
-const ALLOWED_ROLES = ['student', 'teacher'];
+const ALLOWED_ROLES = ['student', 'teacher', 'parent'];
 
 export async function POST(request) {
   try {
@@ -37,11 +37,11 @@ export async function POST(request) {
       );
     }
 
-    // 2. Validate allowed roles (Only Student and Teacher are allowed)
+    // 2. Validate allowed roles (Student, Teacher, Parent)
     if (!ALLOWED_ROLES.includes(normalizedRole)) {
       return NextResponse.json(
         {
-          error: 'Registration is exclusively open for Students and Teachers/Scholars.',
+          error: 'Registration is open for Students, Teachers/Scholars, and Parents/Guardians.',
           allowedRoles: ALLOWED_ROLES,
         },
         { status: 400 }
@@ -72,7 +72,7 @@ export async function POST(request) {
       );
     }
 
-    // 5. Assemble safe payload based on student or teacher role
+    // 5. Assemble safe payload based on student, teacher, or parent role
     const newUserData = {
       name: name.trim(),
       email: email.trim().toLowerCase(),
@@ -92,8 +92,13 @@ export async function POST(request) {
         specialization: specialization || 'Tajweed & Qira’at',
         yearsExperience: yearsExperience || '3+ years',
         qiraat: qiraat || 'Hafs ‘an ‘Asim',
+        hourlyRate: 25,
         studentsCount: 0,
         nextSession: 'Faculty Onboarding Interview (Upcoming)',
+      }),
+      ...(normalizedRole === 'parent' && {
+        phone: body.phone || '+880 1711-000000',
+        childrenIds: Array.isArray(body.childrenIds) && body.childrenIds.length > 0 ? body.childrenIds : ['QI-STU-8842'],
       }),
     };
 
@@ -106,7 +111,7 @@ export async function POST(request) {
         success: true,
         pendingApproval: true,
         message:
-          'Faculty scholar registration submitted! Your account is currently pending credential and Sanad verification by Institute Administrators. You will receive access once approved.',
+          'Teacher registration submitted! Your account is currently pending administrator approval. You will receive access once approved.',
         user: userSafe,
         redirectUrl: '/login?pendingApproval=true',
       });
@@ -116,7 +121,7 @@ export async function POST(request) {
     const token = createSessionToken(createdUser);
     const response = NextResponse.json({
       success: true,
-      message: 'Student account registered successfully! Opening your sanctuary workspace...',
+      message: 'Student account registered successfully! Opening your dashboard...',
       user: userSafe,
       redirectUrl: '/dashboard',
     });

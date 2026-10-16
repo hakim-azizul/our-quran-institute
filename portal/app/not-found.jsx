@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import { Icon } from '../components/Icons';
 
 export default function NotFound() {
   return (
@@ -16,18 +17,20 @@ export default function NotFound() {
           boxShadow: 'var(--shadow-card)',
         }}
       >
-        <div style={{ fontSize: '48px', marginBottom: '12px' }}>📖</div>
+        <div style={{ marginBottom: '16px' }}>
+          <Icon name="book-open" size={48} color="var(--color-green-primary)" />
+        </div>
 
         <div className="auth-card-badge">
           <span>404 — Page Not Found</span>
         </div>
 
         <h1 className="auth-card-title" style={{ fontSize: '26px', marginBottom: '8px' }}>
-          Sanctuary Page Not Found
+          Page Not Found
         </h1>
 
         <p className="auth-card-subtitle" style={{ marginBottom: '24px', fontSize: '13.5px' }}>
-          The portal route you are looking for does not exist or has been relocated.
+          The page you are looking for does not exist or has been moved.
         </p>
 
         <Link
@@ -35,7 +38,7 @@ export default function NotFound() {
           className="btn-auth-submit"
           style={{ textDecoration: 'none', display: 'inline-flex', width: 'auto', padding: '12px 24px' }}
         >
-          <span>Return to Portal Login</span>
+          <span>Return to Sign In</span>
         </Link>
       </div>
     </div>

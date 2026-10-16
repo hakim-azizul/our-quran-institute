@@ -15,6 +15,7 @@ export default function CourseCurriculumViewer({
   onLaunchQuiz,
   onRefreshEnrollment,
   onCourseUpdated,
+  onOpenReviewModal,
 }) {
   const isTeacher = currentUser?.role === 'teacher';
   const isTeacherOrAdmin = currentUser?.role === 'teacher' || currentUser?.role === 'admin';
@@ -77,6 +78,15 @@ export default function CourseCurriculumViewer({
     ? effectiveEnrollment.completedLessons
     : [];
 
+  // Course completion calculation for Ustadh Review eligibility
+  const allCourseLessons = modules.flatMap((m) => (Array.isArray(m.lessons) ? m.lessons : []));
+  const totalLessonsCount = allCourseLessons.length;
+  const totalCompletedLessons = allCourseLessons.filter((l) => completedLessons.includes(l.id)).length;
+  const isCourseFullyCompleted =
+    (totalLessonsCount > 0 && totalCompletedLessons >= totalLessonsCount) ||
+    effectiveEnrollment?.progressPercent === 100 ||
+    effectiveEnrollment?.status === 'Completed';
+
   // Teacher editing module state
   const [isEditingModule, setIsEditingModule] = useState(false);
   const [editModuleTitle, setEditModuleTitle] = useState('');
@@ -99,7 +109,9 @@ export default function CourseCurriculumViewer({
           borderRadius: '16px',
         }}
       >
-        <span style={{ fontSize: '36px', display: 'block', marginBottom: '12px' }}>📖</span>
+        <div style={{ marginBottom: '12px' }}>
+          <Icon name="book-open" size={36} color="var(--color-green-primary)" />
+        </div>
         <h3
           style={{
             fontFamily: 'var(--font-serif)',
@@ -267,7 +279,7 @@ export default function CourseCurriculumViewer({
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <span style={{ fontSize: '24px' }}>🎓</span>
+            <Icon name="student" size={24} />
             <div>
               <div
                 style={{
@@ -343,7 +355,8 @@ export default function CourseCurriculumViewer({
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
             <span className="dashboard-user-badge">
-              📖 Course Syllabus • {course.level || 'All Levels'}
+              <Icon name="book-open" size={13} style={{ marginRight: 5 }} />
+              Course Syllabus • {course.level || 'All Levels'}
             </span>
             <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
               {course.totalDuration || 'Comprehensive'}
@@ -422,6 +435,103 @@ export default function CourseCurriculumViewer({
         )}
       </div>
 
+      {/* Course Completion & Ustadh Review Banner (Only after course end) */}
+      {isCourseFullyCompleted ? (
+        <div
+          style={{
+            background: 'linear-gradient(135deg, #0D4A38 0%, #062A1F 100%)',
+            border: '2px solid var(--color-gold-primary)',
+            borderRadius: '16px',
+            padding: '24px 28px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '16px',
+            color: '#FFFFFF',
+            boxShadow: '0 8px 24px rgba(13, 74, 56, 0.25)',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <div
+              style={{
+                width: '52px',
+                height: '52px',
+                borderRadius: '50%',
+                background: 'rgba(255, 223, 133, 0.15)',
+                border: '1.5px solid var(--color-gold-primary)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#FFDF85',
+              }}
+            >
+              <Icon name="award" size={28} />
+            </div>
+            <div>
+              <span style={{ fontSize: '11.5px', fontWeight: '800', color: '#FFDF85', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                Course Completed
+              </span>
+              <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '20px', fontWeight: '700', color: '#FFFFFF', margin: '2px 0 4px 0' }}>
+                Masha'Allah! All Lessons Completed
+              </h3>
+              <p style={{ fontSize: '13px', color: '#E2E8F0', margin: 0, maxWidth: '620px' }}>
+                You have completed all lessons in <strong>{course.title}</strong>. Share feedback for your teacher ({course.teacherName || 'Teacher'}).
+              </p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => onOpenReviewModal && onOpenReviewModal(course.teacherId, course.teacherName, effectiveEnrollment?.studentId)}
+            className="btn-auth-submit"
+            style={{
+              margin: 0,
+              width: 'auto',
+              padding: '12px 22px',
+              fontSize: '13.5px',
+              fontWeight: '700',
+              background: 'linear-gradient(135deg, #C5A45A 0%, #997A2E 100%)',
+              borderColor: '#FFDF85',
+              color: '#062A1F',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              cursor: 'pointer',
+            }}
+          >
+            <Icon name="star" size={16} fill="#062A1F" color="#062A1F" />
+            <span>Review Ustadh ({course.teacherName?.split(' ')[0] || 'Teacher'})</span>
+          </button>
+        </div>
+      ) : (
+        <div
+          style={{
+            background: 'var(--color-green-surface)',
+            border: '1px solid rgba(13, 74, 56, 0.12)',
+            borderRadius: '12px',
+            padding: '12px 18px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '10px',
+            fontSize: '12.5px',
+            color: 'var(--color-green-deep)',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Icon name="lock" size={14} color="var(--color-gold-deep)" />
+            <span>
+              <strong>Ustadh Review Status:</strong> Evaluation opens only after completing the course ({totalCompletedLessons} of {totalLessonsCount} lessons mastered).
+            </span>
+          </div>
+          <span style={{ fontSize: '11.5px', fontWeight: '700', color: 'var(--color-gold-deep)' }}>
+            {totalLessonsCount > 0 ? Math.round((totalCompletedLessons / totalLessonsCount) * 100) : 0}% Course Progress
+          </span>
+        </div>
+      )}
+
       {/* Curriculum Grid Layout */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '22px' }}>
         {/* Left Column: Module & Lesson Tree */}
@@ -461,7 +571,9 @@ export default function CourseCurriculumViewer({
                 color: 'var(--text-muted)',
               }}
             >
-              <span style={{ fontSize: '28px', display: 'block', marginBottom: '8px' }}>📚</span>
+              <div style={{ display: 'inline-flex', padding: '12px', borderRadius: '50%', background: 'var(--color-green-surface)', color: 'var(--color-green-primary)', marginBottom: '8px' }}>
+                <Icon name="book-open" size={24} />
+              </div>
               <div style={{ fontSize: '14px', fontWeight: '700', color: 'var(--text-main)', marginBottom: '4px' }}>
                 No Modules Added Yet
               </div>
@@ -516,6 +628,9 @@ export default function CourseCurriculumViewer({
                     {isFullyComplete && (
                       <span
                         style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '4px',
                           fontSize: '11px',
                           fontWeight: '700',
                           color: '#166534',
@@ -524,7 +639,8 @@ export default function CourseCurriculumViewer({
                           borderRadius: '4px',
                         }}
                       >
-                        ✓ Completed
+                        <Icon name="check-circle" size={11} color="#166534" />
+                        <span>Completed</span>
                       </span>
                     )}
                   </div>
@@ -553,7 +669,9 @@ export default function CourseCurriculumViewer({
         <div className="dash-panel">
           {!activeModule ? (
             <div style={{ padding: '48px 24px', textAlign: 'center' }}>
-              <span style={{ fontSize: '48px', display: 'block', marginBottom: '16px' }}>📖</span>
+              <div style={{ marginBottom: '16px' }}>
+                <Icon name="book-open" size={48} color="var(--color-green-primary)" />
+              </div>
               <h3
                 style={{
                   fontFamily: 'var(--font-serif)',
@@ -581,9 +699,10 @@ export default function CourseCurriculumViewer({
                 <button
                   onClick={() => setIsAddingModule(true)}
                   className="btn-auth-submit"
-                  style={{ width: 'auto', margin: '0 auto', padding: '12px 24px', fontSize: '14px' }}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', width: 'auto', margin: '0 auto', padding: '12px 24px', fontSize: '14px' }}
                 >
-                  <span>➕ Provision First Module &amp; Lessons</span>
+                  <Icon name="plus" size={16} color="#FFFFFF" />
+                  <span>Provision First Module &amp; Lessons</span>
                 </button>
               )}
             </div>
@@ -651,7 +770,8 @@ export default function CourseCurriculumViewer({
                       whiteSpace: 'nowrap',
                     }}
                   >
-                    ✏️ Edit Module Notes
+                    <Icon name="edit" size={13} style={{ marginRight: 6 }} />
+                    Edit Module Notes
                   </button>
                 )}
               </div>
@@ -679,7 +799,11 @@ export default function CourseCurriculumViewer({
                         fontSize: '14.5px',
                       }}
                     >
-                      {isDone ? <span>✓</span> : <span>📖</span>}
+                      {isDone ? (
+                        <Icon name="check-circle" size={15} color="#166534" />
+                      ) : (
+                        <Icon name="book" size={15} color="var(--color-gold-deep)" />
+                      )}
                       <span>{(les.title || 'Lesson').split(':')[0]}</span>
                     </button>
                   );
@@ -702,7 +826,7 @@ export default function CourseCurriculumViewer({
                       fontSize: '14.5px',
                     }}
                   >
-                    <span>🏆</span>
+                    <Icon name="award" size={16} color="var(--color-gold-deep)" />
                     <span>Module {activeModule.moduleNumber ?? safeModuleIndex + 1} Assessment</span>
                   </button>
                 )}
@@ -733,8 +857,8 @@ export default function CourseCurriculumViewer({
                       {activeLesson.title}
                     </h4>
                     {activeLesson.duration && (
-                      <span style={{ fontSize: '13.5px', fontWeight: '600', color: 'var(--text-muted)' }}>
-                        ⏱ {activeLesson.duration}
+                      <span style={{ fontSize: '13.5px', fontWeight: '600', color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                        <Icon name="clock" size={13} /> {activeLesson.duration}
                       </span>
                     )}
                   </div>
@@ -815,17 +939,26 @@ export default function CourseCurriculumViewer({
                       >
                         {completedLessons.includes(activeLesson.id) ? (
                           isTeacher ? (
-                            <span>
-                              ↺ Reopen Lesson for{' '}
-                              {effectiveEnrollment?.studentName?.split(' ')[0] || 'Student'}
+                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                              <Icon name="repeat" size={14} color="#DC2626" />
+                              <span>
+                                Reopen Lesson for{' '}
+                                {effectiveEnrollment?.studentName?.split(' ')[0] || 'Student'}
+                              </span>
                             </span>
                           ) : (
-                            <span>✓ Lesson Completed</span>
+                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                              <Icon name="check-circle" size={14} color="#166534" />
+                              <span>Lesson Completed</span>
+                            </span>
                           )
                         ) : isTeacher ? (
-                          <span>
-                            ✓ Verify &amp; Mark Mastered for{' '}
-                            {effectiveEnrollment?.studentName?.split(' ')[0] || 'Student'}
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                            <Icon name="check-circle" size={14} color="#FFFFFF" />
+                            <span>
+                              Verify &amp; Mark Mastered for{' '}
+                              {effectiveEnrollment?.studentName?.split(' ')[0] || 'Student'}
+                            </span>
                           </span>
                         ) : (
                           <>
@@ -889,6 +1022,9 @@ export default function CourseCurriculumViewer({
           >
             <h3
               style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
                 fontFamily: 'var(--font-serif)',
                 fontSize: '22px',
                 fontWeight: '700',
@@ -896,7 +1032,8 @@ export default function CourseCurriculumViewer({
                 marginBottom: '14px',
               }}
             >
-              ➕ Provision New Curriculum Module
+              <Icon name="plus" size={20} color="var(--color-green-primary)" />
+              <span>Provision New Curriculum Module</span>
             </h3>
 
             <div className="form-group" style={{ marginBottom: '14px' }}>
@@ -974,9 +1111,13 @@ export default function CourseCurriculumViewer({
                 fontWeight: '700',
                 color: 'var(--color-green-primary)',
                 marginBottom: '14px',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
               }}
             >
-              ✏️ Update Module Curriculum
+              <Icon name="edit" size={18} />
+              Update Module Curriculum
             </h3>
 
             <div className="form-group" style={{ marginBottom: '14px' }}>

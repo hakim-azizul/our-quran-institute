@@ -20,7 +20,7 @@ export default function AuthNavbar() {
         />
         <div className="auth-brand-info">
           <span className="auth-brand-title">Our Quran Institute</span>
-          <span className="auth-brand-subtitle">Sanctuary Learning Portal</span>
+          <span className="auth-brand-subtitle">Student &amp; Parent Portal</span>
         </div>
       </Link>
 
@@ -34,18 +34,18 @@ export default function AuthNavbar() {
           className="auth-nav-link"
           title="Return to the Institute public landing page"
         >
-          ← Return to Institute Website
+          ← Institute Website
         </a>
 
         {/* Page Switcher */}
         {isLoginPage ? (
           <Link href="/register" className="auth-nav-pill-btn">
-            <span>Create New Account</span>
+            <span>Create Account</span>
             <Icon name="arrow-right" size={14} color="currentColor" />
           </Link>
         ) : (
           <Link href="/login" className="auth-nav-pill-btn">
-            <span>Sign In to Portal</span>
+            <span>Sign In</span>
             <Icon name="arrow-right" size={14} color="currentColor" />
           </Link>
         )}

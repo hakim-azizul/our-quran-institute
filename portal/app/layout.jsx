@@ -1,8 +1,8 @@
 import './globals.css';
 
 export const metadata = {
-  title: 'Sanctuary Learning Portal — Our Quran Institute',
-  description: 'Secure student, faculty and parent portal for 1-on-1 Quran memorization, Tajweed, and authentic Islamic scholarship.',
+  title: 'Our Quran Institute — Student & Parent Portal',
+  description: '1-on-1 live online Quran classes, Tajweed, and Hifz programs for students in the UK, USA, Canada, and Europe.',
   icons: {
     icon: '/assets/logo_badge.png',
   },

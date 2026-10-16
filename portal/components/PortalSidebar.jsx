@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { useRouter, usePathname } from 'next/navigation';
 import { Icon } from './Icons';
 
 export default function PortalSidebar({
@@ -10,20 +11,61 @@ export default function PortalSidebar({
   onTabChange,
   enrollment,
   coursesCount = 1,
+  pendingUsersCount = 0,
   isMobileOpen = false,
   onCloseMobile,
   onLogout,
   portalType = 'dashboard', // 'dashboard' | 'admin'
 }) {
+  const router = useRouter();
+  const pathname = usePathname();
+
   const isStudent = user?.role === 'student';
   const isTeacher = user?.role === 'teacher';
+  const isParent = user?.role === 'parent';
   const isAdmin = user?.role === 'admin';
   const isTeacherPending =
     isTeacher && user?.status !== 'Verified Scholar' && user?.status !== 'Active';
   const isEnrolled = isStudent ? !!enrollment : true;
 
+  const slugMap = {
+    progress: '/dashboard/progress',
+    digitalquran: '/dashboard/digital-quran',
+    curriculum: '/dashboard/curriculum',
+    quran: '/dashboard/quran',
+    quiz: '/dashboard/quiz',
+    invoices: '/dashboard/invoices',
+    dictionary: '/dashboard/dictionary',
+    catalog: '/dashboard/catalog',
+    profile: '/dashboard/profile',
+    actionboard: '/dashboard/action-board',
+    salary: '/dashboard/salary',
+    overview: '/dashboard/students',
+    // Admin tabs
+    analytics: '/admin/analytics',
+    users: '/admin/users',
+    finances: '/admin/finances',
+    courses: '/admin/courses',
+    settings: '/admin/settings',
+  };
+
+  const currentTab = (() => {
+    if (activeTab) return activeTab;
+    for (const [k, url] of Object.entries(slugMap)) {
+      if (pathname === url || pathname?.startsWith(url)) return k;
+    }
+    return portalType === 'admin' ? 'analytics' : 'progress';
+  })();
+
   const handleItemClick = (tabKey) => {
-    if (onTabChange) onTabChange(tabKey);
+    if (onTabChange) {
+      onTabChange(tabKey);
+    } else {
+      const targetUrl = slugMap[tabKey];
+      if (targetUrl) {
+        router.push(targetUrl);
+      }
+    }
     if (onCloseMobile) onCloseMobile();
   };
 
@@ -42,13 +84,18 @@ export default function PortalSidebar({
             src="/assets/logo_gold.png"
             alt="Our Quran Institute"
             className="portal-sidebar-logo"
+            onError={(e) => { e.target.style.display = 'none'; }}
           />
           <div className="portal-brand-text">
             <span className="portal-brand-name">Our Quran Institute</span>
             <span className="portal-brand-tag">
               {portalType === 'admin'
-                ? 'Admin Superuser Console'
-                : 'Sanctuary Learning LMS'}
+                ? 'Admin'
+                : isParent
+                ? 'Parent Portal'
+                : isTeacher
+                ? 'Teacher Portal'
+                : 'Student Portal'}
             </span>
           </div>
         </div>
@@ -58,32 +105,71 @@ export default function PortalSidebar({
           {/* ================= ADMIN CONSOLE SIDEBAR ================= */}
           {portalType === 'admin' ? (
             <>
-              <div className="portal-nav-section-title">ADMINISTRATOR CONTROLS</div>
+              <div className="portal-nav-section-title">ADMIN</div>
+
+              <button
+                type="button"
+                onClick={() => handleItemClick('analytics')}
+                className={`portal-nav-item ${currentTab === 'analytics' ? 'active' : ''}`}
+              >
+                <div className="portal-nav-item-content">
+                  <span className="nav-icon"><Icon name="analytics" size={17} /></span>
+                  <span>Analytics</span>
+                </div>
+                <span className="portal-nav-badge">Live</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleItemClick('users')}
+                className={`portal-nav-item ${currentTab === 'users' ? 'active' : ''}`}
+              >
+                <div className="portal-nav-item-content">
+                  <span className="nav-icon"><Icon name="users" size={17} /></span>
+                  <span>Users</span>
+                </div>
+                {pendingUsersCount > 0 && (
+                  <span className="portal-nav-badge" style={{ background: '#F59E0B', color: '#FFF' }}>
+                    {pendingUsersCount}
+                  </span>
+                )}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleItemClick('finances')}
+                className={`portal-nav-item ${currentTab === 'finances' ? 'active' : ''}`}
+              >
+                <div className="portal-nav-item-content">
+                  <span className="nav-icon"><Icon name="wallet" size={17} /></span>
+                  <span>Finances</span>
+                </div>
+              </button>
 
               <button
                 type="button"
                 onClick={() => handleItemClick('courses')}
-                className={`portal-nav-item ${activeTab === 'courses' ? 'active' : ''}`}
+                className={`portal-nav-item ${currentTab === 'courses' ? 'active' : ''}`}
               >
                 <div className="portal-nav-item-content">
-                  <span className="nav-icon">📚</span>
-                  <span>Courses &amp; Curriculum</span>
+                  <span className="nav-icon"><Icon name="book" size={17} /></span>
+                  <span>Courses</span>
                 </div>
                 <span className="portal-nav-badge">{coursesCount}</span>
               </button>
 
               <button
                 type="button"
-                onClick={() => handleItemClick('users')}
-                className={`portal-nav-item ${activeTab === 'users' ? 'active' : ''}`}
+                onClick={() => handleItemClick('settings')}
+                className={`portal-nav-item ${currentTab === 'settings' ? 'active' : ''}`}
               >
                 <div className="portal-nav-item-content">
-                  <span className="nav-icon">👥</span>
-                  <span>Institute Database</span>
+                  <span className="nav-icon"><Icon name="settings" size={17} /></span>
+                  <span>Settings</span>
                 </div>
               </button>
 
-              <div className="portal-nav-section-title">PORTAL NAVIGATION</div>
+              <div className="portal-nav-section-title">NAVIGATION</div>
 
               <Link
                 href="/dashboard"
@@ -91,345 +177,221 @@ export default function PortalSidebar({
                 style={{ color: 'var(--color-green-primary)', fontWeight: '700' }}
               >
                 <div className="portal-nav-item-content">
-                  <span className="nav-icon">🎓</span>
-                  <span>Switch to LMS Workspace</span>
+                  <span className="nav-icon"><Icon name="student" size={17} color="var(--color-green-primary)" /></span>
+                  <span>Student Portal</span>
                 </div>
-                <span>→</span>
+                <Icon name="arrow-right" size={13} color="var(--color-green-primary)" />
               </Link>
-
-              <a
-                href={process.env.NEXT_PUBLIC_LANDING_URL || 'http://localhost:3000'}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="portal-nav-item"
-              >
-                <div className="portal-nav-item-content">
-                  <span className="nav-icon">🌐</span>
-                  <span>Institute Website</span>
-                </div>
-                <span>↗</span>
-              </a>
             </>
-          ) : (
-            /* ================= LMS DASHBOARD SIDEBAR (STUDENT / TEACHER / ADMIN) ================= */
+          ) : isTeacher ? (
+            /* ================= TEACHER DASHBOARD SIDEBAR ================= */
             <>
-              {/* --- TEACHER PENDING APPROVAL --- */}
-              {isTeacher && isTeacherPending ? (
+              {isTeacherPending ? (
                 <>
                   <div className="portal-nav-section-title" style={{ color: '#D97706' }}>
-                    FACULTY STATUS (LOCKED)
+                    STATUS
                   </div>
-
-                  <button
-                    type="button"
-                    onClick={() => handleItemClick('overview')}
-                    className={`portal-nav-item ${activeTab === 'overview' ? 'active' : ''}`}
-                    style={activeTab !== 'overview' ? { background: '#FEF3C7', borderColor: '#F59E0B', color: '#92400E' } : {}}
-                  >
+                  <div className="portal-nav-item active" style={{ background: '#FEF3C7', color: '#92400E' }}>
                     <div className="portal-nav-item-content">
-                      <span className="nav-icon">⏳</span>
-                      <span style={{ fontWeight: 700 }}>Awaiting Admin Approval</span>
+                      <span className="nav-icon"><Icon name="clock" size={17} color="#92400E" /></span>
+                      <span style={{ fontWeight: 700 }}>Pending Approval</span>
                     </div>
-                  </button>
-
-                  <div className="portal-nav-section-title">SCHOLAR ACCOUNT</div>
-
-                  <button
-                    type="button"
-                    onClick={() => handleItemClick('profile')}
-                    className={`portal-nav-item ${activeTab === 'profile' ? 'active' : ''}`}
-                  >
-                    <div className="portal-nav-item-content">
-                      <span className="nav-icon">👤</span>
-                      <span>Faculty Scholar Profile</span>
-                    </div>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => handleItemClick('catalog')}
-                    className={`portal-nav-item ${activeTab === 'catalog' ? 'active' : ''}`}
-                  >
-                    <div className="portal-nav-item-content">
-                      <span className="nav-icon">🌟</span>
-                      <span>Institute Courses Catalog</span>
-                    </div>
-                    <span className="portal-nav-badge">{coursesCount}</span>
-                  </button>
-
-                  <div className="portal-nav-section-title">LOCKED INSTRUCTION TOOLS</div>
-
-                  <div
-                    className="portal-nav-item"
-                    style={{ opacity: 0.5, cursor: 'not-allowed' }}
-                    title="Faculty tools unlock once verified by Administrator"
-                  >
-                    <div className="portal-nav-item-content">
-                      <span className="nav-icon">🔒</span>
-                      <span>Course Modules Editor</span>
-                    </div>
-                    <span className="portal-nav-badge" style={{ background: '#FEE2E2', color: '#991B1B' }}>Locked</span>
                   </div>
-
-                  <div
-                    className="portal-nav-item"
-                    style={{ opacity: 0.5, cursor: 'not-allowed' }}
-                    title="Faculty tools unlock once verified by Administrator"
-                  >
-                    <div className="portal-nav-item-content">
-                      <span className="nav-icon">🔒</span>
-                      <span>Quran Mistake Annotator</span>
-                    </div>
-                    <span className="portal-nav-badge" style={{ background: '#FEE2E2', color: '#991B1B' }}>Locked</span>
-                  </div>
-
-                  <div
-                    className="portal-nav-item"
-                    style={{ opacity: 0.5, cursor: 'not-allowed' }}
-                    title="Faculty tools unlock once verified by Administrator"
-                  >
-                    <div className="portal-nav-item-content">
-                      <span className="nav-icon">🔒</span>
-                      <span>Student Roster &amp; Analytics</span>
-                    </div>
-                    <span className="portal-nav-badge" style={{ background: '#FEE2E2', color: '#991B1B' }}>Locked</span>
-                  </div>
-                </>
-              ) : isTeacher ? (
-                /* --- TEACHER VERIFIED SCHOLAR --- */
-                <>
-                  <div className="portal-nav-section-title">FACULTY INSTRUCTION</div>
-
-                  <button
-                    type="button"
-                    onClick={() => handleItemClick('curriculum')}
-                    className={`portal-nav-item ${activeTab === 'curriculum' ? 'active' : ''}`}
-                  >
-                    <div className="portal-nav-item-content">
-                      <span className="nav-icon">📚</span>
-                      <span>Course Modules Editor</span>
-                    </div>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => handleItemClick('quran')}
-                    className={`portal-nav-item ${activeTab === 'quran' ? 'active' : ''}`}
-                  >
-                    <div className="portal-nav-item-content">
-                      <span className="nav-icon">📖</span>
-                      <span>Quran Mistake Annotator</span>
-                    </div>
-                    <span className="portal-nav-badge">Live</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => handleItemClick('overview')}
-                    className={`portal-nav-item ${activeTab === 'overview' ? 'active' : ''}`}
-                  >
-                    <div className="portal-nav-item-content">
-                      <span className="nav-icon">📊</span>
-                      <span>Student Roster &amp; Analytics</span>
-                    </div>
-                  </button>
-
-                  <div className="portal-nav-section-title">SCHOLAR ACCOUNT</div>
-
-                  <button
-                    type="button"
-                    onClick={() => handleItemClick('catalog')}
-                    className={`portal-nav-item ${activeTab === 'catalog' ? 'active' : ''}`}
-                  >
-                    <div className="portal-nav-item-content">
-                      <span className="nav-icon">🌟</span>
-                      <span>Institute Courses Catalog</span>
-                    </div>
-                    <span className="portal-nav-badge">{coursesCount}</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => handleItemClick('profile')}
-                    className={`portal-nav-item ${activeTab === 'profile' ? 'active' : ''}`}
-                  >
-                    <div className="portal-nav-item-content">
-                      <span className="nav-icon">👤</span>
-                      <span>Faculty Scholar Profile</span>
-                    </div>
-                  </button>
-                </>
-              ) : isStudent && !isEnrolled ? (
-                /* --- STUDENT NOT ENROLLED YET --- */
-                <>
-                  <div className="portal-nav-section-title">COURSE ENROLLMENT</div>
-
-                  <button
-                    type="button"
-                    onClick={() => handleItemClick('catalog')}
-                    className={`portal-nav-item ${activeTab === 'catalog' ? 'active' : ''}`}
-                  >
-                    <div className="portal-nav-item-content">
-                      <span className="nav-icon">🌟</span>
-                      <span>Course Catalog &amp; Enroll</span>
-                    </div>
-                    <span className="portal-nav-badge">Select Scholar</span>
-                  </button>
-
-                  <div className="portal-nav-section-title">SANCTUARY LEARNING LMS</div>
-
-                  <button
-                    type="button"
-                    onClick={() => handleItemClick('curriculum')}
-                    className={`portal-nav-item ${activeTab === 'curriculum' ? 'active' : ''}`}
-                  >
-                    <div className="portal-nav-item-content">
-                      <span className="nav-icon">📚</span>
-                      <span>Course Syllabus &amp; Modules</span>
-                    </div>
-                    <span className="portal-nav-badge" style={{ fontSize: '11px' }}>Preview</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => handleItemClick('quran')}
-                    className={`portal-nav-item ${activeTab === 'quran' ? 'active' : ''}`}
-                  >
-                    <div className="portal-nav-item-content">
-                      <span className="nav-icon">📖</span>
-                      <span>Interactive Quran &amp; Mistake Marker</span>
-                    </div>
-                    <span className="portal-nav-badge">Live</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => handleItemClick('overview')}
-                    className={`portal-nav-item ${activeTab === 'overview' ? 'active' : ''}`}
-                  >
-                    <div className="portal-nav-item-content">
-                      <span className="nav-icon">📊</span>
-                      <span>Academic Progress &amp; Milestones</span>
-                    </div>
-                  </button>
-
-                  <div className="portal-nav-section-title">STUDENT ACCOUNT</div>
-
-                  <button
-                    type="button"
-                    onClick={() => handleItemClick('profile')}
-                    className={`portal-nav-item ${activeTab === 'profile' ? 'active' : ''}`}
-                  >
-                    <div className="portal-nav-item-content">
-                      <span className="nav-icon">👤</span>
-                      <span>My Student Profile</span>
-                    </div>
-                  </button>
                 </>
               ) : (
-                /* --- ENROLLED STUDENT (OR ADMIN VISITING LMS) --- */
                 <>
-                  <div className="portal-nav-section-title">SANCTUARY LEARNING LMS</div>
+                  <div className="portal-nav-section-title">TEACHING</div>
 
                   <button
                     type="button"
-                    onClick={() => handleItemClick('curriculum')}
-                    className={`portal-nav-item ${activeTab === 'curriculum' ? 'active' : ''}`}
+                    onClick={() => handleItemClick('actionboard')}
+                    className={`portal-nav-item ${currentTab === 'actionboard' ? 'active' : ''}`}
                   >
                     <div className="portal-nav-item-content">
-                      <span className="nav-icon">📚</span>
-                      <span>Course Syllabus &amp; Modules</span>
+                      <span className="nav-icon"><Icon name="zap" size={17} /></span>
+                      <span>Action Board</span>
+                    </div>
+                    <span className="portal-nav-badge" style={{ background: '#0D4A38', color: '#FFDF85' }}>
+                      Daily
+                    </span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleItemClick('overview')}
+                    className={`portal-nav-item ${currentTab === 'overview' ? 'active' : ''}`}
+                  >
+                    <div className="portal-nav-item-content">
+                      <span className="nav-icon"><Icon name="users" size={17} /></span>
+                      <span>Students</span>
                     </div>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => handleItemClick('quran')}
-                    className={`portal-nav-item ${activeTab === 'quran' ? 'active' : ''}`}
+                    className={`portal-nav-item ${currentTab === 'quran' ? 'active' : ''}`}
                   >
                     <div className="portal-nav-item-content">
-                      <span className="nav-icon">📖</span>
-                      <span>Interactive Quran &amp; Mistake Marker</span>
-                    </div>
-                    <span className="portal-nav-badge">Live</span>
-                  </button>
-
-                  {isStudent && (
-                    <button
-                      type="button"
-                      onClick={() => handleItemClick('quiz')}
-                      className={`portal-nav-item ${activeTab === 'quiz' ? 'active' : ''}`}
-                    >
-                      <div className="portal-nav-item-content">
-                        <span className="nav-icon">📝</span>
-                        <span>Quizzes &amp; Tajweed Exams</span>
-                      </div>
-                    </button>
-                  )}
-
-                  <button
-                    type="button"
-                    onClick={() => handleItemClick('overview')}
-                    className={`portal-nav-item ${activeTab === 'overview' ? 'active' : ''}`}
-                  >
-                    <div className="portal-nav-item-content">
-                      <span className="nav-icon">📊</span>
-                      <span>Academic Progress &amp; Milestones</span>
+                      <span className="nav-icon"><Icon name="flag" size={17} /></span>
+                      <span>Annotator</span>
                     </div>
                   </button>
 
-                  <div className="portal-nav-section-title">
-                    {isAdmin ? 'ADMINISTRATOR TOOLS' : 'STUDENT ACCOUNT'}
-                  </div>
+                  <div className="portal-nav-section-title">FACULTY TOOLS</div>
 
                   <button
                     type="button"
-                    onClick={() => handleItemClick('catalog')}
-                    className={`portal-nav-item ${activeTab === 'catalog' ? 'active' : ''}`}
+                    onClick={() => handleItemClick('salary')}
+                    className={`portal-nav-item ${currentTab === 'salary' ? 'active' : ''}`}
                   >
                     <div className="portal-nav-item-content">
-                      <span className="nav-icon">🌟</span>
-                      <span>{isAdmin ? 'Course Catalog' : 'Explore Course Catalog'}</span>
+                      <span className="nav-icon"><Icon name="wallet" size={17} /></span>
+                      <span>Salary</span>
                     </div>
-                    <span className="portal-nav-badge">{coursesCount}</span>
+                    <span className="portal-nav-badge" style={{ background: '#EBF5F0', color: '#0D4A38' }}>
+                      Live
+                    </span>
                   </button>
 
                   <button
                     type="button"
-                    onClick={() => handleItemClick('profile')}
-                    className={`portal-nav-item ${activeTab === 'profile' ? 'active' : ''}`}
+                    onClick={() => handleItemClick('dictionary')}
+                    className={`portal-nav-item ${currentTab === 'dictionary' ? 'active' : ''}`}
                   >
                     <div className="portal-nav-item-content">
-                      <span className="nav-icon">👤</span>
-                      <span>{isAdmin ? 'Administrator Profile' : 'My Student Profile'}</span>
+                      <span className="nav-icon"><Icon name="book-marked" size={17} /></span>
+                      <span>Tajweed Tools</span>
                     </div>
                   </button>
 
-                  {isAdmin && (
-                    <>
-                      <div className="portal-nav-section-title">SYSTEM ADMINISTRATION</div>
-                      <Link
-                        href="/admin"
-                        className="portal-nav-item"
-                        style={{
-                          background: '#FEF3C7',
-                          borderColor: '#F59E0B',
-                          color: '#92400E',
-                          fontWeight: '700',
-                        }}
-                      >
-                        <div className="portal-nav-item-content">
-                          <span className="nav-icon">👑</span>
-                          <span>Admin Console</span>
-                        </div>
-                        <span>→</span>
-                      </Link>
-                    </>
-                  )}
+                  <button
+                    type="button"
+                    onClick={() => handleItemClick('curriculum')}
+                    className={`portal-nav-item ${currentTab === 'curriculum' ? 'active' : ''}`}
+                  >
+                    <div className="portal-nav-item-content">
+                      <span className="nav-icon"><Icon name="edit" size={17} /></span>
+                      <span>Curriculum</span>
+                    </div>
+                  </button>
                 </>
               )}
 
-              <div className="portal-nav-section-title">INSTITUTE LINKS</div>
+              <div className="portal-nav-section-title">ACCOUNT</div>
+              <button
+                type="button"
+                onClick={() => handleItemClick('profile')}
+                className={`portal-nav-item ${currentTab === 'profile' ? 'active' : ''}`}
+              >
+                <div className="portal-nav-item-content">
+                  <span className="nav-icon"><Icon name="scholar" size={17} /></span>
+                  <span>Profile</span>
+                </div>
+              </button>
+            </>
+          ) : (
+            /* ================= STUDENT & PARENT UNIFIED DASHBOARD SIDEBAR ================= */
+            <>
+              <div className="portal-nav-section-title">ACADEMICS</div>
+
+              <button
+                type="button"
+                onClick={() => handleItemClick('progress')}
+                className={`portal-nav-item ${currentTab === 'progress' ? 'active' : ''}`}
+              >
+                <div className="portal-nav-item-content">
+                  <span className="nav-icon"><Icon name="trending-up" size={17} /></span>
+                  <span>Progress</span>
+                </div>
+                <span className="portal-nav-badge" style={{ background: '#0D4A38', color: '#FFDF85' }}>
+                  Live
+                </span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleItemClick('digitalquran')}
+                className={`portal-nav-item ${currentTab === 'digitalquran' ? 'active' : ''}`}
+              >
+                <div className="portal-nav-item-content">
+                  <span className="nav-icon"><Icon name="book-open" size={17} /></span>
+                  <span>Quran Reader</span>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleItemClick('curriculum')}
+                className={`portal-nav-item ${currentTab === 'curriculum' ? 'active' : ''}`}
+              >
+                <div className="portal-nav-item-content">
+                  <span className="nav-icon"><Icon name="book-marked" size={17} /></span>
+                  <span>Curriculum</span>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleItemClick('quran')}
+                className={`portal-nav-item ${currentTab === 'quran' ? 'active' : ''}`}
+              >
+                <div className="portal-nav-item-content">
+                  <span className="nav-icon"><Icon name="flag" size={17} /></span>
+                  <span>Mistakes</span>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleItemClick('quiz')}
+                className={`portal-nav-item ${currentTab === 'quiz' ? 'active' : ''}`}
+              >
+                <div className="portal-nav-item-content">
+                  <span className="nav-icon"><Icon name="award" size={17} /></span>
+                  <span>Quizzes</span>
+                </div>
+              </button>
+
+              <div className="portal-nav-section-title">FINANCES</div>
+
+              <button
+                type="button"
+                onClick={() => handleItemClick('invoices')}
+                className={`portal-nav-item ${currentTab === 'invoices' ? 'active' : ''}`}
+              >
+                <div className="portal-nav-item-content">
+                  <span className="nav-icon"><Icon name="receipt" size={17} /></span>
+                  <span>Invoices</span>
+                </div>
+              </button>
+
+              <div className="portal-nav-section-title">ACCOUNT</div>
+
+              <button
+                type="button"
+                onClick={() => handleItemClick('profile')}
+                className={`portal-nav-item ${currentTab === 'profile' ? 'active' : ''}`}
+              >
+                <div className="portal-nav-item-content">
+                  <span className="nav-icon"><Icon name={isParent ? 'parent' : 'student'} size={17} /></span>
+                  <span>Profile</span>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleItemClick('catalog')}
+                className={`portal-nav-item ${currentTab === 'catalog' ? 'active' : ''}`}
+              >
+                <div className="portal-nav-item-content">
+                  <span className="nav-icon"><Icon name="sparkles" size={17} /></span>
+                  <span>Courses</span>
+                </div>
+                <span className="portal-nav-badge">{coursesCount}</span>
+              </button>
+
+              <div className="portal-nav-section-title">EXTERNAL</div>
               <a
                 href={process.env.NEXT_PUBLIC_LANDING_URL || 'http://localhost:3000'}
                 target="_blank"
@@ -437,10 +399,10 @@ export default function PortalSidebar({
                 className="portal-nav-item"
               >
                 <div className="portal-nav-item-content">
-                  <span className="nav-icon">🌐</span>
-                  <span>Institute Website</span>
+                  <span className="nav-icon"><Icon name="mosque" size={17} /></span>
+                  <span>Website</span>
                 </div>
-                <span>↗</span>
+                <Icon name="arrow-right" size={13} color="var(--text-dim)" />
               </a>
             </>
           )}
@@ -450,22 +412,28 @@ export default function PortalSidebar({
         <div className="portal-sidebar-footer">
           <div className="portal-user-card">
             <div className="portal-user-avatar">
-              {user?.avatar || (isTeacher ? '🕌' : isAdmin ? '👑' : '🎓')}
+              <Icon
+                name={isAdmin ? 'shield-user' : isTeacher ? 'scholar' : isParent ? 'parent' : 'student'}
+                size={20}
+                color="var(--color-green-primary)"
+              />
             </div>
             <div className="portal-user-details">
               <span className="portal-user-name" title={user?.name}>
-                {user?.name || 'Sanctuary Scholar'}
+                {user?.name || (isTeacher ? 'Teacher' : isParent ? 'Parent' : 'Student')}
               </span>
               <span className="portal-user-role-badge">
                 {isAdmin
-                  ? 'Administrator'
+                  ? 'Admin'
                   : isTeacher
                   ? isTeacherPending
-                    ? '⏳ Pending Approval'
-                    : 'Verified Scholar'
+                    ? 'Pending'
+                    : 'Teacher'
+                  : isParent
+                  ? 'Parent'
                   : isEnrolled
-                  ? 'Enrolled Student'
-                  : 'Registered Student'}
+                  ? 'Active Student'
+                  : 'Student'}
               </span>
             </div>
           </div>

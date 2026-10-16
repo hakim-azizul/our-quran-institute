@@ -124,17 +124,22 @@ export default function CourseQuizEngine({
         <button
           onClick={onClose}
           className="btn-table-action"
-          style={{ fontSize: '13px' }}
+          style={{ fontSize: '13px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
         >
-          Exit Assessment ✕
+          <span>Exit Assessment</span>
+          <Icon name="x" size={14} />
         </button>
       </div>
 
       {/* Result Card if submitted */}
       {quizResult ? (
         <div style={{ textAlign: 'center', padding: '24px 0' }}>
-          <div style={{ fontSize: '56px', marginBottom: '12px' }}>
-            {quizResult.passed ? '🎉' : '📖'}
+          <div style={{ marginBottom: '16px' }}>
+            {quizResult.passed ? (
+              <Icon name="award" size={52} color="#166534" />
+            ) : (
+              <Icon name="book-open" size={52} color="#991B1B" />
+            )}
           </div>
 
           <h4
@@ -181,8 +186,8 @@ export default function CourseQuizEngine({
             <span style={{ fontSize: '12.5px', fontWeight: '700', color: 'var(--color-gold-deep)' }}>
               Question {currentIndex + 1} of {totalQuestions}
             </span>
-            <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
-              ⏱ {quiz.timeLimitMinutes} Mins Allocated
+            <span style={{ fontSize: '12px', color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+              <Icon name="clock" size={13} /> {quiz.timeLimitMinutes} Mins Allocated
             </span>
           </div>
 
@@ -267,7 +272,14 @@ export default function CourseQuizEngine({
                 className="btn-auth-submit"
                 style={{ margin: 0, width: 'auto', padding: '10px 24px' }}
               >
-                {isSubmitting ? 'Grading Answers...' : 'Submit Assessment for Grading ✓'}
+                {isSubmitting ? (
+                  'Grading Answers...'
+                ) : (
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                    <span>Submit Assessment for Grading</span>
+                    <Icon name="check-circle" size={15} color="#FFFFFF" />
+                  </span>
+                )}
               </button>
             ) : (
               <button

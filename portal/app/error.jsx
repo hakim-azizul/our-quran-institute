@@ -23,7 +23,9 @@ export default function GlobalError({ error, reset }) {
           boxShadow: 'var(--shadow-elevated)',
         }}
       >
-        <div style={{ fontSize: '42px', marginBottom: '14px' }}>🕌</div>
+        <div style={{ marginBottom: '14px' }}>
+          <Icon name="alert-circle" size={44} color="#991B1B" />
+        </div>
 
         <div className="auth-card-badge" style={{ background: '#FEF2F2', borderColor: '#FCA5A5', color: '#991B1B' }}>
           <span>Session Notice</span>
@@ -34,7 +36,7 @@ export default function GlobalError({ error, reset }) {
         </h2>
 
         <p className="auth-card-subtitle" style={{ marginBottom: '24px', fontSize: '13.5px' }}>
-          An unexpected issue occurred while rendering this page. You can retry the action or return to the Sanctuary login.
+          An unexpected error occurred while loading this page. You can try again or return to sign in.
         </p>
 
         {error?.message && (
@@ -70,7 +72,7 @@ export default function GlobalError({ error, reset }) {
             className="auth-nav-pill-btn"
             style={{ display: 'inline-flex', alignItems: 'center' }}
           >
-            <span>Return to Login</span>
+            <span>Return to Sign In</span>
           </Link>
         </div>
       </div>

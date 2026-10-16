@@ -8,11 +8,11 @@ export default function TeacherRegisterFields({ formData, onChange }) {
     <div className="role-fields-container">
       <div className="role-fields-header">
         <Icon name="users" size={16} color="#0D4A38" />
-        <span>Faculty Sanad &amp; Scholarly Credentials</span>
+        <span>Teaching Credentials &amp; Certifications</span>
       </div>
 
       <div className="form-group">
-        <label className="form-label">Sanad / Ijazah Issuing Authority</label>
+        <label className="form-label">Certification / Ijazah Issuing Institution</label>
         <div className="form-input-container">
           <input
             type="text"

@@ -44,7 +44,7 @@ export async function POST(request) {
         return NextResponse.json(
           {
             error:
-              'TEACHER ACCOUNT PENDING APPROVAL: Your faculty scholar account is currently awaiting administrative approval by the Institute Governing Council. You cannot log in until an Administrator approves your credentials and Sanad Ijazah.',
+              'TEACHER ACCOUNT PENDING APPROVAL: Your teacher account is currently awaiting administrative approval. You will be able to log in once an Administrator approves your account.',
             code: 'TEACHER_APPROVAL_REQUIRED',
             status: user.status,
           },

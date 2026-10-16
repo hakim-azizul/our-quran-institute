@@ -132,7 +132,7 @@ export default function TeacherStudentDossier({
   const handleResolveMistake = async (mistakeId) => {
     const resolutionNote = window.prompt(
       'Enter resolution note for this recitation slip (e.g. Corrected during live session):',
-      'Recited with crisp pronunciation during 1-on-1 Sanctuary session. Mumtaz!'
+      'Recited with crisp pronunciation during 1-on-1 class session. Mumtaz!'
     );
     if (!resolutionNote) return;
 
@@ -316,7 +316,7 @@ export default function TeacherStudentDossier({
                       fontWeight: '700',
                     }}
                   >
-                    {stu.studentAvatar || '🎓'}
+                    <Icon name="student" size={18} />
                   </div>
                   <div>
                     <div style={{ fontSize: '14.5px', fontWeight: '700', color: isSelected ? 'var(--color-green-deep)' : 'var(--text-main)' }}>
@@ -395,7 +395,7 @@ export default function TeacherStudentDossier({
                   border: '2px solid var(--color-gold-primary)',
                 }}
               >
-                {activeStudent.studentAvatar || '🎓'}
+                <Icon name="student" size={28} />
               </div>
 
               <div>
@@ -412,7 +412,7 @@ export default function TeacherStudentDossier({
                       borderRadius: '6px',
                     }}
                   >
-                    INDIVIDUAL STUDENT DOSSIER
+                    STUDENT PROFILE
                   </span>
                   <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
                     • Enrolled in {course?.title || 'Quran Reading Foundation'}
@@ -449,13 +449,13 @@ export default function TeacherStudentDossier({
                   gap: '8px',
                 }}
               >
-                <span>📖</span>
+                <Icon name="book-open" size={16} />
                 <span>Launch Quran Mistake Marker</span>
               </button>
 
               <button
                 type="button"
-                onClick={() => alert(`Launching 1-on-1 Sanctuary Classroom with ${activeStudent.studentName || activeStudent.name}...`)}
+                onClick={() => alert(`Launching 1-on-1 Online Classroom with ${activeStudent.studentName || activeStudent.name}...`)}
                 className="btn-table-action"
                 style={{
                   padding: '10px 18px',
@@ -553,6 +553,9 @@ export default function TeacherStudentDossier({
               onClick={() => setInnerTab('materials')}
               className="btn-table-action"
               style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
                 padding: '9px 18px',
                 fontSize: '13.5px',
                 fontWeight: '700',
@@ -562,7 +565,8 @@ export default function TeacherStudentDossier({
                 borderColor: innerTab === 'materials' ? 'var(--color-gold-primary)' : 'var(--border-light)',
               }}
             >
-              📚 Course Material &amp; Lesson Progress
+              <Icon name="book-open" size={15} color="currentColor" />
+              <span>Course Material &amp; Lesson Progress</span>
             </button>
 
             <button
@@ -577,9 +581,12 @@ export default function TeacherStudentDossier({
                 background: innerTab === 'quizzes' ? 'var(--color-green-primary)' : 'var(--color-white)',
                 color: innerTab === 'quizzes' ? '#FFFFFF' : 'var(--text-body)',
                 borderColor: innerTab === 'quizzes' ? 'var(--color-gold-primary)' : 'var(--border-light)',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
               }}
             >
-              📝 Quiz &amp; Tajweed Exam Results ({activeStudent.completedQuizzes?.length || 0})
+              <Icon name="award" size={15} /> Quiz &amp; Tajweed Exam Results ({activeStudent.completedQuizzes?.length || 0})
             </button>
 
             <button
@@ -594,9 +601,12 @@ export default function TeacherStudentDossier({
                 background: innerTab === 'mistakes' ? 'var(--color-green-primary)' : 'var(--color-white)',
                 color: innerTab === 'mistakes' ? '#FFFFFF' : 'var(--text-body)',
                 borderColor: innerTab === 'mistakes' ? 'var(--color-gold-primary)' : 'var(--border-light)',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
               }}
             >
-              📖 Quran Mistake Annotations ({studentMistakes.length})
+              <Icon name="search" size={15} /> Quran Mistake Annotations ({studentMistakes.length})
             </button>
 
             <button
@@ -611,9 +621,12 @@ export default function TeacherStudentDossier({
                 background: innerTab === 'notes' ? 'var(--color-green-primary)' : 'var(--color-white)',
                 color: innerTab === 'notes' ? '#FFFFFF' : 'var(--text-body)',
                 borderColor: innerTab === 'notes' ? 'var(--color-gold-primary)' : 'var(--border-light)',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
               }}
             >
-              ✍️ Scholar Guidance Notes
+              <Icon name="edit" size={15} /> Scholar Guidance Notes
             </button>
           </div>
 
@@ -739,8 +752,12 @@ export default function TeacherStudentDossier({
                             }}
                           >
                             <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px', flex: 1, minWidth: '280px' }}>
-                              <span style={{ fontSize: '20px', marginTop: '2px' }}>
-                                {isDone ? '✅' : '⏳'}
+                              <span style={{ marginTop: '3px' }}>
+                                {isDone ? (
+                                  <Icon name="check-circle" size={18} color="#166534" />
+                                ) : (
+                                  <Icon name="clock" size={18} color="#d97706" />
+                                )}
                               </span>
                               <div>
                                 <div style={{ fontSize: '14.5px', fontWeight: '700', color: isDone ? '#166534' : 'var(--text-main)' }}>
@@ -766,8 +783,8 @@ export default function TeacherStudentDossier({
                             </div>
 
                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                              <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
-                                ⏱ {les.duration}
+                              <span style={{ fontSize: '12px', color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                                <Icon name="clock" size={12} /> {les.duration}
                               </span>
 
                               <button
@@ -785,11 +802,17 @@ export default function TeacherStudentDossier({
                                   color: isDone ? '#991B1B' : '#166534',
                                 }}
                               >
-                                {isUpdating
-                                  ? 'Updating...'
-                                  : isDone
-                                  ? '↺ Revoke Lesson'
-                                  : '✓ Mark Mastered'}
+                                {isUpdating ? (
+                                  'Updating...'
+                                ) : isDone ? (
+                                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                                    <Icon name="repeat" size={12} color="#DC2626" /> Revoke Lesson
+                                  </span>
+                                ) : (
+                                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                                    <Icon name="check-circle" size={12} color="#166534" /> Mark Mastered
+                                  </span>
+                                )}
                               </button>
                             </div>
                           </div>
@@ -845,7 +868,7 @@ export default function TeacherStudentDossier({
                           >
                             PASSED WITH DISTINCTION
                           </span>
-                          <span style={{ fontSize: '18px' }}>🌟</span>
+                          <Icon name="star" size={18} color="#D97706" fill="#D97706" />
                         </div>
 
                         <div style={{ fontSize: '15px', fontWeight: '700', color: 'var(--color-green-deep)' }}>
@@ -878,7 +901,9 @@ export default function TeacherStudentDossier({
                 </div>
               ) : (
                 <div style={{ padding: '36px 20px', textAlign: 'center', background: 'var(--bg-canvas-subtle)', borderRadius: '12px' }}>
-                  <span style={{ fontSize: '36px', display: 'block', marginBottom: '10px' }}>📝</span>
+                  <div style={{ marginBottom: '12px' }}>
+                    <Icon name="award" size={36} color="var(--color-gold-deep)" />
+                  </div>
                   <div style={{ fontSize: '15px', fontWeight: '700', color: 'var(--text-main)' }}>
                     No completed quizzes yet
                   </div>
@@ -911,9 +936,10 @@ export default function TeacherStudentDossier({
                     }
                   }}
                   className="btn-auth-submit"
-                  style={{ margin: 0, padding: '8px 16px', fontSize: '13px', width: 'auto' }}
+                  style={{ margin: 0, padding: '8px 16px', fontSize: '13px', width: 'auto', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
                 >
-                  <span>➕ Add Mistake in Quran Annotator</span>
+                  <Icon name="plus" size={14} color="#FFFFFF" />
+                  <span>Add Mistake in Quran Annotator</span>
                 </button>
               </div>
 
@@ -941,6 +967,9 @@ export default function TeacherStudentDossier({
                           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                             <span
                               style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '4px',
                                 fontSize: '11px',
                                 fontWeight: '800',
                                 padding: '2px 8px',
@@ -949,7 +978,12 @@ export default function TeacherStudentDossier({
                                 color: isActive ? '#991B1B' : '#166534',
                               }}
                             >
-                              {isActive ? '🔴 ACTIVE SLIP (NEEDS REVISION)' : '🟢 RESOLVED & CLEARED'}
+                              <Icon
+                                name={isActive ? 'alert-circle' : 'check-circle'}
+                                size={12}
+                                color={isActive ? '#991B1B' : '#166534'}
+                              />
+                              <span>{isActive ? 'ACTIVE SLIP (NEEDS REVISION)' : 'RESOLVED & CLEARED'}</span>
                             </span>
 
                             <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--color-green-deep)' }}>
@@ -1002,6 +1036,9 @@ export default function TeacherStudentDossier({
                               onClick={() => handleResolveMistake(m.id)}
                               className="btn-table-action"
                               style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '6px',
                                 padding: '6px 14px',
                                 fontSize: '12px',
                                 fontWeight: '700',
@@ -1010,7 +1047,8 @@ export default function TeacherStudentDossier({
                                 color: '#166534',
                               }}
                             >
-                              ✓ Clear &amp; Mark Resolved
+                              <Icon name="check-circle" size={13} color="#166534" />
+                              <span>Clear &amp; Mark Resolved</span>
                             </button>
                           )}
                         </div>
@@ -1020,7 +1058,9 @@ export default function TeacherStudentDossier({
                 </div>
               ) : (
                 <div style={{ padding: '36px 20px', textAlign: 'center', background: 'var(--bg-canvas-subtle)', borderRadius: '12px' }}>
-                  <span style={{ fontSize: '36px', display: 'block', marginBottom: '10px' }}>✨</span>
+                  <div style={{ display: 'inline-flex', padding: '12px', borderRadius: '50%', background: 'var(--color-green-surface)', color: 'var(--color-green-primary)', marginBottom: '10px' }}>
+                    <Icon name="sparkles" size={24} />
+                  </div>
                   <div style={{ fontSize: '15px', fontWeight: '700', color: 'var(--color-green-primary)' }}>
                     No recitation mistakes logged for this student!
                   </div>
@@ -1037,16 +1077,16 @@ export default function TeacherStudentDossier({
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div>
                 <h4 style={{ margin: 0, fontSize: '16px', color: 'var(--color-green-deep)', fontWeight: '800' }}>
-                  Private Scholarly Pedagogy &amp; Sanad Evaluation Notes
+                  Private Teacher Notes &amp; Student Evaluation
                 </h4>
                 <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: 'var(--text-muted)' }}>
-                  Record personalized Tajweed observations, revision homework, or Sanad certification milestones for {activeStudent.studentName || activeStudent.name}.
+                  Record personalized Tajweed observations, revision homework, or progress notes for {activeStudent.studentName || activeStudent.name}.
                 </p>
               </div>
 
               {notesFeedback && (
                 <div className="auth-alert-box auth-alert-success" style={{ margin: 0 }}>
-                  <span>✅</span>
+                  <Icon name="check-circle" size={16} />
                   <span>{notesFeedback}</span>
                 </div>
               )}
@@ -1072,9 +1112,10 @@ export default function TeacherStudentDossier({
                   disabled={isSavingNotes}
                   onClick={handleSaveNotes}
                   className="btn-auth-submit"
-                  style={{ margin: 0, padding: '10px 24px', fontSize: '13.5px', width: 'auto' }}
+                  style={{ margin: 0, padding: '10px 24px', fontSize: '13.5px', width: 'auto', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
                 >
-                  <span>{isSavingNotes ? 'Saving...' : '💾 Save Scholarly Notes'}</span>
+                  <Icon name="save" size={15} color="#FFFFFF" />
+                  <span>{isSavingNotes ? 'Saving...' : 'Save Scholarly Notes'}</span>
                 </button>
               </div>
             </div>

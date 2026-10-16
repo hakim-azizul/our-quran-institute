@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { QURAN_SURAHS } from '../lib/quranData';
 import { Icon } from './Icons';
+import SurahSearchSelect from './SurahSearchSelect';
 
 export default function InteractiveQuranAnnotator({
   currentUser,
@@ -194,7 +195,7 @@ export default function InteractiveQuranAnnotator({
       >
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
-            <span style={{ fontSize: '24px' }}>📖</span>
+            <Icon name="book-open" size={26} color="var(--color-green-primary)" />
             <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '24px', fontWeight: '700', color: 'var(--color-green-primary)' }}>
               Interactive Mushaf &amp; Recitation Mistake Tracker
             </h2>
@@ -220,7 +221,7 @@ export default function InteractiveQuranAnnotator({
             >
               {studentsList.map((stu) => (
                 <option key={stu.id} value={stu.id}>
-                  🎓 {stu.name} ({stu.id})
+                  {stu.name} ({stu.id})
                 </option>
               ))}
             </select>
@@ -236,6 +237,9 @@ export default function InteractiveQuranAnnotator({
             onClick={() => setActiveTab('mushaf')}
             className="btn-table-action"
             style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
               padding: '8px 16px',
               fontSize: '13px',
               fontWeight: '700',
@@ -244,12 +248,16 @@ export default function InteractiveQuranAnnotator({
               borderColor: activeTab === 'mushaf' ? 'var(--color-gold-primary)' : 'var(--border-light)',
             }}
           >
-            📜 Interactive Quran View
+            <Icon name="book-open" size={15} color="currentColor" />
+            <span>Interactive Quran View</span>
           </button>
           <button
             onClick={() => setActiveTab('mistake_log')}
             className="btn-table-action"
             style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
               padding: '10px 18px',
               fontSize: '14px',
               fontWeight: '700',
@@ -258,12 +266,16 @@ export default function InteractiveQuranAnnotator({
               borderColor: activeTab === 'mistake_log' ? 'var(--color-gold-primary)' : 'var(--border-light)',
             }}
           >
-            ⚠️ Needs Revision ({activeMistakes.length})
+            <Icon name="alert-circle" size={15} color="currentColor" />
+            <span>Needs Revision ({activeMistakes.length})</span>
           </button>
           <button
             onClick={() => setActiveTab('resolved_history')}
             className="btn-table-action"
             style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
               padding: '10px 18px',
               fontSize: '14px',
               fontWeight: '700',
@@ -272,28 +284,22 @@ export default function InteractiveQuranAnnotator({
               borderColor: activeTab === 'resolved_history' ? 'var(--color-gold-primary)' : 'var(--border-light)',
             }}
           >
-            ✓ Cleared Milestones ({resolvedMistakes.length})
+            <Icon name="check-circle" size={15} color="currentColor" />
+            <span>Cleared Milestones ({resolvedMistakes.length})</span>
           </button>
         </div>
 
-        {/* Surah Dropdown Selector */}
+        {/* Surah Dropdown Selector with Instant Live Search & 114 Surahs */}
         {activeTab === 'mushaf' && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <span style={{ fontSize: '14px', fontWeight: '700', color: 'var(--text-muted)' }}>
-              Select Surah:
+            <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-muted)' }}>
+              Surah:
             </span>
-            <select
-              value={activeSurahNumber}
-              onChange={(e) => setActiveSurahNumber(Number(e.target.value))}
-              className="form-input form-select"
-              style={{ width: 'auto', padding: '8px 34px 8px 14px', fontSize: '14.5px', fontWeight: '700', color: 'var(--color-green-primary)' }}
-            >
-              {QURAN_SURAHS.map((s) => (
-                <option key={s.number} value={s.number}>
-                  {s.number}. {s.name} ({s.arabicName}) — {s.ayahCount} Ayahs
-                </option>
-              ))}
-            </select>
+            <SurahSearchSelect
+              selectedSurahNumber={activeSurahNumber}
+              onSelectSurah={(num) => setActiveSurahNumber(num)}
+              align="right"
+            />
           </div>
         )}
       </div>
@@ -432,7 +438,8 @@ export default function InteractiveQuranAnnotator({
                           color: 'var(--color-green-primary)',
                         }}
                       >
-                        <span>🚩 Flag Verse Mistake</span>
+                        <Icon name="flag" size={14} color="var(--color-gold-deep)" />
+                        <span>Flag Verse Mistake</span>
                       </button>
                     )}
                   </div>
@@ -563,8 +570,12 @@ export default function InteractiveQuranAnnotator({
                           }}
                         >
                           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                            <span style={{ fontSize: '18px' }}>
-                              {m.severity === 'major' ? '🛑' : '⚠️'}
+                            <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+                              <Icon
+                                name="alert-circle"
+                                size={18}
+                                color={m.severity === 'major' ? '#DC2626' : '#D97706'}
+                              />
                             </span>
                             <div>
                               <strong style={{ fontSize: '14px', color: m.severity === 'major' ? '#991B1B' : '#92400E' }}>
@@ -602,7 +613,21 @@ export default function InteractiveQuranAnnotator({
 
           {activeMistakes.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '40px 20px', color: 'var(--text-muted)' }}>
-              <span style={{ fontSize: '42px', display: 'block', marginBottom: '10px' }}>🌟</span>
+              <div
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '56px',
+                  height: '56px',
+                  borderRadius: '50%',
+                  background: 'var(--color-green-surface)',
+                  color: 'var(--color-green-primary)',
+                  marginBottom: '12px',
+                }}
+              >
+                <Icon name="award" size={28} />
+              </div>
               <h4 style={{ color: 'var(--color-green-primary)', fontSize: '18px', fontWeight: '700' }}>
                 Masha'Allah! Zero Active Recitation Slips
               </h4>
@@ -662,6 +687,9 @@ export default function InteractiveQuranAnnotator({
                         onClick={() => setResolveTargetMistake(m)}
                         className="btn-auth-submit"
                         style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '6px',
                           margin: 0,
                           padding: '6px 14px',
                           fontSize: '12px',
@@ -670,7 +698,8 @@ export default function InteractiveQuranAnnotator({
                           borderColor: '#22C55E',
                         }}
                       >
-                        ✓ Mark Resolved
+                        <Icon name="check-circle" size={13} color="#FFFFFF" />
+                        <span>Mark Resolved</span>
                       </button>
                     )}
                     <button
@@ -721,8 +750,9 @@ export default function InteractiveQuranAnnotator({
                 >
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                      <span style={{ background: '#DCFCE7', color: '#166534', padding: '2px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: '700' }}>
-                        ✓ RESOLVED &amp; MASTERED
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: '#DCFCE7', color: '#166534', padding: '2px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: '700' }}>
+                        <Icon name="check-circle" size={11} color="#166534" />
+                        RESOLVED &amp; MASTERED
                       </span>
                       <strong style={{ fontSize: '14px', color: 'var(--color-green-deep)' }}>
                         Surah {m.surahName} (Verse {m.ayahNumber}) {m.wordText ? `— Word: "${m.wordText}"` : ''}
@@ -783,8 +813,9 @@ export default function InteractiveQuranAnnotator({
             onClick={(e) => e.stopPropagation()}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '22px', fontWeight: '700', color: 'var(--color-green-primary)' }}>
-                🚩 Flag Recitation Mistake for Student
+              <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px', fontFamily: 'var(--font-serif)', fontSize: '22px', fontWeight: '700', color: 'var(--color-green-primary)' }}>
+                <Icon name="flag" size={22} color="var(--color-gold-deep)" />
+                <span>Flag Recitation Mistake for Student</span>
               </h3>
               <button
                 onClick={() => setIsModalOpen(false)}
@@ -826,9 +857,9 @@ export default function InteractiveQuranAnnotator({
                     onChange={(e) => setSeverity(e.target.value)}
                     className="form-input form-select"
                   >
-                    <option value="major">Major (🔴 Critical - Alters Meaning)</option>
-                    <option value="minor">Minor (🟡 Tajweed Inaccuracy)</option>
-                    <option value="info">Info (🔵 Scholarly Advice / Recommendation)</option>
+                    <option value="major">Major (Critical - Alters Meaning)</option>
+                    <option value="minor">Minor (Tajweed Inaccuracy)</option>
+                    <option value="info">Info (Scholarly Advice / Recommendation)</option>
                   </select>
                 </div>
 
@@ -909,8 +940,9 @@ export default function InteractiveQuranAnnotator({
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '22px', fontWeight: '700', color: '#166534', marginBottom: '8px' }}>
-              ✓ Mark Mistake as Cleared &amp; Mastered
+            <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px', fontFamily: 'var(--font-serif)', fontSize: '22px', fontWeight: '700', color: '#166534', marginBottom: '8px' }}>
+              <Icon name="check-circle" size={22} color="#166534" />
+              <span>Mark Mistake as Cleared &amp; Mastered</span>
             </h3>
             <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '16px' }}>
               Confirm that {resolveTargetMistake.studentName} has successfully recited this verse with proper Tajweed.
@@ -977,6 +1009,9 @@ export default function InteractiveQuranAnnotator({
               <div>
                 <span
                   style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '4px',
                     background: activeSelectedMistake.status === 'resolved' ? '#DCFCE7' : '#FEF3C7',
                     color: activeSelectedMistake.status === 'resolved' ? '#166534' : '#92400E',
                     padding: '2px 8px',
@@ -985,7 +1020,12 @@ export default function InteractiveQuranAnnotator({
                     fontWeight: '700',
                   }}
                 >
-                  {activeSelectedMistake.status === 'resolved' ? '✓ RESOLVED & MASTERED' : '⚠️ NEEDS REVISION'}
+                  <Icon
+                    name={activeSelectedMistake.status === 'resolved' ? 'check-circle' : 'alert-circle'}
+                    size={12}
+                    color={activeSelectedMistake.status === 'resolved' ? '#166534' : '#92400E'}
+                  />
+                  <span>{activeSelectedMistake.status === 'resolved' ? 'RESOLVED & MASTERED' : 'NEEDS REVISION'}</span>
                 </span>
                 <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '22px', fontWeight: '700', color: 'var(--color-green-primary)', marginTop: '4px' }}>
                   {activeSelectedMistake.categoryLabel}
@@ -1024,9 +1064,18 @@ export default function InteractiveQuranAnnotator({
                 <button
                   onClick={() => setResolveTargetMistake(activeSelectedMistake)}
                   className="btn-auth-submit"
-                  style={{ margin: 0, padding: '8px 16px', width: 'auto', background: '#166534' }}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    margin: 0,
+                    padding: '8px 16px',
+                    width: 'auto',
+                    background: '#166534',
+                  }}
                 >
-                  ✓ Mark as Cleared
+                  <Icon name="check-circle" size={14} color="#FFFFFF" />
+                  <span>Mark as Cleared</span>
                 </button>
               )}
 

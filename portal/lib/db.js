@@ -12,8 +12,8 @@ const initialUsers = [
     password: 'admin123',
     role: 'admin',
     title: 'Director of Academic Affairs & System Controller',
-    department: 'Institute Governing Council',
-    avatar: '👑',
+    department: 'Institute Administration',
+    avatar: 'admin',
     status: 'Active',
     registeredAt: '2024-01-01T00:00:00Z',
     permissions: ['all_access', 'database_manage', 'faculty_verify', 'system_audit'],
@@ -29,9 +29,10 @@ const initialUsers = [
     sanadCertification: '10 Qira’at Mutawatirah with Connected Chain (Al-Azhar Al-Sharif)',
     specialization: 'Qira’at, Tajweed Sanad & Advanced Hifz',
     yearsExperience: '14+ years',
+    hourlyRate: 30,
     studentsCount: 18,
     nextSession: 'Today at 5:00 PM with Tariq Al-Mansoor',
-    avatar: '🕌',
+    avatar: 'scholar',
     registeredAt: '2024-01-10T08:30:00Z',
   },
   {
@@ -44,10 +45,27 @@ const initialUsers = [
     sanadCertification: 'Ijazah in Warsh ‘an Nafi’ & Hafs (Madinah University)',
     specialization: 'Tajweed Rules & Arabic Makharij',
     yearsExperience: '9 years',
+    hourlyRate: 25,
     studentsCount: 12,
     nextSession: 'Thursday at 4:30 PM',
-    avatar: '🕌',
+    avatar: 'scholar',
     registeredAt: '2024-06-18T14:15:00Z',
+  },
+  {
+    id: 'QI-FAC-035',
+    name: 'Ustadh Bilal Al-Hashemi',
+    email: 'bilal.teacher@quraninstitute.org',
+    password: 'password123',
+    role: 'teacher',
+    status: 'Pending Credential Verification',
+    sanadCertification: 'Ijaza in Qaloon & Hafs from University of Jordan',
+    specialization: 'Hifz Revision & Tajweed Application',
+    yearsExperience: '5 years',
+    hourlyRate: 25,
+    studentsCount: 0,
+    nextSession: 'Faculty Onboarding Interview (Upcoming)',
+    avatar: 'scholar',
+    registeredAt: '2026-10-12T14:00:00Z',
   },
   {
     id: 'QI-STU-8842',
@@ -58,10 +76,12 @@ const initialUsers = [
     status: 'Enrolled',
     assignedTeacherId: 'QI-FAC-014',
     mentor: 'Dr. Sheikh Ahmad Al-Azhari',
+    parentId: 'QI-PAR-101',
+    parentName: 'Hajji Mansoor Rahman',
     nextSession: 'Today at 6:30 PM (in 45 mins)',
     memorizedJuz: 12,
     totalJuz: 30,
-    avatar: '🎓',
+    avatar: 'student',
     registeredAt: '2025-09-15T10:00:00Z',
   },
   {
@@ -73,14 +93,91 @@ const initialUsers = [
     status: 'Enrolled',
     assignedTeacherId: 'QI-FAC-014',
     mentor: 'Dr. Sheikh Ahmad Al-Azhari',
+    parentId: 'QI-PAR-102',
+    parentName: 'Dr. Fatima Al-Qasim',
     nextSession: 'Tomorrow at 10:00 AM',
     memorizedJuz: 28,
     totalJuz: 30,
-    avatar: '🎓',
+    avatar: 'student',
     registeredAt: '2025-10-02T11:20:00Z',
+  },
+  {
+    id: 'QI-STU-7721',
+    name: 'Zaid bin Harith',
+    email: 'zaid.student@quraninstitute.org',
+    password: 'password123',
+    role: 'student',
+    status: 'Enrolled',
+    assignedTeacherId: 'QI-FAC-028',
+    mentor: 'Ustadh Mahmoud Al-Misri',
+    parentId: 'QI-PAR-101',
+    parentName: 'Hajji Mansoor Rahman',
+    nextSession: 'Wednesday at 5:00 PM',
+    memorizedJuz: 6,
+    totalJuz: 30,
+    avatar: 'student',
+    registeredAt: '2025-11-01T09:00:00Z',
+  },
+  {
+    id: 'QI-STU-6512',
+    name: 'Amina Khan',
+    email: 'amina.student@quraninstitute.org',
+    password: 'password123',
+    role: 'student',
+    status: 'Pending Approval',
+    assignedTeacherId: null,
+    mentor: 'Pending Scholar Assignment',
+    parentId: 'QI-PAR-103',
+    parentName: 'Kamrul Hasan',
+    memorizedJuz: 1,
+    totalJuz: 30,
+    avatar: 'student',
+    registeredAt: '2026-10-14T11:00:00Z',
+  },
+  {
+    id: 'QI-PAR-101',
+    name: 'Hajji Mansoor Rahman',
+    email: 'parent@quraninstitute.org',
+    password: 'password123',
+    role: 'parent',
+    status: 'Active',
+    childrenIds: ['QI-STU-8842', 'QI-STU-7721'],
+    phone: '+880 1711-223344',
+    avatar: 'parent',
+    registeredAt: '2024-01-15T10:00:00Z',
+  },
+  {
+    id: 'QI-PAR-102',
+    name: 'Dr. Fatima Al-Qasim',
+    email: 'fatima.parent@quraninstitute.org',
+    password: 'password123',
+    role: 'parent',
+    status: 'Active',
+    childrenIds: ['QI-STU-9904'],
+    phone: '+880 1711-556677',
+    avatar: 'parent',
+    registeredAt: '2024-02-01T11:00:00Z',
+  },
+  {
+    id: 'QI-PAR-103',
+    name: 'Kamrul Hasan',
+    email: 'kamrul.parent@quraninstitute.org',
+    password: 'password123',
+    role: 'parent',
+    status: 'Pending Approval',
+    childrenIds: ['QI-STU-6512'],
+    phone: '+880 1711-889900',
+    avatar: 'parent',
+    registeredAt: '2024-10-10T09:30:00Z',
   },
 ];
 globalThis.__QURAN_USERS__ = globalThis.__QURAN_USERS__ || initialUsers;
+// Synchronize new initialUsers into global cache if not present
+initialUsers.forEach((u) => {
+  if (!globalThis.__QURAN_USERS__.some((existing) => existing.id === u.id)) {
+    globalThis.__QURAN_USERS__.push(u);
+  }
+});
 const users = globalThis.__QURAN_USERS__;
 
 // 2. Initial Flagship Course: How to Read the Quran / Quran Reading Mastery
@@ -568,8 +665,28 @@ const initialEnrollments = [
     ],
     status: 'active',
   },
+  {
+    id: 'QI-ENR-03',
+    studentId: 'QI-STU-7721',
+    studentName: 'Zaid bin Harith',
+    courseId: 'QI-CRS-001',
+    teacherId: 'QI-FAC-028',
+    teacherName: 'Ustadh Mahmoud Al-Misri',
+    enrolledAt: '2025-11-01T09:00:00Z',
+    progressPercent: 45,
+    completedLessons: ['les-1-1', 'les-1-2', 'les-1-3', 'les-2-1'],
+    completedQuizzes: [
+      { quizId: 'quiz-mod-1', score: 90, passed: true, date: '2025-11-10T14:00:00Z' },
+    ],
+    status: 'active',
+  },
 ];
 globalThis.__QURAN_ENROLLMENTS__ = globalThis.__QURAN_ENROLLMENTS__ || initialEnrollments;
+initialEnrollments.forEach((e) => {
+  if (!globalThis.__QURAN_ENROLLMENTS__.some((existing) => existing.id === e.id)) {
+    globalThis.__QURAN_ENROLLMENTS__.push(e);
+  }
+});
 const enrollments = globalThis.__QURAN_ENROLLMENTS__;
 
 // 5. Student-by-Student Interactive Quran Mistake Annotations
@@ -691,20 +808,31 @@ export function createUser(userData) {
     );
   }
 
-  if (userData.role !== 'student' && userData.role !== 'teacher') {
-    throw new Error('Invalid user role. Only Student and Teacher accounts may be registered.');
+  const roleLower = String(userData.role || '').toLowerCase();
+  if (roleLower !== 'student' && roleLower !== 'teacher' && roleLower !== 'parent') {
+    throw new Error('Invalid user role. Only Student, Teacher, and Parent accounts may be registered.');
   }
 
-  const rolePrefix = userData.role === 'teacher' ? 'FAC' : 'STU';
+  const rolePrefix = roleLower === 'teacher' ? 'FAC' : roleLower === 'parent' ? 'PAR' : 'STU';
   const randomNum = Math.floor(1000 + Math.random() * 9000);
   const newId = `QI-${rolePrefix}-${randomNum}`;
 
+  const defaultStatus =
+    roleLower === 'teacher'
+      ? 'Pending Credential Verification'
+      : roleLower === 'parent'
+      ? 'Active'
+      : 'Enrolled';
+
+  const defaultAvatar = roleLower === 'teacher' ? 'scholar' : roleLower === 'parent' ? 'parent' : roleLower === 'admin' ? 'admin' : 'student';
+
   const newUser = {
     id: newId,
-    status: userData.role === 'teacher' ? 'Pending Credential Verification' : 'Enrolled',
-    avatar: userData.role === 'teacher' ? '🕌' : '🎓',
+    status: defaultStatus,
+    avatar: defaultAvatar,
     registeredAt: new Date().toISOString(),
     ...userData,
+    role: roleLower,
   };
 
   users.push(newUser);
@@ -725,6 +853,12 @@ export function getAllTeachers() {
     .map(({ password: _, ...safeUser }) => safeUser);
 }
 
+export function getAllParents() {
+  return users
+    .filter((u) => u.role === 'parent')
+    .map(({ password: _, ...safeUser }) => safeUser);
+}
+
 export function updateUserProfile(userId, updates) {
   const user = users.find((u) => u.id === userId);
   if (!user) throw new Error('User not found');
@@ -739,19 +873,51 @@ export function updateUserProfile(userId, updates) {
 export function getInstituteStats() {
   const students = users.filter((u) => u.role === 'student');
   const teachers = users.filter((u) => u.role === 'teacher');
+  const parents = users.filter((u) => u.role === 'parent');
   const verifiedTeachers = teachers.filter(
     (u) => u.status === 'Verified Scholar' || u.status === 'Active'
   );
   const pendingTeachers = teachers.filter(
-    (u) => u.status !== 'Verified Scholar' && u.status !== 'Active' && u.status !== 'Suspended'
+    (u) => u.status !== 'Verified Scholar' && u.status !== 'Active' && u.status !== 'Suspended' && u.status !== 'Rejected'
+  );
+  const pendingStudents = students.filter(
+    (u) => u.status === 'Pending Approval' || u.status === 'Pending Credential Verification'
+  );
+  const pendingParents = parents.filter(
+    (u) => u.status === 'Pending Approval'
   );
   const admins = users.filter((u) => u.role === 'admin');
   const totalMemorizedJuz = students.reduce((acc, curr) => acc + (curr.memorizedJuz || 0), 0);
+
+  // Calculate overall attendance rate
+  const allAtt = globalThis.__QURAN_ATTENDANCE__ || [];
+  const presentCount = allAtt.filter((a) => a.status === 'present').length;
+  const lateCount = allAtt.filter((a) => a.status === 'late').length;
+  const attendanceRate = allAtt.length > 0
+    ? Math.round(((presentCount + lateCount * 0.8) / allAtt.length) * 100)
+    : 96;
+
+  // Calculate monthly revenue and payroll
+  const invoicesList = globalThis.__QURAN_INVOICES__ || [];
+  const monthlyRevenue = invoicesList
+    .filter((inv) => inv.status === 'Paid')
+    .reduce((sum, inv) => sum + (inv.amount || 0), 0);
+  const pendingRevenue = invoicesList
+    .filter((inv) => inv.status !== 'Paid')
+    .reduce((sum, inv) => sum + (inv.amount || 0), 0);
+
+  const salariesList = globalThis.__QURAN_TEACHER_SALARIES__ || [];
+  const monthlyPayroll = salariesList.reduce((sum, s) => sum + (s.totalPayable || 0), 0);
+  const totalHoursTaught = salariesList.reduce((sum, s) => sum + (s.totalHoursTaught || 0), 0);
 
   return {
     totalStudents: students.length,
     totalTeachers: verifiedTeachers.length,
     pendingTeachers: pendingTeachers.length,
+    totalParents: parents.length,
+    pendingStudents: pendingStudents.length,
+    pendingParents: pendingParents.length,
+    pendingUsersTotal: pendingTeachers.length + pendingStudents.length + pendingParents.length,
     totalAdmins: admins.length,
     totalUsers: users.length,
     totalMemorizedJuz,
@@ -760,27 +926,73 @@ export function getInstituteStats() {
     totalResolvedMistakes: studentMistakes.filter((m) => m.status === 'resolved').length,
     verifiedSanadsCount: verifiedTeachers.length + 3,
     activeLiveSessionsToday: 6,
+    attendanceRate,
+    monthlyRevenue,
+    pendingRevenue,
+    monthlyPayroll,
+    totalHoursTaught,
   };
 }
 
 export function approveTeacher(userId) {
+  return approveUser(userId);
+}
+
+export function rejectTeacher(userId) {
+  return rejectUser(userId);
+}
+
+export function approveUser(userId) {
   const user = users.find((u) => u.id === userId);
   if (!user) throw new Error('User not found');
-  if (user.role !== 'teacher') throw new Error('User is not a teacher');
 
-  user.status = 'Verified Scholar';
+  if (user.role === 'teacher') {
+    user.status = 'Verified Scholar';
+  } else if (user.role === 'student') {
+    user.status = 'Enrolled';
+  } else if (user.role === 'parent') {
+    user.status = 'Active';
+  } else {
+    user.status = 'Active';
+  }
+
   const { password: _, ...safeUser } = user;
   return safeUser;
 }
 
-export function rejectTeacher(userId) {
+export function rejectUser(userId) {
   const user = users.find((u) => u.id === userId);
   if (!user) throw new Error('User not found');
-  if (user.role !== 'teacher') throw new Error('User is not a teacher');
 
   user.status = 'Rejected';
   const { password: _, ...safeUser } = user;
   return safeUser;
+}
+
+export function assignTeacherToStudent(studentId, teacherId) {
+  const student = users.find((u) => u.id === studentId);
+  if (!student) throw new Error('Student record not found');
+  const teacher = users.find((u) => u.id === teacherId);
+  if (!teacher) throw new Error('Teacher record not found');
+
+  student.assignedTeacherId = teacher.id;
+  student.mentor = teacher.name;
+
+  // Synchronize enrollments
+  enrollments.forEach((e) => {
+    if (e.studentId === studentId) {
+      e.teacherId = teacher.id;
+      e.teacherName = teacher.name;
+    }
+  });
+
+  // Update teacher studentsCount
+  const count = users.filter((u) => u.assignedTeacherId === teacher.id).length;
+  teacher.studentsCount = count;
+
+  const { password: _p1, ...safeStudent } = student;
+  const { password: _p2, ...safeTeacher } = teacher;
+  return { student: safeStudent, teacher: safeTeacher };
 }
 
 export function toggleUserStatus(userId) {
@@ -794,6 +1006,8 @@ export function toggleUserStatus(userId) {
       ? 'Suspended'
       : user.role === 'teacher'
       ? 'Verified Scholar'
+      : user.role === 'parent'
+      ? 'Active'
       : 'Enrolled';
   const { password: _, ...safeUser } = user;
   return safeUser;
@@ -943,12 +1157,12 @@ export function getEnrollmentsForTeacher(teacherId) {
       return {
         ...e,
         studentEmail: studentUser?.email || '',
-        studentAvatar: studentUser?.avatar || '🎓',
+        studentAvatar: studentUser?.avatar || 'student',
         memorizedJuz: studentUser?.memorizedJuz || 0,
         totalJuz: studentUser?.totalJuz || 30,
         tajweedLevel: studentUser?.tajweedLevel || 'Intermediate',
         targetGoal: studentUser?.targetGoal || 'Hifz & Tajweed Mastery',
-        nextSession: studentUser?.nextSession || 'Weekly 1-on-1 Sanctuary Class',
+        nextSession: studentUser?.nextSession || 'Weekly 1-on-1 Class',
         mistakesCount: studentMistakesList.length,
         activeMistakesCount: studentMistakesList.filter((m) => m.status === 'active').length,
         resolvedMistakesCount: studentMistakesList.filter((m) => m.status === 'resolved').length,
@@ -1169,3 +1383,983 @@ export function submitQuizAnswers(enrollmentId, quizId, answers) {
     passingScore: quiz.passingScore,
   };
 }
+
+// =========================================================================
+// 7. ATTENDANCE SYSTEM
+// =========================================================================
+const initialAttendance = [
+  {
+    id: 'ATT-20261016-01',
+    studentId: 'QI-STU-8842',
+    studentName: 'Tariq Al-Mansoor',
+    teacherId: 'QI-FAC-014',
+    teacherName: 'Dr. Sheikh Ahmad Al-Azhari',
+    courseId: 'QI-CRS-001',
+    date: '2026-10-16',
+    status: 'present', // 'present' | 'absent' | 'late' | 'excused'
+    note: 'Joined session on time with complete Wudhu and active focus.',
+    timestamp: '2026-10-16T10:00:00Z',
+  },
+  {
+    id: 'ATT-20261016-02',
+    studentId: 'QI-STU-9904',
+    studentName: 'Maryam Al-Qasim',
+    teacherId: 'QI-FAC-014',
+    teacherName: 'Dr. Sheikh Ahmad Al-Azhari',
+    courseId: 'QI-CRS-001',
+    date: '2026-10-16',
+    status: 'present',
+    note: 'Excellent punctuality and clear recitation of Surah Al-Baqarah.',
+    timestamp: '2026-10-16T11:15:00Z',
+  },
+  {
+    id: 'ATT-20261015-01',
+    studentId: 'QI-STU-8842',
+    studentName: 'Tariq Al-Mansoor',
+    teacherId: 'QI-FAC-014',
+    teacherName: 'Dr. Sheikh Ahmad Al-Azhari',
+    courseId: 'QI-CRS-001',
+    date: '2026-10-15',
+    status: 'present',
+    note: 'Full attendance. Recited 1.5 pages of new Sabaq.',
+    timestamp: '2026-10-15T10:00:00Z',
+  },
+  {
+    id: 'ATT-20261015-02',
+    studentId: 'QI-STU-7721',
+    studentName: 'Zaid bin Harith',
+    teacherId: 'QI-FAC-028',
+    teacherName: 'Ustadh Mahmoud Al-Misri',
+    courseId: 'QI-CRS-001',
+    date: '2026-10-15',
+    status: 'late',
+    note: 'Joined 8 minutes late due to prayer at mosque.',
+    timestamp: '2026-10-15T15:08:00Z',
+  },
+  {
+    id: 'ATT-20261014-01',
+    studentId: 'QI-STU-8842',
+    studentName: 'Tariq Al-Mansoor',
+    teacherId: 'QI-FAC-014',
+    teacherName: 'Dr. Sheikh Ahmad Al-Azhari',
+    courseId: 'QI-CRS-001',
+    date: '2026-10-14',
+    status: 'present',
+    note: 'Punctual attendance.',
+    timestamp: '2026-10-14T10:00:00Z',
+  },
+  {
+    id: 'ATT-20261014-02',
+    studentId: 'QI-STU-9904',
+    studentName: 'Maryam Al-Qasim',
+    teacherId: 'QI-FAC-014',
+    teacherName: 'Dr. Sheikh Ahmad Al-Azhari',
+    courseId: 'QI-CRS-001',
+    date: '2026-10-14',
+    status: 'present',
+    note: 'Present and recited 2 Juz revision.',
+    timestamp: '2026-10-14T11:00:00Z',
+  },
+  {
+    id: 'ATT-20261013-01',
+    studentId: 'QI-STU-8842',
+    studentName: 'Tariq Al-Mansoor',
+    teacherId: 'QI-FAC-014',
+    teacherName: 'Dr. Sheikh Ahmad Al-Azhari',
+    courseId: 'QI-CRS-001',
+    date: '2026-10-13',
+    status: 'present',
+    note: 'Present and engaged.',
+    timestamp: '2026-10-13T10:00:00Z',
+  },
+];
+globalThis.__QURAN_ATTENDANCE__ = globalThis.__QURAN_ATTENDANCE__ || initialAttendance;
+const attendance = globalThis.__QURAN_ATTENDANCE__;
+
+export function recordAttendance({
+  studentId,
+  teacherId,
+  courseId = 'QI-CRS-001',
+  date = new Date().toISOString().split('T')[0],
+  status = 'present',
+  note = '',
+}) {
+  const student = findUserById(studentId);
+  const teacher = findUserById(teacherId);
+  if (!student) throw new Error('Student not found');
+  if (!teacher) throw new Error('Teacher not found');
+
+  // Check if attendance already recorded today for this student & teacher
+  const existingIndex = attendance.findIndex(
+    (a) => a.studentId === studentId && a.date === date
+  );
+
+  const record = {
+    id: existingIndex !== -1 ? attendance[existingIndex].id : `ATT-${date.replace(/-/g, '')}-${Math.floor(1000 + Math.random() * 9000)}`,
+    studentId,
+    studentName: student.name,
+    teacherId,
+    teacherName: teacher.name,
+    courseId,
+    date,
+    status,
+    note,
+    timestamp: new Date().toISOString(),
+  };
+
+  if (existingIndex !== -1) {
+    attendance[existingIndex] = record;
+  } else {
+    attendance.unshift(record);
+  }
+
+  return record;
+}
+
+export function getAttendanceForStudent(studentId) {
+  return attendance.filter((a) => a.studentId === studentId);
+}
+
+export function getAttendanceForTeacher(teacherId, date = null) {
+  return attendance.filter((a) => {
+    if (a.teacherId !== teacherId) return false;
+    if (date && a.date !== date) return false;
+    return true;
+  });
+}
+
+export function getInstituteAttendanceAnalytics() {
+  const total = attendance.length;
+  if (total === 0) {
+    return {
+      rate: 96,
+      present: 0,
+      late: 0,
+      absent: 0,
+      excused: 0,
+      total: 0,
+      recentRecords: [],
+    };
+  }
+
+  const present = attendance.filter((a) => a.status === 'present').length;
+  const late = attendance.filter((a) => a.status === 'late').length;
+  const absent = attendance.filter((a) => a.status === 'absent').length;
+  const excused = attendance.filter((a) => a.status === 'excused').length;
+  const rate = Math.round(((present + late * 0.8) / total) * 100);
+
+  return {
+    rate,
+    present,
+    late,
+    absent,
+    excused,
+    total,
+    recentRecords: attendance.slice(0, 10),
+  };
+}
+
+// =========================================================================
+// 8. DAILY SABAQ, SABQI, MANZIL & TARBIYAH
+// =========================================================================
+const initialDailyProgress = [
+  {
+    id: 'PRG-1001',
+    studentId: 'QI-STU-8842',
+    studentName: 'Tariq Al-Mansoor',
+    teacherId: 'QI-FAC-014',
+    teacherName: 'Dr. Sheikh Ahmad Al-Azhari',
+    date: '2026-10-16',
+    sabaq: {
+      para: 12,
+      surah: 'Yusuf (يُوسُف)',
+      startAyah: 1,
+      endAyah: 22,
+      grade: 'Mumtaz (ممتاز - 98%)',
+      pages: 1.5,
+      notes: 'Exceptional Tajweed with pristine Madd Lazim & Makharij.',
+    },
+    sabqi: {
+      para: 11,
+      surahs: 'Hud 50 - 123',
+      accuracy: '96%',
+      grade: 'Jayyid Jiddan (جيد جداً)',
+    },
+    manzil: 'Para 1 to 3 Complete Revision',
+    tarbiyah: {
+      salatAttendance: '5/5 In Congregation',
+      adabScore: 'Outstanding (10/10)',
+      sunnahHabit: 'Morning and Evening Adhkar recited with mindfulness',
+      teacherGuidance: 'Advised Tariq to listen to Sheikh Al-Husary for slow Tartil cadence.',
+    },
+    teacherFeedback: 'MashaAllah, Tariq was thoroughly prepared today. He has mastered the throat letters and his voice projection is magnificent. Keep up this noble journey!',
+    timestamp: '2026-10-16T10:45:00Z',
+  },
+  {
+    id: 'PRG-1002',
+    studentId: 'QI-STU-8842',
+    studentName: 'Tariq Al-Mansoor',
+    teacherId: 'QI-FAC-014',
+    teacherName: 'Dr. Sheikh Ahmad Al-Azhari',
+    date: '2026-10-15',
+    sabaq: {
+      para: 11,
+      surah: 'Hud (هُود)',
+      startAyah: 80,
+      endAyah: 115,
+      grade: 'Jayyid Jiddan (جيد جداً - 92%)',
+      pages: 1.0,
+      notes: 'Corrected Qalqalah on Daal. Recited smoothly afterwards.',
+    },
+    sabqi: {
+      para: 11,
+      surahs: 'Yunus 50 - Hud 40',
+      accuracy: '94%',
+      grade: 'Jayyid Jiddan (جيد جداً)',
+    },
+    manzil: 'Para 1 to 2 Revision',
+    tarbiyah: {
+      salatAttendance: '5/5 In Congregation',
+      adabScore: 'Very Good (9/10)',
+      sunnahHabit: 'Tahajjud & Quran reading after Fajr',
+      teacherGuidance: 'Encouraged humility and consistent review before sleeping.',
+    },
+    teacherFeedback: 'Great progress on Surah Hud. Parents are requested to ensure 30 minutes of listening practice before tomorrow’s lesson.',
+    timestamp: '2026-10-15T10:30:00Z',
+  },
+  {
+    id: 'PRG-1003',
+    studentId: 'QI-STU-9904',
+    studentName: 'Maryam Al-Qasim',
+    teacherId: 'QI-FAC-014',
+    teacherName: 'Dr. Sheikh Ahmad Al-Azhari',
+    date: '2026-10-16',
+    sabaq: {
+      para: 28,
+      surah: 'Al-Mumtahanah (المُمْتَحَنَة)',
+      startAyah: 1,
+      endAyah: 13,
+      grade: 'Mumtaz (ممتاز - 99%)',
+      pages: 2.0,
+      notes: 'Flawless recitation with connected sanad standard.',
+    },
+    sabqi: {
+      para: 27,
+      surahs: 'Ar-Rahman, Al-Waqi’ah, Al-Hadid',
+      accuracy: '98%',
+      grade: 'Mumtaz (ممتاز)',
+    },
+    manzil: 'Para 1 to 5',
+    tarbiyah: {
+      salatAttendance: '5/5 Jama’ah',
+      adabScore: 'Exemplary (10/10)',
+      sunnahHabit: 'Helping younger siblings with Noorani Qaida',
+      teacherGuidance: 'Preparing for Sanad test in November.',
+    },
+    teacherFeedback: 'Maryam is on track to complete her Khatm and Ijazah within two months. SubhanAllah, her dedication is an inspiration to the entire institute.',
+    timestamp: '2026-10-16T11:45:00Z',
+  },
+  {
+    id: 'PRG-1004',
+    studentId: 'QI-STU-7721',
+    studentName: 'Zaid bin Harith',
+    teacherId: 'QI-FAC-028',
+    teacherName: 'Ustadh Mahmoud Al-Misri',
+    date: '2026-10-15',
+    sabaq: {
+      para: 6,
+      surah: 'An-Nisa (النِّسَاء)',
+      startAyah: 148,
+      endAyah: 165,
+      grade: 'Jayyid (جيد - 85%)',
+      pages: 1.0,
+      notes: 'Focus on holding Ghunnah for 2 counts on Noon Mushaddadah.',
+    },
+    sabqi: {
+      para: 5,
+      surahs: 'An-Nisa 24 - 100',
+      accuracy: '88%',
+      grade: 'Jayyid (جيد)',
+    },
+    manzil: 'Para 1 Revision',
+    tarbiyah: {
+      salatAttendance: '5/5 On Time',
+      adabScore: 'Good (8.5/10)',
+      sunnahHabit: 'Reciting Ayat al-Kursi after every fardh prayer',
+      teacherGuidance: 'Advised repetition of Ayahs 150-155 three times at home.',
+    },
+    teacherFeedback: 'Zaid worked hard today. With extra revision on the heavy letters (Khaa and Saad), he will reach Mumtaz level soon inshaAllah.',
+    timestamp: '2026-10-15T15:45:00Z',
+  },
+];
+globalThis.__QURAN_DAILY_PROGRESS__ = globalThis.__QURAN_DAILY_PROGRESS__ || initialDailyProgress;
+const dailyProgress = globalThis.__QURAN_DAILY_PROGRESS__;
+
+export function recordDailyProgress({
+  studentId,
+  teacherId,
+  date = new Date().toISOString().split('T')[0],
+  sabaq = {},
+  sabqi = {},
+  manzil = '',
+  tarbiyah = {},
+  teacherFeedback = '',
+}) {
+  const student = findUserById(studentId);
+  const teacher = findUserById(teacherId);
+  if (!student) throw new Error('Student not found');
+  if (!teacher) throw new Error('Teacher not found');
+
+  const newEntry = {
+    id: `PRG-${Math.floor(1000 + Math.random() * 9000)}`,
+    studentId,
+    studentName: student.name,
+    teacherId,
+    teacherName: teacher.name,
+    date,
+    sabaq: {
+      para: sabaq.para || student.memorizedJuz || 1,
+      surah: sabaq.surah || 'Al-Fatihah',
+      startAyah: Number(sabaq.startAyah) || 1,
+      endAyah: Number(sabaq.endAyah) || 10,
+      grade: sabaq.grade || 'Mumtaz (ممتاز)',
+      pages: Number(sabaq.pages) || 1.0,
+      notes: sabaq.notes || '',
+    },
+    sabqi: {
+      para: sabqi.para || Math.max(1, (sabaq.para || 1) - 1),
+      surahs: sabqi.surahs || 'Previous lessons revision',
+      accuracy: sabqi.accuracy || '95%',
+      grade: sabqi.grade || 'Jayyid Jiddan (جيد جداً)',
+    },
+    manzil: manzil || 'Assigned Para Revision',
+    tarbiyah: {
+      salatAttendance: tarbiyah.salatAttendance || '5/5 Jama’ah',
+      adabScore: tarbiyah.adabScore || 'Outstanding (10/10)',
+      sunnahHabit: tarbiyah.sunnahHabit || 'Daily Morning and Evening Adhkar',
+      teacherGuidance: tarbiyah.teacherGuidance || '',
+    },
+    teacherFeedback: teacherFeedback || 'Well done in today’s recitation session.',
+    timestamp: new Date().toISOString(),
+  };
+
+  dailyProgress.unshift(newEntry);
+  return newEntry;
+}
+
+export function getDailyProgressForStudent(studentId) {
+  return dailyProgress.filter((p) => p.studentId === studentId);
+}
+
+export function getDailyProgressForTeacher(teacherId) {
+  return dailyProgress.filter((p) => p.teacherId === teacherId);
+}
+
+// =========================================================================
+// 9. DIGITAL QURAN SCREEN TIME & READING TRACKER
+// =========================================================================
+const initialScreenTime = [
+  {
+    id: 'ST-001',
+    studentId: 'QI-STU-8842',
+    surahNumber: 1,
+    surahName: 'Al-Fatihah',
+    durationSeconds: 1200, // 20 mins
+    date: '2026-10-16',
+    timestamp: '2026-10-16T08:20:00Z',
+  },
+  {
+    id: 'ST-002',
+    studentId: 'QI-STU-8842',
+    surahNumber: 112,
+    surahName: 'Al-Ikhlas',
+    durationSeconds: 900, // 15 mins
+    date: '2026-10-15',
+    timestamp: '2026-10-15T19:00:00Z',
+  },
+  {
+    id: 'ST-003',
+    studentId: 'QI-STU-9904',
+    surahNumber: 113,
+    surahName: 'Al-Falaq',
+    durationSeconds: 2400, // 40 mins
+    date: '2026-10-16',
+    timestamp: '2026-10-16T09:00:00Z',
+  },
+];
+globalThis.__QURAN_SCREENTIME__ = globalThis.__QURAN_SCREENTIME__ || initialScreenTime;
+const screenTimeRecords = globalThis.__QURAN_SCREENTIME__;
+
+export function recordQuranReadingSession({
+  studentId,
+  surahNumber,
+  surahName,
+  durationSeconds,
+  date = new Date().toISOString().split('T')[0],
+}) {
+  const newSession = {
+    id: `ST-${Math.floor(1000 + Math.random() * 9000)}`,
+    studentId,
+    surahNumber: Number(surahNumber) || 1,
+    surahName: surahName || `Surah ${surahNumber}`,
+    durationSeconds: Math.max(1, Number(durationSeconds) || 60),
+    date,
+    timestamp: new Date().toISOString(),
+  };
+
+  screenTimeRecords.unshift(newSession);
+  return newSession;
+}
+
+export function getQuranScreenTimeStats(studentId) {
+  const studentSessions = screenTimeRecords.filter((s) => s.studentId === studentId);
+  const today = new Date().toISOString().split('T')[0];
+
+  const todaySeconds = studentSessions
+    .filter((s) => s.date === today)
+    .reduce((sum, s) => sum + s.durationSeconds, 0);
+
+  const totalSeconds = studentSessions.reduce((sum, s) => sum + s.durationSeconds, 0);
+
+  return {
+    todaySeconds,
+    todayMinutes: Math.round(todaySeconds / 60),
+    totalSeconds,
+    totalMinutes: Math.round(totalSeconds / 60),
+    totalHours: (totalSeconds / 3600).toFixed(1),
+    sessionsCount: studentSessions.length,
+    recentSessions: studentSessions.slice(0, 5),
+  };
+}
+
+// =========================================================================
+// 10. PARENTAL REVIEWS & TEACHER RATINGS
+// =========================================================================
+const initialReviews = [
+  {
+    id: 'REV-001',
+    teacherId: 'QI-FAC-014',
+    teacherName: 'Dr. Sheikh Ahmad Al-Azhari',
+    parentId: 'QI-PAR-101',
+    parentName: 'Hajji Mansoor Rahman',
+    studentId: 'QI-STU-8842',
+    studentName: 'Tariq Al-Mansoor',
+    rating: 5,
+    categories: {
+      punctuality: 5,
+      tajweedExcellence: 5,
+      patienceWithChild: 5,
+      tarbiyahFocus: 5,
+    },
+    reviewText: 'Dr. Sheikh Ahmad Al-Azhari is truly a blessing for our family. His patient methodology, profound mastery of the Ten Qira’at, and spiritual warmth have inspired my son Tariq to love reciting the Holy Quran every morning.',
+    month: 'October 2026',
+    createdAt: '2026-10-10T14:30:00Z',
+    verified: true,
+  },
+  {
+    id: 'REV-002',
+    teacherId: 'QI-FAC-014',
+    teacherName: 'Dr. Sheikh Ahmad Al-Azhari',
+    parentId: 'QI-PAR-102',
+    parentName: 'Dr. Fatima Al-Qasim',
+    studentId: 'QI-STU-9904',
+    studentName: 'Maryam Al-Qasim',
+    rating: 5,
+    categories: {
+      punctuality: 5,
+      tajweedExcellence: 5,
+      patienceWithChild: 5,
+      tarbiyahFocus: 5,
+    },
+    reviewText: 'Outstanding guidance for Maryam’s Hifz Khatm and Ijazah preparation. The teacher notes provided after each session are meticulous and actionable.',
+    month: 'October 2026',
+    createdAt: '2026-10-12T16:00:00Z',
+    verified: true,
+  },
+  {
+    id: 'REV-003',
+    teacherId: 'QI-FAC-028',
+    teacherName: 'Ustadh Mahmoud Al-Misri',
+    parentId: 'QI-PAR-101',
+    parentName: 'Hajji Mansoor Rahman',
+    studentId: 'QI-STU-7721',
+    studentName: 'Zaid bin Harith',
+    rating: 5,
+    categories: {
+      punctuality: 5,
+      tajweedExcellence: 5,
+      patienceWithChild: 4,
+      tarbiyahFocus: 5,
+    },
+    reviewText: 'Ustadh Mahmoud is firm yet kind, ensuring Zaid develops accurate Arabic phonetics without feeling rushed. Highly recommended for young boys.',
+    month: 'September 2026',
+    createdAt: '2026-09-28T18:00:00Z',
+    verified: true,
+  },
+];
+globalThis.__QURAN_REVIEWS__ = globalThis.__QURAN_REVIEWS__ || initialReviews;
+const reviews = globalThis.__QURAN_REVIEWS__;
+
+export function submitTeacherReview({
+  teacherId,
+  parentId,
+  studentId,
+  rating = 5,
+  categories = {},
+  reviewText = '',
+  month = 'October 2026',
+}) {
+  const teacher = findUserById(teacherId);
+  const parent = findUserById(parentId);
+  const student = findUserById(studentId);
+  if (!teacher) throw new Error('Teacher record not found');
+
+  const newReview = {
+    id: `REV-${Math.floor(1000 + Math.random() * 9000)}`,
+    teacherId,
+    teacherName: teacher.name,
+    parentId: parentId || 'QI-PAR-101',
+    parentName: parent?.name || 'Parent Guardian',
+    studentId: studentId || 'QI-STU-8842',
+    studentName: student?.name || 'Enrolled Student',
+    rating: Math.min(5, Math.max(1, Number(rating) || 5)),
+    categories: {
+      punctuality: categories.punctuality || 5,
+      tajweedExcellence: categories.tajweedExcellence || 5,
+      patienceWithChild: categories.patienceWithChild || 5,
+      tarbiyahFocus: categories.tarbiyahFocus || 5,
+    },
+    reviewText: reviewText.trim() || 'Alhamdulillah, excellent instruction and tarbiyah.',
+    month,
+    createdAt: new Date().toISOString(),
+    verified: true,
+  };
+
+  reviews.unshift(newReview);
+  return newReview;
+}
+
+export function getReviewsForTeacher(teacherId) {
+  return reviews.filter((r) => r.teacherId === teacherId);
+}
+
+export function getAllReviews() {
+  return reviews;
+}
+
+// =========================================================================
+// 11. FINANCIALS: TUITION INVOICES & TEACHER SALARIES
+// =========================================================================
+const initialInvoices = [
+  {
+    id: 'INV-2026-1001',
+    studentId: 'QI-STU-8842',
+    studentName: 'Tariq Al-Mansoor',
+    parentId: 'QI-PAR-101',
+    parentName: 'Hajji Mansoor Rahman',
+    month: 'October 2026',
+    issueDate: '2026-10-01',
+    dueDate: '2026-10-10',
+    amount: 65.0,
+    currency: 'USD',
+    amountBDT: 7500,
+    status: 'Paid', // 'Paid' | 'Due' | 'Overdue'
+    paymentMethod: 'bKash Merchant Pay',
+    transactionId: 'BK-9921448102',
+    paidAt: '2026-10-05T14:20:00Z',
+    items: [
+      { desc: 'Monthly Intensive 1-on-1 Hifz & Tajweed Program', amount: 55.0 },
+      { desc: 'Digital Quran & Online Platform Access', amount: 10.0 },
+    ],
+  },
+  {
+    id: 'INV-2026-1002',
+    studentId: 'QI-STU-7721',
+    studentName: 'Zaid bin Harith',
+    parentId: 'QI-PAR-101',
+    parentName: 'Hajji Mansoor Rahman',
+    month: 'October 2026',
+    issueDate: '2026-10-01',
+    dueDate: '2026-10-10',
+    amount: 55.0,
+    currency: 'USD',
+    amountBDT: 6500,
+    status: 'Due',
+    paymentMethod: null,
+    transactionId: null,
+    paidAt: null,
+    items: [
+      { desc: 'Standard 1-on-1 Quran Reading & Tajweed Tuition', amount: 55.0 },
+    ],
+  },
+  {
+    id: 'INV-2026-1003',
+    studentId: 'QI-STU-9904',
+    studentName: 'Maryam Al-Qasim',
+    parentId: 'QI-PAR-102',
+    parentName: 'Dr. Fatima Al-Qasim',
+    month: 'October 2026',
+    issueDate: '2026-10-01',
+    dueDate: '2026-10-10',
+    amount: 75.0,
+    currency: 'USD',
+    amountBDT: 8800,
+    status: 'Paid',
+    paymentMethod: 'Visa Card •••• 4242',
+    transactionId: 'TX-CARD-773199',
+    paidAt: '2026-10-02T09:15:00Z',
+    items: [
+      { desc: 'Advanced Quran Memorization & Ijazah Program', amount: 75.0 },
+    ],
+  },
+  {
+    id: 'INV-2026-0901',
+    studentId: 'QI-STU-8842',
+    studentName: 'Tariq Al-Mansoor',
+    parentId: 'QI-PAR-101',
+    parentName: 'Hajji Mansoor Rahman',
+    month: 'September 2026',
+    issueDate: '2026-09-01',
+    dueDate: '2026-09-10',
+    amount: 65.0,
+    currency: 'USD',
+    amountBDT: 7500,
+    status: 'Paid',
+    paymentMethod: 'bKash Merchant Pay',
+    transactionId: 'BK-8819203911',
+    paidAt: '2026-09-04T12:00:00Z',
+    items: [
+      { desc: 'Monthly Intensive 1-on-1 Hifz & Tajweed Program', amount: 65.0 },
+    ],
+  },
+];
+globalThis.__QURAN_INVOICES__ = globalThis.__QURAN_INVOICES__ || initialInvoices;
+const invoices = globalThis.__QURAN_INVOICES__;
+
+const initialTeacherSalaries = [
+  {
+    id: 'SAL-202610-01',
+    teacherId: 'QI-FAC-014',
+    teacherName: 'Dr. Sheikh Ahmad Al-Azhari',
+    month: 'October 2026',
+    hourlyRate: 30.0,
+    totalHoursTaught: 38.5,
+    calculatedSalary: 1155.0,
+    bonus: 50.0,
+    totalPayable: 1205.0,
+    sessionsCount: 26,
+    status: 'Approved', // 'Pending Approval' | 'Approved' | 'Disbursed'
+    approvedBy: 'QI-ADM-001',
+    approvedAt: '2026-10-15T12:00:00Z',
+    disbursedAt: null,
+    notes: 'Approved for outstanding faculty performance and perfect attendance.',
+  },
+  {
+    id: 'SAL-202610-02',
+    teacherId: 'QI-FAC-028',
+    teacherName: 'Ustadh Mahmoud Al-Misri',
+    month: 'October 2026',
+    hourlyRate: 25.0,
+    totalHoursTaught: 30.0,
+    calculatedSalary: 750.0,
+    bonus: 0.0,
+    totalPayable: 750.0,
+    sessionsCount: 20,
+    status: 'Pending Approval',
+    approvedBy: null,
+    approvedAt: null,
+    disbursedAt: null,
+    notes: 'Regular faculty payroll under administrative review.',
+  },
+];
+globalThis.__QURAN_TEACHER_SALARIES__ = globalThis.__QURAN_TEACHER_SALARIES__ || initialTeacherSalaries;
+const teacherSalaries = globalThis.__QURAN_TEACHER_SALARIES__;
+
+export function getAllInvoices() {
+  return invoices;
+}
+
+export function getInvoicesForUser(userId, role) {
+  if (role === 'parent') {
+    const parent = findUserById(userId);
+    const childIds = parent?.childrenIds || [];
+    return invoices.filter(
+      (inv) => inv.parentId === userId || childIds.includes(inv.studentId)
+    );
+  }
+  // Student
+  return invoices.filter((inv) => inv.studentId === userId);
+}
+
+export function markInvoicePaid(invoiceId, paymentMethod = 'bKash Merchant Pay', transactionId = null) {
+  const invoice = invoices.find((inv) => inv.id === invoiceId);
+  if (!invoice) throw new Error('Invoice not found');
+
+  invoice.status = 'Paid';
+  invoice.paymentMethod = paymentMethod;
+  invoice.transactionId = transactionId || `TX-${Math.floor(100000 + Math.random() * 900000)}`;
+  invoice.paidAt = new Date().toISOString();
+
+  return invoice;
+}
+
+export function getAllTeacherSalaries() {
+  return teacherSalaries;
+}
+
+export function getTeacherSalary(teacherId, month = 'October 2026') {
+  return teacherSalaries.find((s) => s.teacherId === teacherId && s.month === month) || null;
+}
+
+export function approveTeacherSalary(salaryId, adminId = 'QI-ADM-001') {
+  const salary = teacherSalaries.find((s) => s.id === salaryId);
+  if (!salary) throw new Error('Salary record not found');
+
+  salary.status = 'Approved';
+  salary.approvedBy = adminId;
+  salary.approvedAt = new Date().toISOString();
+
+  return salary;
+}
+
+export function disburseTeacherSalary(salaryId, adminId = 'QI-ADM-001') {
+  const salary = teacherSalaries.find((s) => s.id === salaryId);
+  if (!salary) throw new Error('Salary record not found');
+
+  salary.status = 'Disbursed';
+  salary.disbursedAt = new Date().toISOString();
+
+  return salary;
+}
+
+export function getFinancialAnalytics() {
+  const totalRevenue = invoices
+    .filter((inv) => inv.status === 'Paid')
+    .reduce((sum, inv) => sum + inv.amount, 0);
+
+  const pendingTuition = invoices
+    .filter((inv) => inv.status !== 'Paid')
+    .reduce((sum, inv) => sum + inv.amount, 0);
+
+  const totalPayroll = teacherSalaries.reduce((sum, s) => sum + s.totalPayable, 0);
+  const netMargin = totalRevenue - totalPayroll;
+
+  return {
+    totalRevenue,
+    pendingTuition,
+    totalPayroll,
+    netMargin,
+    totalInvoicesCount: invoices.length,
+    paidInvoicesCount: invoices.filter((i) => i.status === 'Paid').length,
+    dueInvoicesCount: invoices.filter((i) => i.status !== 'Paid').length,
+    salaries: teacherSalaries,
+    invoices: invoices.slice(0, 10),
+  };
+}
+
+// =========================================================================
+// 12. SYSTEM SETTINGS & GLOBAL NOTIFICATIONS
+// =========================================================================
+const initialSystemSettings = {
+  instituteName: 'Our Quran Institute',
+  academicYear: '1447-1448 AH (2026-2027 Academic Session)',
+  term: 'Fall Intensive Hifz & Tajweed Trimester',
+  defaultLanguage: 'en', // 'en' | 'ar'
+  timezone: 'Asia/Dhaka (GMT+6)',
+  contactEmail: 'academics@quraninstitute.org',
+  contactPhone: '+880 1711-223344 / +1 (800) 555-QURAN',
+  tuitionFeeStandard: 65.0,
+  directorSignature: 'Dr. Sheikh Ibrahim Al-Mansoor, Academic Director',
+  notificationsEnabled: true,
+  allowStudentQuranScreenTimer: true,
+  systemStatus: 'Operational & Connected to Sanad Registry',
+};
+globalThis.__QURAN_SYSTEM_SETTINGS__ = globalThis.__QURAN_SYSTEM_SETTINGS__ || initialSystemSettings;
+const systemSettings = globalThis.__QURAN_SYSTEM_SETTINGS__;
+
+const initialAnnouncements = [
+  {
+    id: 'ANN-001',
+    title: 'Quarterly Hifz Evaluation & Parent-Teacher Conference',
+    arabicTitle: 'الاخْتِبَارُ الفَصْلِيُّ لِحِفْظِ القُرْآنِ الكَرِيمِ',
+    message: 'On October 24th, the institute will host quarterly Hifz recitation reviews and live parent-teacher conferences. All guardians are respectfully requested to attend their scheduled session.',
+    targetAudience: 'all', // 'all' | 'teachers' | 'students' | 'parents'
+    priority: 'urgent', // 'urgent' | 'normal' | 'info'
+    date: '2026-10-14',
+    author: 'Director of Academic Affairs',
+  },
+  {
+    id: 'ANN-002',
+    title: 'New Digital Tajweed Dictionary Tool Launched for Faculty',
+    arabicTitle: 'إِطْلَاقُ مُعْجَمِ التَّجْوِيدِ لِلأَسَاتِذَةِ',
+    message: 'Scholars can now access the instant Tajweed terminology and classroom Arabic glossary directly inside their Dynamic Action Board.',
+    targetAudience: 'teachers',
+    priority: 'normal',
+    date: '2026-10-12',
+    author: 'Institute IT Division',
+  },
+];
+globalThis.__QURAN_ANNOUNCEMENTS__ = globalThis.__QURAN_ANNOUNCEMENTS__ || initialAnnouncements;
+const announcements = globalThis.__QURAN_ANNOUNCEMENTS__;
+
+export function getSystemSettings() {
+  return systemSettings;
+}
+
+export function updateSystemSettings(updates) {
+  Object.assign(systemSettings, updates);
+  return systemSettings;
+}
+
+export function getAnnouncements(targetAudience = 'all') {
+  if (targetAudience === 'all') return announcements;
+  return announcements.filter(
+    (a) => a.targetAudience === 'all' || a.targetAudience === targetAudience
+  );
+}
+
+export function createAnnouncement({
+  title,
+  arabicTitle = '',
+  message,
+  targetAudience = 'all',
+  priority = 'normal',
+  author = 'Administration',
+}) {
+  const newAnn = {
+    id: `ANN-${Math.floor(100 + Math.random() * 900)}`,
+    title,
+    arabicTitle,
+    message,
+    targetAudience,
+    priority,
+    date: new Date().toISOString().split('T')[0],
+    author,
+  };
+
+  announcements.unshift(newAnn);
+  return newAnn;
+}
+
+export function deleteAnnouncement(announcementId) {
+  const idx = announcements.findIndex((a) => a.id === announcementId);
+  if (idx !== -1) {
+    return announcements.splice(idx, 1)[0];
+  }
+  return null;
+}
+
+// =========================================================================
+// 13. DIGITAL TOOLS: TAJWEED & QURANIC TERMINOLOGY DICTIONARY
+// =========================================================================
+const initialDictionary = [
+  {
+    id: 'DIC-001',
+    termArabic: 'مَخَارِجُ الحُرُوفِ',
+    termTranslit: 'Makharij Al-Huroof',
+    termEnglish: 'Points of Articulation',
+    category: 'makharij',
+    definition: 'The 17 specific anatomical points in the throat, tongue, lips, nasal cavity, and chest from which Arabic letters originate.',
+    example: 'حروف الحلق (ء، هـ، ع، ح، غ، خ)',
+  },
+  {
+    id: 'DIC-002',
+    termArabic: 'القَلْقَلَة',
+    termTranslit: 'Al-Qalqalah',
+    termEnglish: 'Echoing / Bouncing Sound',
+    category: 'sifaat',
+    definition: 'A vibration or echoing release produced when pronouncing the five letters (ق، ط، ب، ج، د) when they carry a Sukoon.',
+    example: 'الفَلَقْ - كَسَبْ - مَسَدْ',
+  },
+  {
+    id: 'DIC-003',
+    termArabic: 'إِظْهَار حَلْقِيّ',
+    termTranslit: 'Izhar Halqi',
+    termEnglish: 'Clear Throat Pronunciation',
+    category: 'noon_tanween',
+    definition: 'Pronouncing Noon Sakinah or Tanween distinctly without extra nasalization when followed by the 6 throat letters.',
+    example: 'مَنْ ءَامَنَ - أَنْعَمْتَ',
+  },
+  {
+    id: 'DIC-004',
+    termArabic: 'إِدْغَام بِغُنَّة',
+    termTranslit: 'Idgham bi-Ghunnah',
+    termEnglish: 'Merging With Nasalization',
+    category: 'noon_tanween',
+    definition: 'Merging Noon Sakinah or Tanween into one of the four letters (ي، ن، م، و) while retaining a 2-count nasal humming sound.',
+    example: 'مَن يَقُولُ - مِن مَّالٍ',
+  },
+  {
+    id: 'DIC-005',
+    termArabic: 'إِقْلَاب',
+    termTranslit: 'Iqlab',
+    termEnglish: 'Conversion into Meem',
+    category: 'noon_tanween',
+    definition: 'Transforming the Noon Sakinah or Tanween into a concealed Meem with Ghunnah when meeting the letter Baa (ب).',
+    example: 'مِنۢ بَعْدِ - أَنۢبِئْهُم',
+  },
+  {
+    id: 'DIC-006',
+    termArabic: 'إِخْفَاء حَقِيقِيّ',
+    termTranslit: 'Ikhfa Haqiqi',
+    termEnglish: 'Concealment of Noon',
+    category: 'noon_tanween',
+    definition: 'Pronouncing the Noon sound between Izhar and Idgham with continuous Ghunnah across the 15 Ikhfa letters.',
+    example: 'مِن قَبْلُ - كُنتُمْ',
+  },
+  {
+    id: 'DIC-007',
+    termArabic: 'مَدّ لَازِم',
+    termTranslit: 'Madd Lazim',
+    termEnglish: 'Compulsory 6-Count Elongation',
+    category: 'madd',
+    definition: 'Obligatory elongation for 6 full counts caused by an original Sukoon or Shaddah following a Madd letter in the same word.',
+    example: 'وَلَا الضَّآلِّينَ - الحَآقَّةُ',
+  },
+  {
+    id: 'DIC-008',
+    termArabic: 'وَقْف لَازِم (مـ)',
+    termTranslit: 'Waqf Lazim',
+    termEnglish: 'Mandatory Stop Sign',
+    category: 'waqf',
+    definition: 'A stop mark indicating that stopping recitation is mandatory to preserve correct theological meaning and grammar.',
+    example: 'إِنَّمَا يَسْتَجِيبُ الَّذِينَ يَسْمَعُونَ ۘ وَالْمَوْتَىٰ يَبْعَثُهُمُ اللَّهُ',
+  },
+  {
+    id: 'DIC-009',
+    termArabic: 'أَعِدْ مِنَ البِدَايَةِ',
+    termTranslit: "A'id min al-bidayah",
+    termEnglish: 'Recite again from the beginning of the Ayah',
+    category: 'classroom',
+    definition: 'Scholar classroom instruction used when a student loses breath or makes a recitation slip midway.',
+    example: 'Used during live 1-on-1 recitation correction.',
+  },
+  {
+    id: 'DIC-010',
+    termArabic: 'احْرِصْ عَلَى الغُنَّةِ',
+    termTranslit: "Ihriz 'ala al-ghunnah",
+    termEnglish: 'Pay strict attention to the 2-count Ghunnah duration',
+    category: 'classroom',
+    definition: 'Teacher feedback prompt reminding students not to rush past Noon or Meem Mushaddadah.',
+    example: 'Correction note on Noon Mushaddadah in Surah An-Nas.',
+  },
+];
+globalThis.__QURAN_DICTIONARY__ = globalThis.__QURAN_DICTIONARY__ || initialDictionary;
+const dictionary = globalThis.__QURAN_DICTIONARY__;
+
+export function getDictionaryEntries(category = 'all', search = '') {
+  return dictionary.filter((item) => {
+    if (category && category !== 'all' && item.category !== category) return false;
+    if (search && search.trim() !== '') {
+      const q = search.toLowerCase().trim();
+      return (
+        item.termArabic.toLowerCase().includes(q) ||
+        item.termTranslit.toLowerCase().includes(q) ||
+        item.termEnglish.toLowerCase().includes(q) ||
+        item.definition.toLowerCase().includes(q)
+      );
+    }
+    return true;
+  });
+}
+

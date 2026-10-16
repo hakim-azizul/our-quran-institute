@@ -42,7 +42,7 @@ export default function CourseEnrollmentCatalog({
         throw new Error(data.error || 'Failed to complete enrollment.');
       }
 
-      setEnrollSuccessMessage('Alhamdulillah! You are now enrolled. Unlocking your sanctuary Quran learning workspace...');
+      setEnrollSuccessMessage('You are now enrolled! Opening your Quran learning dashboard...');
       if (onEnrollSuccess) {
         setTimeout(() => {
           onEnrollSuccess(data.enrollment);
@@ -77,8 +77,8 @@ export default function CourseEnrollmentCatalog({
           gap: '12px',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <span style={{ fontSize: '24px' }}>📖</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <Icon name="book-open" size={26} color="var(--color-green-primary)" />
           <div>
             <h2 style={{ margin: 0, fontSize: '18px', fontWeight: '800', color: 'var(--color-green-deep)' }}>
               Enroll in Your First Course to Unlock Quran Modules &amp; Mistake Tracking
@@ -92,13 +92,17 @@ export default function CourseEnrollmentCatalog({
 
         {enrollError && (
           <div className="auth-alert auth-alert-error" style={{ margin: '8px 0 0 0' }}>
-            <span>⚠️ {enrollError}</span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              <Icon name="alert-circle" size={16} /> {enrollError}
+            </span>
           </div>
         )}
 
         {enrollSuccessMessage && (
           <div className="auth-alert auth-alert-success" style={{ margin: '8px 0 0 0' }}>
-            <span>✨ {enrollSuccessMessage}</span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              <Icon name="check-circle" size={16} /> {enrollSuccessMessage}
+            </span>
           </div>
         )}
       </div>
@@ -176,7 +180,7 @@ export default function CourseEnrollmentCatalog({
                   fontWeight: '700',
                 }}
               >
-                Connected Sanad Accreditation
+                Certified Curriculum
               </span>
             </div>
 
@@ -189,20 +193,20 @@ export default function CourseEnrollmentCatalog({
 
             <div style={{ display: 'flex', gap: '20px', marginTop: '18px', flexWrap: 'wrap' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: 'var(--text-muted)' }}>
-                <span>📚</span>
-                <span><strong>{course.modules?.length || 6}</strong> Progressive Modules</span>
+                <Icon name="book-open" size={15} />
+                <span><strong>{course.modules?.length || 6}</strong> Structured Modules</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: 'var(--text-muted)' }}>
-                <span>🎙️</span>
-                <span><strong>18+</strong> Practical Recitation Lessons</span>
+                <Icon name="mic" size={15} />
+                <span><strong>18+</strong> Live Recitation Lessons</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: 'var(--text-muted)' }}>
-                <span>🎯</span>
-                <span><strong>Interactive</strong> Quran Mistake Annotator</span>
+                <Icon name="award" size={15} />
+                <span><strong>Interactive</strong> Mistake Marker</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: 'var(--text-muted)' }}>
-                <span>📜</span>
-                <span><strong>Sanad</strong> Ijazah Verification</span>
+                <Icon name="shield-check" size={15} />
+                <span><strong>Certificate</strong> of Completion</span>
               </div>
             </div>
           </div>
@@ -287,7 +291,7 @@ export default function CourseEnrollmentCatalog({
                         fontWeight: '700',
                       }}
                     >
-                      {teacher.avatar || '🕌'}
+                      <Icon name="scholar" size={22} />
                     </div>
                     <div>
                       <h3 style={{ margin: 0, fontSize: '16.5px', fontWeight: '800', color: 'var(--color-green-deep)' }}>
@@ -309,7 +313,7 @@ export default function CourseEnrollmentCatalog({
                 </div>
 
                 <div style={{ fontSize: '13.5px', color: 'var(--text-body)', lineHeight: '1.45', marginTop: '6px' }}>
-                  <strong>Certification:</strong> {teacher.sanadCertification || 'Connected Sanad in 10 Qira’at'}
+                  <strong>Certification:</strong> {teacher.sanadCertification || 'Certified in 10 Qira’at'}
                 </div>
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: 'var(--text-muted)', borderTop: '1px dashed var(--border-light)', paddingTop: '8px' }}>
@@ -348,8 +352,8 @@ export default function CourseEnrollmentCatalog({
               gap: '10px',
             }}
           >
-            <span>✨</span>
-            <span>{enrolling ? 'Enrolling in Sanctuary...' : `Enroll Now with ${selectedTeacher?.name?.split(' ')[0] || 'Teacher'}`}</span>
+            <Icon name="sparkles" size={18} color="#FFDF85" />
+            <span>{enrolling ? 'Enrolling in Course...' : `Enroll Now with ${selectedTeacher?.name?.split(' ')[0] || 'Teacher'}`}</span>
           </button>
         </div>
       </div>
@@ -481,7 +485,7 @@ export default function CourseEnrollmentCatalog({
                               fontWeight: '700',
                             }}
                           >
-                            <span>🔒</span>
+                            <Icon name="lock" size={12} color="#6B7280" />
                             <span>Locked</span>
                           </div>
                         </div>
@@ -500,13 +504,13 @@ export default function CourseEnrollmentCatalog({
                           }}
                         >
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <span>📝</span>
+                            <Icon name="edit" size={15} />
                             <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--color-green-deep)' }}>
                               {mod.assessment.title}
                             </span>
                           </div>
-                          <span style={{ fontSize: '11.5px', color: 'var(--color-gold-deep)', fontWeight: '700' }}>
-                            🔒 Passing Score: {mod.assessment.passingScore}%
+                          <span style={{ fontSize: '11.5px', color: 'var(--color-gold-deep)', fontWeight: '700', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                            <Icon name="lock" size={12} /> Passing Score: {mod.assessment.passingScore}%
                           </span>
                         </div>
                       )}

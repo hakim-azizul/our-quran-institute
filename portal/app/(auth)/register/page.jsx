@@ -98,7 +98,7 @@ export default function RegisterPage() {
       }, 850);
     } catch (err) {
       console.error(err);
-      setErrorMsg('Network error. Could not connect to the sanctuary registration service.');
+      setErrorMsg('Network error. Could not connect to the registration service.');
       setIsSubmitting(false);
     }
   };
@@ -120,11 +120,11 @@ export default function RegisterPage() {
           <div className="auth-card-header">
             <div className="auth-card-badge">
               <Icon name="award" size={13} color="#0D4A38" />
-              <span>Sanctuary Institute Admissions</span>
+              <span>Student &amp; Teacher Registration</span>
             </div>
-            <h1 className="auth-card-title">Begin Your Sacred Quranic Journey</h1>
+            <h1 className="auth-card-title">Create Your Account</h1>
             <p className="auth-card-subtitle">
-              Register for 1-on-1 personalized lessons, connected Sanad chains with Al-Azhar scholars, and global classroom tracking.
+              Register for 1-on-1 online Quran classes with certified teachers and track progress in real time.
             </p>
           </div>
 
@@ -146,7 +146,7 @@ export default function RegisterPage() {
               marginBottom: '16px',
             }}
           >
-            <span>🛡️</span>
+            <Icon name="shield-check" size={16} color="#166534" />
             <span>
               <strong>Registration Policy:</strong> Public registration is exclusively for Students and Certified Scholars. Admin accounts cannot be created online and are restricted to database configuration.
             </span>
@@ -155,14 +155,14 @@ export default function RegisterPage() {
           {/* Alert feedback */}
           {errorMsg && (
             <div className="auth-alert-box auth-alert-error">
-              <span>⚠️</span>
+              <Icon name="alert-circle" size={16} />
               <span>{errorMsg}</span>
             </div>
           )}
 
           {successMsg && (
             <div className="auth-alert-box auth-alert-success">
-              <span>✅</span>
+              <Icon name="check-circle" size={16} />
               <span>{successMsg}</span>
             </div>
           )}
@@ -281,7 +281,7 @@ export default function RegisterPage() {
                 className="form-checkbox"
               />
               <label htmlFor="portal-terms-agree" className="form-checkbox-text">
-                I agree to the Sanctuary Honor Code, Student Etiquette (Adab al-Talib), and Institute Policies.
+                I agree to the Institute Terms of Service and Code of Conduct.
               </label>
             </div>
 
@@ -291,11 +291,11 @@ export default function RegisterPage() {
               className="btn-auth-submit"
             >
               {isSubmitting ? (
-                <span>Registering Account &amp; Enrolling...</span>
+                <span>Registering Account...</span>
               ) : (
                 <>
                   <span>
-                    Complete Registration as {role === 'student' ? 'Student' : 'Faculty Scholar'}
+                    Complete Registration as {role === 'student' ? 'Student' : 'Teacher'}
                   </span>
                   <Icon name="arrow-right" size={16} color="#FFDF85" />
                 </>
@@ -306,9 +306,9 @@ export default function RegisterPage() {
           {/* Footer */}
           <div className="auth-card-footer">
             <p className="auth-footer-prompt">
-              Already have an enrolled account?
+              Already have an account?
               <Link href="/login" className="auth-footer-link">
-                Sign In to Sanctuary Portal
+                Sign In
               </Link>
             </p>
           </div>
