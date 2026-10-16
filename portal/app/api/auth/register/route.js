@@ -92,6 +92,7 @@ export async function POST(request) {
         specialization: specialization || 'Tajweed & Qira’at',
         yearsExperience: yearsExperience || '3+ years',
         qiraat: qiraat || 'Hafs ‘an ‘Asim',
+        ratePerClass: 25,
         hourlyRate: 25,
         studentsCount: 0,
         nextSession: 'Faculty Onboarding Interview (Upcoming)',

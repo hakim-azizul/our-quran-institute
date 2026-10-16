@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Icon } from './Icons';
 
 export default function ParentTeacherReviewModal({
@@ -26,8 +27,13 @@ export default function ParentTeacherReviewModal({
   const [selectedMonth, setSelectedMonth] = useState('October 2026');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
+  const [mounted, setMounted] = useState(false);
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!isOpen || !mounted) return null;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -72,7 +78,7 @@ export default function ParentTeacherReviewModal({
     }
   };
 
-  return (
+  return createPortal(
     <div className="review-modal-backdrop" onClick={onClose}>
       <div className="review-modal-container" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
@@ -255,6 +261,7 @@ export default function ParentTeacherReviewModal({
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

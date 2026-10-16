@@ -19,7 +19,7 @@ export default function StudentProgressComboChart({
     ? [
         { label: 'W1', period: 'Week 1', date: 'Aug 15', pages: 8, accuracy: 88, status: 'Good Retention' },
         { label: 'W2', period: 'Week 2', date: 'Aug 22', pages: 10, accuracy: 89, status: 'Good Progress' },
-        { label: 'W3', period: 'Week 3', date: 'Aug 29', pages: 9, accuracy: 91, status: 'Madd Rules Mastered' },
+        { label: 'W3', period: 'Week 3', date: 'Aug 29', pages: 9, accuracy: 91, status: 'Madd Mastered' },
         { label: 'W4', period: 'Week 4', date: 'Sep 05', pages: 12, accuracy: 92, status: 'Consistent Pace' },
         { label: 'W5', period: 'Week 5', date: 'Sep 12', pages: 11, accuracy: 90, status: 'Revision Focus' },
         { label: 'W6', period: 'Week 6', date: 'Sep 19', pages: 14, accuracy: 93, status: 'Surah Completed' },
@@ -42,7 +42,7 @@ export default function StudentProgressComboChart({
         { label: 'May', period: 'May 2026', date: 'May', pages: 30, accuracy: 87, status: 'Foundation' },
         { label: 'Jun', period: 'Jun 2026', date: 'Jun', pages: 34, accuracy: 89, status: 'Juz 4 Cleared' },
         { label: 'Jul', period: 'Jul 2026', date: 'Jul', pages: 38, accuracy: 91, status: 'Accelerating' },
-        { label: 'Aug', period: 'Aug 2026', date: 'Aug', pages: 42, accuracy: 92, status: 'Juz 5 Exam Passed' },
+        { label: 'Aug', period: 'Aug 2026', date: 'Aug', pages: 42, accuracy: 92, status: 'Juz 5 Exam' },
         { label: 'Sep', period: 'Sep 2026', date: 'Sep', pages: 46, accuracy: 94, status: 'Strong Retention' },
         { label: 'Oct', period: 'Oct 2026', date: 'Current', pages: 50, accuracy: 95, status: 'Juz 6 In Progress' },
       ]
@@ -57,13 +57,13 @@ export default function StudentProgressComboChart({
 
   const activeDataset = timeframe === 'weekly' ? weeklyData : monthlyData;
 
-  // Chart Dimensions & Scales
-  const svgWidth = 800;
-  const svgHeight = 310;
-  const paddingLeft = 55;
-  const paddingRight = 55;
-  const paddingTop = 35;
-  const paddingBottom = 45;
+  // Compact, executive chart dimensions (reduced height for better proportion)
+  const svgWidth = 760;
+  const svgHeight = 195;
+  const paddingLeft = 44;
+  const paddingRight = 44;
+  const paddingTop = 24;
+  const paddingBottom = 32;
 
   const chartWidth = svgWidth - paddingLeft - paddingRight;
   const chartHeight = svgHeight - paddingTop - paddingBottom;
@@ -77,13 +77,12 @@ export default function StudentProgressComboChart({
   // Coordinate calculations
   const numPoints = activeDataset.length;
   const stepX = chartWidth / numPoints;
-  const barWidth = Math.min(38, stepX * 0.55);
+  const barWidth = 18; // Sleek, refined bar width (not oversized)
 
   const points = activeDataset.map((d, i) => {
     const x = paddingLeft + i * stepX + stepX / 2;
-    const barHeight = (d.pages / maxPages) * chartHeight;
+    const barHeight = Math.max(4, (d.pages / maxPages) * chartHeight);
     const barY = paddingTop + (chartHeight - barHeight);
-
     const lineY = paddingTop + (1 - (d.accuracy - minAcc) / (maxAcc - minAcc)) * chartHeight;
 
     return {
@@ -101,11 +100,6 @@ export default function StudentProgressComboChart({
   // Polyline coordinates for line chart
   const polylinePoints = points.map((p) => `${p.x},${p.lineY}`).join(' ');
 
-  // SVG Area path under the line
-  const areaPath = `M ${points[0].x},${paddingTop + chartHeight} L ${points
-    .map((p) => `${p.x},${p.lineY}`)
-    .join(' L ')} L ${points[points.length - 1].x},${paddingTop + chartHeight} Z`;
-
   // Summary Metrics
   const avgPages = Math.round(
     activeDataset.reduce((sum, d) => sum + d.pages, 0) / activeDataset.length
@@ -120,15 +114,15 @@ export default function StudentProgressComboChart({
     <div
       className="student-progress-combo-chart-card"
       style={{
-        background: 'var(--color-white)',
-        border: '1.5px solid var(--border-light)',
-        borderRadius: '16px',
-        padding: '24px 28px',
-        boxShadow: 'var(--shadow-card)',
+        background: '#FFFFFF',
+        border: '1.5px solid #E6DEC9',
+        borderRadius: '14px',
+        padding: '16px 20px',
+        boxShadow: '0 2px 8px rgba(13, 74, 56, 0.04)',
         display: 'flex',
         flexDirection: 'column',
-        gap: '20px',
-        marginTop: '20px',
+        gap: '12px',
+        marginTop: '16px',
       }}
     >
       {/* Chart Top Header & Controls */}
@@ -138,82 +132,82 @@ export default function StudentProgressComboChart({
           justifyContent: 'space-between',
           alignItems: 'center',
           flexWrap: 'wrap',
-          gap: '16px',
+          gap: '12px',
         }}
       >
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <span
-              style={{
-                width: '32px',
-                height: '32px',
-                borderRadius: '8px',
-                background: 'var(--color-green-surface)',
-                border: '1px solid var(--color-gold-border)',
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'var(--color-green-primary)',
-              }}
-            >
-              <Icon name="activity" size={17} />
-            </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <span
+            style={{
+              width: '28px',
+              height: '28px',
+              borderRadius: '7px',
+              background: '#FDF8EC',
+              border: '1.5px solid #D4AF37',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#B8860B',
+            }}
+          >
+            <Icon name="activity" size={15} />
+          </span>
+          <div>
             <h3
               style={{
                 fontFamily: 'var(--font-serif)',
-                fontSize: '22px',
+                fontSize: '17px',
                 fontWeight: '700',
-                color: 'var(--color-green-deep)',
+                color: '#0D4A38',
                 margin: 0,
+                lineHeight: '1.2',
               }}
             >
-              Weekly Progress &amp; Accuracy
+              Weekly Memorization &amp; Accuracy
             </h3>
+            <p style={{ fontSize: '12px', color: '#64748B', margin: '2px 0 0' }}>
+              Pages memorized (solid gold bars) and Tajweed recitation score (solid emerald line).
+            </p>
           </div>
-          <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: '4px 0 0' }}>
-            Track weekly pages read (bars) and Tajweed accuracy score (line).
-          </p>
         </div>
 
         {/* Legend & Filter Controls */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
-          {/* Legend */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '14px', fontSize: '12px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap' }}>
+          {/* Legend with ONLY solid colors */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '11.5px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
               <span
                 style={{
                   width: '12px',
-                  height: '12px',
-                  borderRadius: '3px',
-                  background: 'linear-gradient(180deg, #2E8B6D 0%, #0D4A38 100%)',
+                  height: '10px',
+                  borderRadius: '2px',
+                  background: '#D4AF37',
                   display: 'inline-block',
                 }}
               />
-              <span style={{ fontWeight: '600', color: 'var(--text-main)' }}>Pages Read (Bar)</span>
+              <span style={{ fontWeight: '600', color: '#1E293B' }}>Pages Read (Bar)</span>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
               <span
                 style={{
-                  width: '12px',
+                  width: '14px',
                   height: '3px',
-                  background: '#C5A45A',
+                  background: '#0D4A38',
                   borderRadius: '2px',
                   display: 'inline-block',
-                  position: 'relative',
                 }}
               />
-              <span style={{ fontWeight: '600', color: 'var(--color-gold-deep)' }}>Tajweed Accuracy % (Line)</span>
+              <span style={{ fontWeight: '600', color: '#0D4A38' }}>Accuracy % (Line)</span>
             </div>
           </div>
 
-          {/* Timeframe Toggle Buttons */}
+          {/* Timeframe Toggle Buttons (Solid Gold active styling) */}
           <div
             style={{
               display: 'inline-flex',
-              background: 'var(--bg-canvas)',
-              borderRadius: '8px',
-              padding: '3px',
-              border: '1px solid var(--border-light)',
+              background: '#F8FAFC',
+              borderRadius: '7px',
+              padding: '2px',
+              border: '1px solid #E2E8F0',
             }}
           >
             <button
@@ -221,11 +215,11 @@ export default function StudentProgressComboChart({
               onClick={() => setTimeframe('weekly')}
               style={{
                 border: 'none',
-                background: timeframe === 'weekly' ? 'var(--color-green-primary)' : 'transparent',
-                color: timeframe === 'weekly' ? '#FFFFFF' : 'var(--text-muted)',
-                padding: '5px 12px',
-                borderRadius: '6px',
-                fontSize: '12px',
+                background: timeframe === 'weekly' ? '#D4AF37' : 'transparent',
+                color: timeframe === 'weekly' ? '#FFFFFF' : '#64748B',
+                padding: '4px 10px',
+                borderRadius: '5px',
+                fontSize: '11.5px',
                 fontWeight: '700',
                 cursor: 'pointer',
                 transition: 'all 0.15s ease',
@@ -238,11 +232,11 @@ export default function StudentProgressComboChart({
               onClick={() => setTimeframe('monthly')}
               style={{
                 border: 'none',
-                background: timeframe === 'monthly' ? 'var(--color-green-primary)' : 'transparent',
-                color: timeframe === 'monthly' ? '#FFFFFF' : 'var(--text-muted)',
-                padding: '5px 12px',
-                borderRadius: '6px',
-                fontSize: '12px',
+                background: timeframe === 'monthly' ? '#D4AF37' : 'transparent',
+                color: timeframe === 'monthly' ? '#FFFFFF' : '#64748B',
+                padding: '4px 10px',
+                borderRadius: '5px',
+                fontSize: '11.5px',
                 fontWeight: '700',
                 cursor: 'pointer',
                 transition: 'all 0.15s ease',
@@ -254,69 +248,49 @@ export default function StudentProgressComboChart({
         </div>
       </div>
 
-      {/* SVG Combo Chart Visualization */}
+      {/* SVG Combo Chart Visualization - Compact & Solid Golden */}
       <div style={{ position: 'relative', width: '100%', overflowX: 'auto' }}>
         <svg
           viewBox={`0 0 ${svgWidth} ${svgHeight}`}
-          style={{ width: '100%', height: 'auto', display: 'block', minWidth: '600px' }}
+          style={{ width: '100%', height: 'auto', display: 'block', maxHeight: '210px' }}
         >
-          <defs>
-            {/* Bar Emerald Gradient */}
-            <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#2E8B6D" />
-              <stop offset="100%" stopColor="#0D4A38" />
-            </linearGradient>
-
-            {/* Hovered Bar Gradient */}
-            <linearGradient id="barGradientHover" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#34D399" />
-              <stop offset="100%" stopColor="#15664F" />
-            </linearGradient>
-
-            {/* Line Gold Area Glow */}
-            <linearGradient id="goldAreaGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#C5A45A" stopOpacity="0.25" />
-              <stop offset="100%" stopColor="#C5A45A" stopOpacity="0.0" />
-            </linearGradient>
-          </defs>
-
-          {/* Background Horizontal Grid Lines & Left Y-Axis (Pages) */}
-          {[0, 0.25, 0.5, 0.75, 1].map((ratio, idx) => {
+          {/* Background Horizontal Grid Lines & Y-Axis */}
+          {[0, 0.33, 0.66, 1].map((ratio, idx) => {
             const y = paddingTop + chartHeight * (1 - ratio);
             const valPages = Math.round(maxPages * ratio);
             const valAcc = Math.round(minAcc + (maxAcc - minAcc) * ratio);
 
             return (
               <g key={idx}>
-                {/* Grid Line */}
+                {/* Clean Solid Grid Line */}
                 <line
                   x1={paddingLeft}
                   y1={y}
                   x2={svgWidth - paddingRight}
                   y2={y}
-                  stroke="#E2E8F0"
-                  strokeDasharray="4 4"
+                  stroke="#F1F5F9"
+                  strokeDasharray="3 3"
                   strokeWidth="1"
                 />
                 {/* Left Y-Axis Label (Pages) */}
                 <text
-                  x={paddingLeft - 10}
-                  y={y + 4}
+                  x={paddingLeft - 8}
+                  y={y + 3.5}
                   textAnchor="end"
-                  fontSize="11"
+                  fontSize="10"
                   fontWeight="600"
-                  fill="var(--text-muted)"
+                  fill="#94A3B8"
                 >
                   {valPages}p
                 </text>
                 {/* Right Y-Axis Label (Accuracy %) */}
                 <text
-                  x={svgWidth - paddingRight + 10}
-                  y={y + 4}
+                  x={svgWidth - paddingRight + 8}
+                  y={y + 3.5}
                   textAnchor="start"
-                  fontSize="11"
+                  fontSize="10"
                   fontWeight="600"
-                  fill="#9F7C35"
+                  fill="#0D4A38"
                 >
                   {valAcc}%
                 </text>
@@ -324,10 +298,7 @@ export default function StudentProgressComboChart({
             );
           })}
 
-          {/* Area fill under the Line */}
-          <path d={areaPath} fill="url(#goldAreaGradient)" />
-
-          {/* Render Bars (Pages Memorized) */}
+          {/* Render Bars (Pages Memorized - Pure Solid Gold) */}
           {points.map((p) => {
             const isHovered = hoveredIndex === p.index;
 
@@ -338,41 +309,37 @@ export default function StudentProgressComboChart({
                 onMouseLeave={() => setHoveredIndex(null)}
                 style={{ cursor: 'pointer' }}
               >
-                {/* Vertical hover guide strip */}
+                {/* Vertical hover strip */}
                 {isHovered && (
                   <rect
                     x={p.x - stepX / 2}
                     y={paddingTop}
                     width={stepX}
                     height={chartHeight}
-                    fill="rgba(13, 74, 56, 0.04)"
+                    fill="#FDF8EC"
                     rx="4"
                   />
                 )}
 
-                {/* Bar */}
+                {/* Bar (SOLID GOLDEN: #D4AF37, on hover: #B8860B) */}
                 <rect
                   x={p.barX}
                   y={p.barY}
                   width={p.barWidth}
                   height={p.barHeight}
-                  fill={isHovered ? 'url(#barGradientHover)' : 'url(#barGradient)'}
-                  rx="6"
-                  ry="6"
-                  style={{
-                    transition: 'all 0.2s ease',
-                    filter: isHovered ? 'drop-shadow(0 4px 8px rgba(13, 74, 56, 0.25))' : 'none',
-                  }}
+                  fill={isHovered ? '#B8860B' : '#D4AF37'}
+                  rx="4"
+                  ry="4"
                 />
 
                 {/* Page number badge over bar */}
                 <text
                   x={p.x}
-                  y={p.barY - 8}
+                  y={p.barY - 5}
                   textAnchor="middle"
-                  fontSize="11"
+                  fontSize="10"
                   fontWeight="700"
-                  fill={isHovered ? 'var(--color-green-primary)' : 'var(--text-muted)'}
+                  fill={isHovered ? '#B8860B' : '#8C6819'}
                 >
                   {p.pages}p
                 </text>
@@ -380,21 +347,21 @@ export default function StudentProgressComboChart({
                 {/* X-Axis Period Label */}
                 <text
                   x={p.x}
-                  y={paddingTop + chartHeight + 20}
+                  y={paddingTop + chartHeight + 15}
                   textAnchor="middle"
-                  fontSize="12"
+                  fontSize="11"
                   fontWeight={isHovered ? '800' : '600'}
-                  fill={isHovered ? 'var(--color-green-primary)' : 'var(--text-main)'}
+                  fill={isHovered ? '#0D4A38' : '#334155'}
                 >
                   {p.label}
                 </text>
 
                 <text
                   x={p.x}
-                  y={paddingTop + chartHeight + 34}
+                  y={paddingTop + chartHeight + 26}
                   textAnchor="middle"
-                  fontSize="10"
-                  fill="var(--text-dim)"
+                  fontSize="9.5"
+                  fill="#94A3B8"
                 >
                   {p.date}
                 </text>
@@ -402,18 +369,17 @@ export default function StudentProgressComboChart({
             );
           })}
 
-          {/* Render Line (Tajweed Accuracy %) */}
+          {/* Render Line (Tajweed Accuracy % - Pure Solid Deep Emerald #0D4A38) */}
           <polyline
             points={polylinePoints}
             fill="none"
-            stroke="#D4AF37"
-            strokeWidth="3.5"
+            stroke="#0D4A38"
+            strokeWidth="2.5"
             strokeLinecap="round"
             strokeLinejoin="round"
-            style={{ filter: 'drop-shadow(0 2px 6px rgba(197, 164, 90, 0.45))' }}
           />
 
-          {/* Render Line Data Point Dots */}
+          {/* Render Line Data Point Dots (Solid Colors: #D4AF37 and #FFFFFF) */}
           {points.map((p) => {
             const isHovered = hoveredIndex === p.index;
 
@@ -424,47 +390,36 @@ export default function StudentProgressComboChart({
                 onMouseLeave={() => setHoveredIndex(null)}
                 style={{ cursor: 'pointer' }}
               >
-                {/* Outer Glow Ring on Hover */}
-                {isHovered && (
-                  <circle
-                    cx={p.x}
-                    cy={p.lineY}
-                    r="10"
-                    fill="rgba(212, 175, 55, 0.25)"
-                  />
-                )}
-
                 {/* Point Node */}
                 <circle
                   cx={p.x}
                   cy={p.lineY}
-                  r={isHovered ? '6.5' : '4.5'}
-                  fill="#FFFFFF"
-                  stroke="#C5A45A"
-                  strokeWidth={isHovered ? '3.5' : '2.5'}
-                  style={{ transition: 'all 0.15s ease' }}
+                  r={isHovered ? '5.5' : '3.8'}
+                  fill={isHovered ? '#0D4A38' : '#FFFFFF'}
+                  stroke={isHovered ? '#D4AF37' : '#0D4A38'}
+                  strokeWidth="2"
                 />
 
-                {/* Accuracy percentage pill on hover */}
+                {/* Compact Accuracy tooltip on hover */}
                 {isHovered && (
                   <g>
                     <rect
-                      x={p.x - 22}
-                      y={p.lineY - 26}
-                      width="44"
-                      height="18"
+                      x={p.x - 24}
+                      y={p.lineY - 22}
+                      width="48"
+                      height="16"
                       rx="4"
-                      fill="#9F7C35"
+                      fill="#0D4A38"
                     />
                     <text
                       x={p.x}
-                      y={p.lineY - 13}
+                      y={p.lineY - 10}
                       textAnchor="middle"
-                      fontSize="10.5"
+                      fontSize="9.5"
                       fontWeight="800"
                       fill="#FFFFFF"
                     >
-                      {p.accuracy}%
+                      {p.accuracy}% Acc
                     </text>
                   </g>
                 )}
@@ -474,61 +429,54 @@ export default function StudentProgressComboChart({
         </svg>
       </div>
 
-      {/* Floating / Active Data Inspection Strip */}
+      {/* Sleek, Compact Footer Metric Strip (Solid Colors Only) */}
       <div
         style={{
-          background: 'var(--color-green-surface)',
-          border: '1px solid var(--color-gold-border)',
-          borderRadius: '12px',
-          padding: '14px 20px',
+          background: '#FAF8F3',
+          border: '1px solid #EEDFB8',
+          borderRadius: '8px',
+          padding: '8px 14px',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
           flexWrap: 'wrap',
-          gap: '12px',
+          gap: '8px',
+          fontSize: '12px',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span
             style={{
-              padding: '6px 12px',
-              borderRadius: '8px',
-              background: 'var(--color-green-primary)',
+              padding: '2px 8px',
+              borderRadius: '4px',
+              background: '#D4AF37',
               color: '#FFFFFF',
-              fontSize: '12.5px',
+              fontSize: '11px',
               fontWeight: '700',
             }}
           >
             {activePoint.period}
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', fontSize: '13px' }}>
-            <span>
-              <strong>Read:</strong>{' '}
-              <span style={{ color: 'var(--color-green-primary)', fontWeight: '800' }}>
-                {activePoint.pages} Pages
-              </span>
-            </span>
-            <span>•</span>
-            <span>
-              <strong>Accuracy:</strong>{' '}
-              <span style={{ color: 'var(--color-gold-deep)', fontWeight: '800' }}>
-                {activePoint.accuracy}%
-              </span>
-            </span>
-            <span>•</span>
-            <span style={{ color: 'var(--text-muted)' }}>
-              Rating: <strong>{activePoint.status}</strong>
-            </span>
-          </div>
+          </span>
+          <span style={{ color: '#475569' }}>
+            Read: <strong style={{ color: '#B8860B' }}>{activePoint.pages} Pages</strong>
+          </span>
+          <span style={{ color: '#CBD5E1' }}>•</span>
+          <span style={{ color: '#475569' }}>
+            Tajweed Accuracy: <strong style={{ color: '#0D4A38' }}>{activePoint.accuracy}%</strong>
+          </span>
+          <span style={{ color: '#CBD5E1' }}>•</span>
+          <span style={{ color: '#64748B' }}>
+            Rating: <strong style={{ color: '#1E293B' }}>{activePoint.status}</strong>
+          </span>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', fontSize: '12px', color: 'var(--text-muted)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '11.5px', color: '#64748B' }}>
           <span>
-            Weekly Average: <strong style={{ color: 'var(--color-green-primary)' }}>{avgPages} pages</strong>
+            Period Average: <strong style={{ color: '#B8860B' }}>{avgPages} pages</strong>
           </span>
-          <span>•</span>
+          <span style={{ color: '#CBD5E1' }}>•</span>
           <span>
-            Avg Accuracy: <strong style={{ color: 'var(--color-gold-deep)' }}>{avgAccuracy}%</strong>
+            Avg Accuracy: <strong style={{ color: '#0D4A38' }}>{avgAccuracy}%</strong>
           </span>
         </div>
       </div>

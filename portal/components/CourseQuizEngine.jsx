@@ -196,7 +196,7 @@ export default function CourseQuizEngine({
               style={{
                 width: `${((currentIndex + 1) / totalQuestions) * 100}%`,
                 height: '100%',
-                background: 'linear-gradient(90deg, var(--color-green-primary) 0%, var(--color-gold-primary) 100%)',
+                background: '#D4AF37',
                 transition: 'width 0.3s ease',
               }}
             />

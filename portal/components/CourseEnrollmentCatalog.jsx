@@ -68,8 +68,8 @@ export default function CourseEnrollmentCatalog({
       {/* Banner: Not enrolled notification */}
       <div
         style={{
-          background: 'linear-gradient(135deg, rgba(197, 164, 90, 0.12), rgba(13, 74, 56, 0.08))',
-          border: '1.5px solid var(--color-gold-primary)',
+          background: '#FAF8F3',
+          border: '1.5px solid #D4AF37',
           borderRadius: '16px',
           padding: '24px',
           display: 'flex',
@@ -343,9 +343,9 @@ export default function CourseEnrollmentCatalog({
               padding: '15px 32px',
               fontSize: '16px',
               width: 'auto',
-              background: 'linear-gradient(135deg, #0D4A38 0%, #062A1F 100%)',
+              background: '#0D4A38',
               color: '#FFDF85',
-              borderColor: 'var(--color-gold-primary)',
+              borderColor: '#D4AF37',
               cursor: enrolling ? 'not-allowed' : 'pointer',
               display: 'flex',
               alignItems: 'center',

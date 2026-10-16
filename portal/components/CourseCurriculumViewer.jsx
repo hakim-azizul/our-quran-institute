@@ -267,8 +267,8 @@ export default function CourseCurriculumViewer({
       {isTeacher && studentsList.length > 0 && (
         <div
           style={{
-            background: 'linear-gradient(135deg, rgba(13, 74, 56, 0.05) 0%, rgba(197, 164, 90, 0.1) 100%)',
-            border: '1.5px solid var(--color-gold-primary)',
+            background: '#FAF8F3',
+            border: '1.5px solid #D4AF37',
             borderRadius: '14px',
             padding: '14px 20px',
             display: 'flex',
@@ -439,8 +439,8 @@ export default function CourseCurriculumViewer({
       {isCourseFullyCompleted ? (
         <div
           style={{
-            background: 'linear-gradient(135deg, #0D4A38 0%, #062A1F 100%)',
-            border: '2px solid var(--color-gold-primary)',
+            background: '#0D4A38',
+            border: '2px solid #D4AF37',
             borderRadius: '16px',
             padding: '24px 28px',
             display: 'flex',
@@ -449,7 +449,7 @@ export default function CourseCurriculumViewer({
             flexWrap: 'wrap',
             gap: '16px',
             color: '#FFFFFF',
-            boxShadow: '0 8px 24px rgba(13, 74, 56, 0.25)',
+            boxShadow: '0 4px 16px rgba(13, 74, 56, 0.15)',
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
@@ -458,18 +458,18 @@ export default function CourseCurriculumViewer({
                 width: '52px',
                 height: '52px',
                 borderRadius: '50%',
-                background: 'rgba(255, 223, 133, 0.15)',
-                border: '1.5px solid var(--color-gold-primary)',
+                background: '#09382B',
+                border: '1.5px solid #D4AF37',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: '#FFDF85',
+                color: '#D4AF37',
               }}
             >
               <Icon name="award" size={28} />
             </div>
             <div>
-              <span style={{ fontSize: '11.5px', fontWeight: '800', color: '#FFDF85', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              <span style={{ fontSize: '11.5px', fontWeight: '800', color: '#D4AF37', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                 Course Completed
               </span>
               <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '20px', fontWeight: '700', color: '#FFFFFF', margin: '2px 0 4px 0' }}>
@@ -491,16 +491,16 @@ export default function CourseCurriculumViewer({
               padding: '12px 22px',
               fontSize: '13.5px',
               fontWeight: '700',
-              background: 'linear-gradient(135deg, #C5A45A 0%, #997A2E 100%)',
-              borderColor: '#FFDF85',
-              color: '#062A1F',
+              background: '#D4AF37',
+              borderColor: '#B8860B',
+              color: '#0D4A38',
               display: 'inline-flex',
               alignItems: 'center',
               gap: '8px',
               cursor: 'pointer',
             }}
           >
-            <Icon name="star" size={16} fill="#062A1F" color="#062A1F" />
+            <Icon name="star" size={16} fill="#0D4A38" color="#0D4A38" />
             <span>Review Ustadh ({course.teacherName?.split(' ')[0] || 'Teacher'})</span>
           </button>
         </div>

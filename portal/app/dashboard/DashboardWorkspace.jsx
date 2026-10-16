@@ -275,6 +275,7 @@ export default function DashboardWorkspace({ initialTab }) {
         activeTab={activeTab}
         onTabChange={handleTabChange}
         enrollment={enrollment}
+        course={course}
         coursesCount={coursesList.length}
         isMobileOpen={isMobileOpen}
         onCloseMobile={() => setIsMobileOpen(false)}
@@ -365,6 +366,7 @@ export default function DashboardWorkspace({ initialTab }) {
                 <TeacherActionBoard
                   teacherUser={user}
                   studentsList={studentsList}
+                  course={course}
                   selectedStudentId={selectedStudentId}
                   onSelectStudent={(stuId) => setSelectedStudentId(stuId)}
                   onOpenQuranForStudent={(stuId) => {
@@ -396,11 +398,20 @@ export default function DashboardWorkspace({ initialTab }) {
               {activeTab === 'quran' && (
                 <InteractiveQuranAnnotator
                   currentUser={user}
+                  selectedStudentId={selectedStudentId}
                   initialStudentId={selectedStudentId}
-                  studentList={studentsList.map((s) => ({
+                  studentsList={studentsList.map((s) => ({
                     id: s.studentId || s.id,
+                    studentId: s.studentId || s.id,
                     name: s.studentName || s.name,
+                    courseId: s.courseId,
+                    courseTitle: s.courseTitle || 'Quran Reading Foundation & Tajweed Mastery',
+                    activeMistakesCount: s.activeMistakesCount || 0,
+                    resolvedMistakesCount: s.resolvedMistakesCount || 0,
                   }))}
+                  onSelectStudent={(stuId) => setSelectedStudentId(stuId)}
+                  course={course}
+                  coursesList={coursesList}
                 />
               )}
 
@@ -447,7 +458,7 @@ export default function DashboardWorkspace({ initialTab }) {
 
               {activeTab === 'digitalquran' && (
                 <DigitalQuranReader
-                  studentId={isParent ? 'QI-STU-8842' : user.id}
+                  studentId={isParent ? (selectedStudentId || 'QI-STU-8842') : (user?.id || 'QI-STU-8842')}
                   onClose={() => handleTabChange('progress')}
                 />
               )}
@@ -466,15 +477,19 @@ export default function DashboardWorkspace({ initialTab }) {
               {activeTab === 'quran' && (
                 <InteractiveQuranAnnotator
                   currentUser={user}
-                  initialStudentId={isParent ? 'QI-STU-8842' : user.id}
-                  studentList={
+                  selectedStudentId={isParent ? (selectedStudentId || 'QI-STU-8842') : (user?.id || 'QI-STU-8842')}
+                  initialStudentId={isParent ? (selectedStudentId || 'QI-STU-8842') : (user?.id || 'QI-STU-8842')}
+                  studentsList={
                     isParent
                       ? [
-                          { id: 'QI-STU-8842', name: 'Tariq Al-Mansoor (Child)' },
-                          { id: 'QI-STU-7721', name: 'Zaid bin Harith (Child)' },
+                          { id: 'QI-STU-8842', studentId: 'QI-STU-8842', name: 'Tariq Al-Mansoor (Child)', courseId: 'QI-CRS-001', courseTitle: 'Quran Reading Foundation & Tajweed Mastery' },
+                          { id: 'QI-STU-7721', studentId: 'QI-STU-7721', name: 'Zaid bin Harith (Child)', courseId: 'QI-CRS-001', courseTitle: 'Quran Reading Foundation & Tajweed Mastery' },
                         ]
-                      : [{ id: user.id, name: user.name }]
+                      : [{ id: user?.id || 'QI-STU-8842', studentId: user?.id || 'QI-STU-8842', name: user?.name || 'Tariq Al-Mansoor', courseId: course?.id || 'QI-CRS-001', courseTitle: course?.title || 'Quran Reading Foundation & Tajweed Mastery' }]
                   }
+                  onSelectStudent={(stuId) => setSelectedStudentId(stuId)}
+                  course={course}
+                  coursesList={coursesList}
                 />
               )}
 

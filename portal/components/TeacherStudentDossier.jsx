@@ -242,20 +242,33 @@ export default function TeacherStudentDossier({
             </p>
           </div>
 
-          <div style={{ position: 'relative', minWidth: '260px' }}>
+          <div className="dossier-search-box">
+            <span className="dossier-search-icon">
+              <Icon name="search" size={16} />
+            </span>
             <input
               type="text"
               placeholder="Search student by name or ID..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="form-control"
-              style={{
-                padding: '9px 14px',
-                fontSize: '13px',
-                borderRadius: '10px',
-                width: '100%',
-              }}
+              className="dossier-search-input"
+              aria-label="Search student by name or ID"
             />
+            {searchQuery ? (
+              <button
+                type="button"
+                className="dossier-search-clear-btn"
+                onClick={() => setSearchQuery('')}
+                aria-label="Clear student search"
+                title="Clear search"
+              >
+                <Icon name="x" size={13} />
+              </button>
+            ) : (
+              <span className="dossier-search-badge">
+                {filteredStudents.length} {filteredStudents.length === 1 ? 'Student' : 'Students'}
+              </span>
+            )}
           </div>
         </div>
 
@@ -287,13 +300,13 @@ export default function TeacherStudentDossier({
                   padding: '12px 16px',
                   borderRadius: '12px',
                   background: isSelected
-                    ? 'linear-gradient(135deg, rgba(13, 74, 56, 0.08) 0%, rgba(197, 164, 90, 0.12) 100%)'
+                    ? '#FBF8F0'
                     : '#FFFFFF',
                   border: isSelected
-                    ? '2px solid var(--color-gold-primary)'
+                    ? '2px solid #D4AF37'
                     : '1.5px solid var(--border-light)',
                   boxShadow: isSelected
-                    ? '0 4px 14px rgba(13, 74, 56, 0.1)'
+                    ? '0 2px 8px rgba(13, 74, 56, 0.08)'
                     : 'none',
                   cursor: 'pointer',
                   textAlign: 'left',
@@ -385,14 +398,14 @@ export default function TeacherStudentDossier({
                   width: '64px',
                   height: '64px',
                   borderRadius: '50%',
-                  background: 'linear-gradient(135deg, var(--color-green-primary) 0%, var(--color-green-deep) 100%)',
+                  background: '#0D4A38',
                   color: '#FFFFFF',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   fontSize: '28px',
-                  boxShadow: '0 6px 18px rgba(13, 74, 56, 0.2)',
-                  border: '2px solid var(--color-gold-primary)',
+                  boxShadow: '0 4px 12px rgba(13, 74, 56, 0.16)',
+                  border: '2px solid #D4AF37',
                 }}
               >
                 <Icon name="student" size={28} />
@@ -450,7 +463,7 @@ export default function TeacherStudentDossier({
                 }}
               >
                 <Icon name="book-open" size={16} />
-                <span>Launch Quran Mistake Marker</span>
+                <span>Launch {activeStudent.studentName ? activeStudent.studentName.split(' ')[0] : 'Student'}&apos;s Quran Mistake Marker</span>
               </button>
 
               <button
@@ -492,7 +505,7 @@ export default function TeacherStudentDossier({
                   style={{
                     height: '100%',
                     width: `${activeStudent.progressPercent || 0}%`,
-                    background: 'linear-gradient(90deg, var(--color-green-primary), var(--color-gold-primary))',
+                    background: '#D4AF37',
                   }}
                 />
               </div>
@@ -939,7 +952,7 @@ export default function TeacherStudentDossier({
                   style={{ margin: 0, padding: '8px 16px', fontSize: '13px', width: 'auto', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
                 >
                   <Icon name="plus" size={14} color="#FFFFFF" />
-                  <span>Add Mistake in Quran Annotator</span>
+                  <span>Add Mistake in {activeStudent.studentName ? activeStudent.studentName.split(' ')[0] : 'Student'}&apos;s Mushaf</span>
                 </button>
               </div>
 

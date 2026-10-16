@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Icon } from './Icons';
 
 export default function InvoicePrintModal({
@@ -13,6 +14,11 @@ export default function InvoicePrintModal({
   const [loading, setLoading] = useState(true);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [paymentSuccessMsg, setPaymentSuccessMsg] = useState('');
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (isOpen) {
@@ -70,9 +76,9 @@ export default function InvoicePrintModal({
     }
   };
 
-  if (!isOpen) return null;
+  if (!isOpen || !mounted) return null;
 
-  return (
+  return createPortal(
     <div className="invoice-modal-backdrop" onClick={onClose}>
       <div className="invoice-modal-container" onClick={(e) => e.stopPropagation()}>
         {/* Modal Top Bar */}
@@ -268,6 +274,7 @@ export default function InvoicePrintModal({
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

@@ -20,7 +20,8 @@ export async function GET(request) {
     // If teacher requesting salary
     if (session?.role === 'teacher' || type === 'salary') {
       const teacherId = searchParams.get('teacherId') || session?.userId;
-      const salary = getTeacherSalary(teacherId);
+      const month = searchParams.get('month') || 'October 2026';
+      const salary = getTeacherSalary(teacherId, month);
       const allSalaries = session?.role === 'admin' ? getAllTeacherSalaries() : [];
       return NextResponse.json({ success: true, salary, allSalaries });
     }

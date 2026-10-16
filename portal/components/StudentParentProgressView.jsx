@@ -106,6 +106,9 @@ export default function StudentParentProgressView({
   const totalCount = activeStudent.totalJuz || 30;
   const completionPercentage = Math.round((memorizedCount / totalCount) * 100);
 
+  const activeSurah = latestLog?.sabaq?.surah || activeStudent.currentSurah || 'Surah Yusuf (يُوسُف)';
+  const activePara = latestLog?.sabaq?.para || activeStudent.currentPara || 12;
+
   return (
     <div className="student-parent-progress-wrapper">
       {/* If Parent: Child Selector Switcher */}
@@ -148,7 +151,7 @@ export default function StudentParentProgressView({
       <div className="hifz-hero-card">
         <div className="hifz-hero-left">
           <div className="hifz-header-badge">
-            <Icon name="book-open" size={14} style={{ marginRight: 6, color: '#c5a45a' }} />
+            <Icon name="book-open" size={14} style={{ marginRight: 6, color: '#FFFFFF' }} />
             <span>Quran Memorization Progress</span>
           </div>
           <h2 className="hifz-hero-title">
@@ -156,7 +159,7 @@ export default function StudentParentProgressView({
           </h2>
           <p className="hifz-hero-subtitle">
             Teacher: <strong>{activeStudent.mentor}</strong>.
-            Currently learning <strong>{activeStudent.currentSurah}</strong> (Juz {activeStudent.currentPara}).
+            Currently learning <strong>{activeSurah}</strong> (Juz {activePara}).
           </p>
 
           <div className="hifz-quick-stats-row">
@@ -425,12 +428,12 @@ export default function StudentParentProgressView({
                     borderRadius: '8px',
                     fontSize: '12px',
                     fontWeight: '600',
-                    background: 'rgba(255, 255, 255, 0.08)',
-                    color: '#94A3B8',
-                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    background: '#F8FAFC',
+                    color: '#475569',
+                    border: '1.5px solid #CBD5E1',
                   }}
                 >
-                  <Icon name="lock" size={13} color="#94A3B8" />
+                  <Icon name="lock" size={13} color="#64748B" />
                   <span>Teacher review unlocks upon course completion ({completionPercentage}%)</span>
                 </div>
               )

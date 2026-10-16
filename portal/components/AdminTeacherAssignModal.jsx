@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Icon } from './Icons';
 
 export default function AdminTeacherAssignModal({
@@ -19,6 +20,11 @@ export default function AdminTeacherAssignModal({
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedbackMsg, setFeedbackMsg] = useState('');
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Update selectedStudentId if initialStudentId changes
   React.useEffect(() => {
@@ -76,7 +82,9 @@ export default function AdminTeacherAssignModal({
     }
   };
 
-  return (
+  if (!isOpen || !mounted) return null;
+
+  return createPortal(
     <div className="pairing-modal-backdrop" onClick={onClose}>
       <div className="pairing-modal-container" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
@@ -165,7 +173,7 @@ export default function AdminTeacherAssignModal({
                 <h4 className="teacher-preview-name">{activeTeacher.name}</h4>
                 <p className="teacher-preview-sanad">{activeTeacher.sanadCertification || 'Verified Scholar'}</p>
                 <span className="teacher-preview-stats">
-                  Hourly Rate: ${activeTeacher.hourlyRate || 30}/hr • Active Students: {activeTeacher.studentsCount || 0}
+                  Rate: ${activeTeacher.ratePerClass || activeTeacher.hourlyRate || 35}/class • Active Students: {activeTeacher.studentsCount || 0}
                 </span>
               </div>
             </div>
@@ -205,6 +213,7 @@ export default function AdminTeacherAssignModal({
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

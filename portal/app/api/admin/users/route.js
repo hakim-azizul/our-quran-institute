@@ -20,11 +20,13 @@ import {
   createAnnouncement,
   deleteAnnouncement,
   findUserById,
+  updateTeacherClassRate,
+  getTeacherSuccessfulClassesData,
 } from '../../../../lib/db';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export async function GET(request) {
   try {
     const session = getSessionCookie();
     if (!session || session.role !== 'admin') {
@@ -32,6 +34,19 @@ export async function GET() {
         { error: 'Forbidden: Access restricted to System Administrators only.' },
         { status: 403 }
       );
+    }
+
+    const { searchParams } = new URL(request.url);
+    const type = searchParams.get('type');
+
+    if (type === 'teacher_classes') {
+      const targetTeacherId = searchParams.get('teacherId');
+      const month = searchParams.get('month') || 'October 2026';
+      if (!targetTeacherId) {
+        return NextResponse.json({ error: 'teacherId parameter is required.' }, { status: 400 });
+      }
+      const data = getTeacherSuccessfulClassesData(targetTeacherId, month);
+      return NextResponse.json({ success: true, ...data });
     }
 
     const stats = getInstituteStats();
@@ -169,6 +184,27 @@ export async function PATCH(request) {
         success: true,
         message: 'System settings successfully updated.',
         settings: updatedSettings,
+      });
+    }
+
+    // 9. Set Teacher Per-Class Honorarium Rate & Recalculate Cumulative Payroll
+    if (action === 'set_teacher_rate' || action === 'update_teacher_rate') {
+      const targetTeacherId = teacherId || userId;
+      const { newRate, month } = body;
+      if (!targetTeacherId || newRate === undefined) {
+        return NextResponse.json({ error: 'Teacher ID and newRate are required.' }, { status: 400 });
+      }
+      const parsedRate = parseFloat(newRate);
+      if (isNaN(parsedRate) || parsedRate <= 0) {
+        return NextResponse.json({ error: 'Please enter a valid rate greater than $0.' }, { status: 400 });
+      }
+
+      const result = updateTeacherClassRate(targetTeacherId, parsedRate, month);
+      return NextResponse.json({
+        success: true,
+        message: `Per-class rate for ${result.user.name} set to $${parsedRate.toFixed(2)}/class. Cumulative salary recalculated to $${result.salary?.totalPayable?.toFixed(2) || 0} (${result.salary?.totalClassesTaught || 0} classes × $${parsedRate.toFixed(2)}${result.salary?.bonus ? ` + $${result.salary.bonus} bonus` : ''}).`,
+        user: result.user,
+        salary: result.salary,
       });
     }
 

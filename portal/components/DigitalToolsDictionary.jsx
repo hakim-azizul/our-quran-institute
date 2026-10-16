@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Icon } from './Icons';
 
 export default function DigitalToolsDictionary({
@@ -8,11 +9,16 @@ export default function DigitalToolsDictionary({
   onClose,
   onInsertTerm,
 }) {
+  const [mounted, setMounted] = useState(false);
   const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [copiedId, setCopiedId] = useState(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const categories = [
     { id: 'all', label: 'All Terms', icon: 'book-open' },
@@ -60,9 +66,9 @@ export default function DigitalToolsDictionary({
     }
   };
 
-  if (!isOpen) return null;
+  if (!isOpen || !mounted) return null;
 
-  return (
+  return createPortal(
     <div className="dictionary-modal-backdrop" onClick={onClose}>
       <div className="dictionary-modal-container" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
@@ -220,6 +226,7 @@ export default function DigitalToolsDictionary({
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

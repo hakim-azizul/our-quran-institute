@@ -7,6 +7,11 @@ import { Icon } from '../../components/Icons';
 import PortalSidebar from '../../components/PortalSidebar';
 import AdminTeacherAssignModal from '../../components/AdminTeacherAssignModal';
 import InvoicePrintModal from '../../components/InvoicePrintModal';
+import AdminTeacherRateModal from '../../components/AdminTeacherRateModal';
+import AdminTeacherClassesLedgerModal from '../../components/AdminTeacherClassesLedgerModal';
+import AdminNewCourseModal from '../../components/AdminNewCourseModal';
+import AdminCourseCurriculumModal from '../../components/AdminCourseCurriculumModal';
+import AdminStatusFilterDropdown from '../../components/AdminStatusFilterDropdown';
 
 const mapAdminSlug = (slug) => {
   if (!slug) return 'analytics';
@@ -72,8 +77,19 @@ export default function AdminWorkspace({ initialTab }) {
   const [selectedStudentForAssign, setSelectedStudentForAssign] = useState(null);
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
 
-  // New Course Creation State
+  // Teacher Rate Adjustment & Classes Ledger Modal State
+  const [isRateModalOpen, setIsRateModalOpen] = useState(false);
+  const [selectedTeacherForRate, setSelectedTeacherForRate] = useState(null);
+  const [isClassesModalOpen, setIsClassesModalOpen] = useState(false);
+  const [selectedTeacherForClasses, setSelectedTeacherForClasses] = useState(null);
+
+  // Curriculum Management Modals & Filters
   const [isNewCourseModalOpen, setIsNewCourseModalOpen] = useState(false);
+  const [isCurriculumModalOpen, setIsCurriculumModalOpen] = useState(false);
+  const [selectedCourseForCurriculum, setSelectedCourseForCurriculum] = useState(null);
+  const [courseSearchQuery, setCourseSearchQuery] = useState('');
+  const [courseCategoryFilter, setCourseCategoryFilter] = useState('all');
+  const [expandedCourseModulesId, setExpandedCourseModulesId] = useState(null);
   const [newCourseTitle, setNewCourseTitle] = useState('');
   const [newCourseArabicTitle, setNewCourseArabicTitle] = useState('');
   const [newCourseLevel, setNewCourseLevel] = useState('Beginner to Intermediate');
@@ -726,24 +742,71 @@ export default function AdminWorkspace({ initialTab }) {
                   </button>
                 </div>
 
-                <div className="search-status-controls">
-                  <input
-                    type="text"
-                    placeholder="Search by name, ID, or email..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="users-search-input"
-                  />
-                  <select
+                <div className="search-status-controls" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <div className="admin-users-search-box" style={{ position: 'relative', minWidth: '240px' }}>
+                    <span
+                      style={{
+                        position: 'absolute',
+                        left: '12px',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        color: 'var(--color-green-primary)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        pointerEvents: 'none',
+                      }}
+                    >
+                      <Icon name="search" size={14} />
+                    </span>
+                    <input
+                      type="text"
+                      placeholder="Search by name, ID, or email..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="users-search-input"
+                      style={{
+                        padding: '8px 32px 8px 34px',
+                        borderRadius: '10px',
+                        border: '1.5px solid var(--border-light)',
+                        fontSize: '13px',
+                        width: '100%',
+                        outline: 'none',
+                        background: '#FFFFFF',
+                        transition: 'all 0.2s ease',
+                      }}
+                    />
+                    {searchQuery && (
+                      <button
+                        type="button"
+                        onClick={() => setSearchQuery('')}
+                        style={{
+                          position: 'absolute',
+                          right: '10px',
+                          top: '50%',
+                          transform: 'translateY(-50%)',
+                          background: '#F1F5F9',
+                          border: 'none',
+                          borderRadius: '50%',
+                          width: '18px',
+                          height: '18px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: '#64748B',
+                          cursor: 'pointer',
+                        }}
+                        title="Clear search query"
+                      >
+                        <Icon name="x" size={11} />
+                      </button>
+                    )}
+                  </div>
+
+                  <AdminStatusFilterDropdown
                     value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value)}
-                    className="users-status-select"
-                  >
-                    <option value="all">All Statuses</option>
-                    <option value="active">Active / Verified</option>
-                    <option value="pending">Pending Approval</option>
-                    <option value="suspended">Suspended</option>
-                  </select>
+                    onChange={(newStatus) => setStatusFilter(newStatus)}
+                    usersList={usersList}
+                  />
                 </div>
               </div>
 
@@ -804,8 +867,60 @@ export default function AdminWorkspace({ initialTab }) {
                                 </div>
                               ) : user.role === 'teacher' ? (
                                 <div className="allocation-info">
-                                  <span>Rate: <strong>${user.hourlyRate || 30}/hr</strong></span>
-                                  <span className="sub">{user.studentsCount || 0} Assigned Students</span>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                    <span>Rate: <strong>${user.ratePerClass || user.hourlyRate || 35}/class</strong></span>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setSelectedTeacherForRate(user);
+                                        setIsRateModalOpen(true);
+                                      }}
+                                      title="Set per-class rate & recalculate"
+                                      style={{
+                                        background: '#F0FDF4',
+                                        border: '1px solid #BBF7D0',
+                                        borderRadius: '5px',
+                                        padding: '1px 5px',
+                                        fontSize: '10.5px',
+                                        fontWeight: '700',
+                                        color: '#15803D',
+                                        cursor: 'pointer',
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        gap: '2px',
+                                      }}
+                                    >
+                                      <Icon name="pencil" size={10} color="#15803D" />
+                                      <span>Set</span>
+                                    </button>
+                                  </div>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '3px' }}>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setSelectedTeacherForClasses(user);
+                                        setIsClassesModalOpen(true);
+                                      }}
+                                      title="Inspect successful completed classes"
+                                      style={{
+                                        background: '#F8FAF9',
+                                        border: '1px solid #CBD5E1',
+                                        borderRadius: '6px',
+                                        padding: '1px 6px',
+                                        fontSize: '11px',
+                                        fontWeight: '700',
+                                        color: '#0D4A38',
+                                        cursor: 'pointer',
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        gap: '4px',
+                                      }}
+                                    >
+                                      <Icon name="check-circle" size={11} color="#10B981" />
+                                      <span><strong>{user.totalClassesTaught || 34}</strong> Successful Classes</span>
+                                    </button>
+                                    <span className="sub">• {user.studentsCount || 0} Students</span>
+                                  </div>
                                 </div>
                               ) : user.role === 'parent' ? (
                                 <div className="allocation-info">
@@ -854,6 +969,60 @@ export default function AdminWorkspace({ initialTab }) {
                                   >
                                     <Icon name="link" size={14} style={{ marginRight: 4 }} /> Pair Scholar
                                   </button>
+                                )}
+
+                                {user.role === 'teacher' && (
+                                  <>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setSelectedTeacherForClasses(user);
+                                        setIsClassesModalOpen(true);
+                                      }}
+                                      title="Inspect verified classes taken by this scholar"
+                                      style={{
+                                        padding: '5px 9px',
+                                        borderRadius: '7px',
+                                        fontSize: '11.5px',
+                                        fontWeight: '600',
+                                        border: '1px solid #10B981',
+                                        background: '#ECFDF5',
+                                        color: '#047857',
+                                        cursor: 'pointer',
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        gap: '4px',
+                                      }}
+                                    >
+                                      <Icon name="book-open" size={12} color="#047857" />
+                                      <span>Classes ({user.totalClassesTaught || 34})</span>
+                                    </button>
+
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setSelectedTeacherForRate(user);
+                                        setIsRateModalOpen(true);
+                                      }}
+                                      title="Set per-class price and recalculate cumulative salary"
+                                      style={{
+                                        padding: '5px 9px',
+                                        borderRadius: '7px',
+                                        fontSize: '11.5px',
+                                        fontWeight: '600',
+                                        border: '1px solid #0D4A38',
+                                        background: '#F0FDF4',
+                                        color: '#0D4A38',
+                                        cursor: 'pointer',
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        gap: '4px',
+                                      }}
+                                    >
+                                      <Icon name="credit-card" size={12} color="#0D4A38" />
+                                      <span>Set Rate</span>
+                                    </button>
+                                  </>
                                 )}
 
                                 {user.role !== 'admin' && (
@@ -942,8 +1111,8 @@ export default function AdminWorkspace({ initialTab }) {
                   </span>
                   <div>
                     <span className="fin-kpi-label">Teacher Payroll Obligations</span>
-                    <span className="fin-kpi-val">${financialAnalytics?.totalPayroll || 1955}.00</span>
-                    <span className="fin-kpi-sub">Calculated for active monthly hours</span>
+                    <span className="fin-kpi-val">${financialAnalytics?.totalPayroll || 1940}.00</span>
+                    <span className="fin-kpi-sub">Calculated for completed monthly class sessions</span>
                   </div>
                 </div>
 
@@ -964,7 +1133,7 @@ export default function AdminWorkspace({ initialTab }) {
                 <div className="table-card-top-row">
                   <div>
                     <h3 className="card-heading">Faculty Monthly Salary &amp; Billing Approval</h3>
-                    <p className="card-subheading">Track hours taught, hourly rates, and authorize disbursements.</p>
+                    <p className="card-subheading">Track completed classes, per-class compensation rates, and authorize disbursements.</p>
                   </div>
                 </div>
 
@@ -974,8 +1143,8 @@ export default function AdminWorkspace({ initialTab }) {
                       <tr>
                         <th>Faculty Scholar</th>
                         <th>Billing Cycle</th>
-                        <th>Hourly Rate</th>
-                        <th>Hours Taught</th>
+                        <th>Rate / Class</th>
+                        <th>Classes Completed</th>
                         <th>Base Salary</th>
                         <th>Bonus</th>
                         <th>Total Payable</th>
@@ -991,8 +1160,80 @@ export default function AdminWorkspace({ initialTab }) {
                             <span className="sub">{sal.teacherId}</span>
                           </td>
                           <td>{sal.month}</td>
-                          <td>${sal.hourlyRate}/hr</td>
-                          <td><strong>{sal.totalHoursTaught} hrs</strong></td>
+                          <td>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                              <strong style={{ color: '#0D4A38', fontSize: '13.5px' }}>
+                                ${(sal.ratePerClass || sal.hourlyRate || 35).toFixed(2)}
+                              </strong>
+                              <span style={{ fontSize: '11px', color: '#64748B' }}>/class</span>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const teacherObj = usersList.find((u) => u.id === sal.teacherId) || {
+                                    id: sal.teacherId,
+                                    name: sal.teacherName,
+                                    ratePerClass: sal.ratePerClass || 35,
+                                    totalClassesTaught: sal.totalClassesTaught || sal.sessionsCount || 34,
+                                    bonus: sal.bonus || 0,
+                                  };
+                                  setSelectedTeacherForRate(teacherObj);
+                                  setIsRateModalOpen(true);
+                                }}
+                                title="Set per-class rate & recalculate cumulative payroll"
+                                style={{
+                                  background: '#F0FDF4',
+                                  border: '1px solid #BBF7D0',
+                                  borderRadius: '5px',
+                                  padding: '1px 5px',
+                                  fontSize: '10.5px',
+                                  fontWeight: '700',
+                                  color: '#15803D',
+                                  cursor: 'pointer',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '2px',
+                                }}
+                              >
+                                <Icon name="pencil" size={10} color="#15803D" />
+                                <span>Set</span>
+                              </button>
+                            </div>
+                          </td>
+                          <td>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const teacherObj = usersList.find((u) => u.id === sal.teacherId) || {
+                                  id: sal.teacherId,
+                                  name: sal.teacherName,
+                                  ratePerClass: sal.ratePerClass || 35,
+                                  totalClassesTaught: sal.totalClassesTaught || sal.sessionsCount || 34,
+                                };
+                                setSelectedTeacherForClasses(teacherObj);
+                                setIsClassesModalOpen(true);
+                              }}
+                              title="Inspect verified class sessions ledger"
+                              style={{
+                                background: '#F8FAF9',
+                                border: '1px solid #CBD5E1',
+                                borderRadius: '7px',
+                                padding: '3px 7px',
+                                cursor: 'pointer',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '5px',
+                                transition: 'all 0.15s ease',
+                              }}
+                            >
+                              <Icon name="check-circle" size={12} color="#10B981" />
+                              <strong style={{ color: '#0F172A', fontSize: '12px' }}>
+                                {sal.totalClassesTaught || sal.sessionsCount || 0} classes
+                              </strong>
+                              <span style={{ fontSize: '10.5px', color: '#0D4A38', fontWeight: '700', textDecoration: 'underline' }}>
+                                Inspect
+                              </span>
+                            </button>
+                          </td>
                           <td>${sal.calculatedSalary.toFixed(2)}</td>
                           <td>+${sal.bonus.toFixed(2)}</td>
                           <td>
@@ -1115,46 +1356,411 @@ export default function AdminWorkspace({ initialTab }) {
           {/* ==========================================================
               TAB 4: COURSES & CURRICULUM
               ========================================================== */}
-          {activeAdminTab === 'courses' && (
-            <div className="admin-courses-view">
-              <div className="view-intro-banner">
-                <div>
-                  <h1 className="view-title">Curriculum &amp; Course Management</h1>
-                  <p className="view-subtitle">
-                    Manage courses, modules, and teacher assignments.
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  className="btn-primary-action"
-                  onClick={() => setIsNewCourseModalOpen(true)}
-                >
-                  <Icon name="plus" size={15} style={{ marginRight: 6 }} />
-                  <span>Create New Course</span>
-                </button>
-              </div>
+          {activeAdminTab === 'courses' && (() => {
+            const totalModulesCount = coursesList.reduce((sum, c) => sum + (c.modules?.length || 0), 0);
+            const totalLessonsCount = coursesList.reduce(
+              (sum, c) => sum + (c.modules?.reduce((acc, m) => acc + (m.lessons?.length || 0), 0) || 0),
+              0
+            );
 
-              <div className="courses-cards-grid">
-                {coursesList.map((course) => (
-                  <div key={course.id} className="admin-course-card">
-                    <div className="course-card-top">
-                      <span className="course-level-badge">{course.level}</span>
-                      <span className="course-status-badge">{course.status}</span>
+            const filteredCourses = coursesList.filter((c) => {
+              const q = courseSearchQuery.toLowerCase().trim();
+              const matchesSearch =
+                !q ||
+                c.title?.toLowerCase().includes(q) ||
+                c.arabicTitle?.toLowerCase().includes(q) ||
+                c.teacherName?.toLowerCase().includes(q) ||
+                c.description?.toLowerCase().includes(q);
+              const matchesCategory =
+                courseCategoryFilter === 'all' ||
+                (courseCategoryFilter === 'quran' &&
+                  (c.category === 'quran' || c.category === 'tajweed' || c.id === 'QI-CRS-001')) ||
+                (courseCategoryFilter === 'arabic' &&
+                  (c.category === 'arabic' || c.id === 'QI-CRS-002'));
+              return matchesSearch && matchesCategory;
+            });
+
+            return (
+              <div className="admin-courses-view">
+                {/* View Intro Banner */}
+                <div className="view-intro-banner">
+                  <div>
+                    <span
+                      style={{
+                        fontSize: '11px',
+                        fontWeight: '700',
+                        letterSpacing: '1px',
+                        textTransform: 'uppercase',
+                        color: 'var(--color-gold-primary)',
+                        display: 'block',
+                        marginBottom: '3px',
+                      }}
+                    >
+                      إِدَارَةُ المَنَاهِجِ الدِّرَاسِيَّةِ وَالمَسَارَاتِ التَّعْلِيمِيَّةِ
+                    </span>
+                    <h1 className="view-title">Curriculum &amp; Course Management</h1>
+                    <p className="view-subtitle">
+                      Author, structure, and supervise Quranic memorization, Tajweed, and Classical Arabic curricula.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    className="btn-primary-action"
+                    onClick={() => setIsNewCourseModalOpen(true)}
+                  >
+                    <Icon name="plus" size={15} style={{ marginRight: 6 }} />
+                    <span>Author New Course</span>
+                  </button>
+                </div>
+
+                {/* Top Metrics Cards */}
+                <div className="courses-stats-grid">
+                  <div className="courses-stat-card">
+                    <div className="courses-stat-icon">
+                      <Icon name="book-open" size={22} />
                     </div>
-                    <h3 className="course-title">{course.title}</h3>
-                    {course.arabicTitle && (
-                      <span className="course-arabic-title">{course.arabicTitle}</span>
-                    )}
-                    <p className="course-desc">{course.description}</p>
-                    <div className="course-meta-footer">
-                      <span>Faculty: <strong>{course.teacherName}</strong></span>
-                      <span>Modules: <strong>{course.modules?.length || 0}</strong></span>
+                    <div>
+                      <div className="courses-stat-val">{coursesList.length} Tracks</div>
+                      <div className="courses-stat-label">Academic Courses</div>
                     </div>
                   </div>
-                ))}
+
+                  <div className="courses-stat-card">
+                    <div className="courses-stat-icon">
+                      <Icon name="file-text" size={22} />
+                    </div>
+                    <div>
+                      <div className="courses-stat-val">{totalModulesCount} Modules</div>
+                      <div className="courses-stat-label">Curriculum Modules</div>
+                    </div>
+                  </div>
+
+                  <div className="courses-stat-card">
+                    <div className="courses-stat-icon">
+                      <Icon name="check-circle" size={22} color="#10B981" />
+                    </div>
+                    <div>
+                      <div className="courses-stat-val">{totalLessonsCount} Lessons</div>
+                      <div className="courses-stat-label">Instructional Units</div>
+                    </div>
+                  </div>
+
+                  <div className="courses-stat-card">
+                    <div className="courses-stat-icon">
+                      <Icon name="users" size={22} />
+                    </div>
+                    <div>
+                      <div className="courses-stat-val">{verifiedTeachersList.length} Mentors</div>
+                      <div className="courses-stat-label">Assigned Scholars</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Filter and Search Bar */}
+                <div className="courses-filter-bar">
+                  <div className="courses-filter-search">
+                    <span className="courses-search-icon">
+                      <Icon name="search" size={15} />
+                    </span>
+                    <input
+                      type="text"
+                      placeholder="Search courses by title, Arabic name, or scholar..."
+                      value={courseSearchQuery}
+                      onChange={(e) => setCourseSearchQuery(e.target.value)}
+                      className="courses-search-input"
+                    />
+                    {courseSearchQuery && (
+                      <button
+                        type="button"
+                        onClick={() => setCourseSearchQuery('')}
+                        style={{
+                          position: 'absolute',
+                          right: '12px',
+                          top: '50%',
+                          transform: 'translateY(-50%)',
+                          background: 'none',
+                          border: 'none',
+                          color: '#94A3B8',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        <Icon name="x" size={13} />
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="courses-filter-pills">
+                    {[
+                      { id: 'all', label: 'All Courses' },
+                      { id: 'quran', label: 'Holy Quran & Tajweed' },
+                      { id: 'arabic', label: 'Classical Arabic' },
+                    ].map((f) => {
+                      const active = courseCategoryFilter === f.id;
+                      return (
+                        <button
+                          key={f.id}
+                          type="button"
+                          onClick={() => setCourseCategoryFilter(f.id)}
+                          className={`courses-filter-pill-btn ${active ? 'active' : ''}`}
+                        >
+                          {f.label}
+                        </button>
+                      );
+                    })}
+                    <span
+                      style={{
+                        fontSize: '11px',
+                        fontWeight: '700',
+                        color: 'var(--color-green-deep)',
+                        background: 'var(--color-green-light)',
+                        padding: '4px 10px',
+                        borderRadius: '999px',
+                        border: '1px solid var(--color-green-mint)',
+                        marginLeft: '4px',
+                      }}
+                    >
+                      {filteredCourses.length} {filteredCourses.length === 1 ? 'Course' : 'Courses'}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Courses Cards Grid */}
+                {filteredCourses.length === 0 ? (
+                  <div
+                    style={{
+                      padding: '60px 20px',
+                      textAlign: 'center',
+                      background: '#FFFFFF',
+                      borderRadius: '16px',
+                      border: '1px solid var(--border-light)',
+                    }}
+                  >
+                    <Icon name="inbox" size={36} color="#94A3B8" />
+                    <h3 style={{ margin: '10px 0 4px 0', fontSize: '16px', color: '#1E293B' }}>
+                      No Courses Found
+                    </h3>
+                    <p style={{ margin: 0, fontSize: '13px', color: '#64748B' }}>
+                      No academic courses matched your search query. Try clearing the filter.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="courses-cards-grid">
+                    {filteredCourses.map((course) => {
+                      const isQuran =
+                        course.category === 'quran' ||
+                        course.category === 'tajweed' ||
+                        course.id === 'QI-CRS-001';
+                      const isModulesExpanded = expandedCourseModulesId === course.id;
+                      const courseLessonsCount =
+                        course.modules?.reduce((sum, m) => sum + (m.lessons?.length || 0), 0) || 0;
+
+                      return (
+                        <div key={course.id} className="admin-course-card">
+                          {/* Banner */}
+                          <div className="course-card-banner">
+                            <img
+                              src="/assets/hero_stand_book.png"
+                              alt="Course Stand"
+                              className="course-card-banner-bg"
+                            />
+                            <div className="course-card-top">
+                              <span className="course-category-badge">
+                                <Icon name="book-open" size={11} style={{ marginRight: 4 }} />
+                                {isQuran ? 'Holy Quran & Tajweed' : 'Classical Arabic'}
+                              </span>
+                              <div style={{ display: 'flex', gap: '6px' }}>
+                                <span className="course-level-badge">{course.level}</span>
+                                <span className="course-status-badge">
+                                  <span
+                                    style={{
+                                      width: 6,
+                                      height: 6,
+                                      borderRadius: '50%',
+                                      backgroundColor: '#10B981',
+                                      display: 'inline-block',
+                                    }}
+                                  />
+                                  <span>{course.status || 'Published'}</span>
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Body */}
+                          <div className="course-card-body">
+                            <h3 className="course-title">{course.title}</h3>
+                            {course.arabicTitle && (
+                              <span dir="rtl" className="course-arabic-title">
+                                {course.arabicTitle}
+                              </span>
+                            )}
+                            <p className="course-desc">{course.description}</p>
+
+                            {/* Specs Grid */}
+                            <div className="course-specs-grid">
+                              <div className="course-spec-item">
+                                <div className="course-spec-icon">
+                                  <Icon name="users" size={15} />
+                                </div>
+                                <div className="course-spec-text">
+                                  <span className="course-spec-label">Faculty Scholar</span>
+                                  <span className="course-spec-val">{course.teacherName}</span>
+                                </div>
+                              </div>
+
+                              <div className="course-spec-item">
+                                <div className="course-spec-icon">
+                                  <Icon name="clock" size={15} />
+                                </div>
+                                <div className="course-spec-text">
+                                  <span className="course-spec-label">Scope &amp; Duration</span>
+                                  <span className="course-spec-val">
+                                    {course.totalDuration || '10 Weeks'}
+                                  </span>
+                                </div>
+                              </div>
+
+                              <div className="course-spec-item">
+                                <div className="course-spec-icon">
+                                  <Icon name="file-text" size={15} />
+                                </div>
+                                <div className="course-spec-text">
+                                  <span className="course-spec-label">Curriculum Units</span>
+                                  <span className="course-spec-val">
+                                    {course.modules?.length || 0} Modules • {courseLessonsCount} Lessons
+                                  </span>
+                                </div>
+                              </div>
+
+                              <div className="course-spec-item">
+                                <div className="course-spec-icon">
+                                  <Icon name="award" size={15} />
+                                </div>
+                                <div className="course-spec-text">
+                                  <span className="course-spec-label">Passing Threshold</span>
+                                  <span className="course-spec-val">
+                                    {course.passingGrade || 80}% Standard
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Modules Accordion */}
+                            {course.modules && course.modules.length > 0 && (
+                              <div className="course-modules-accordion">
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setExpandedCourseModulesId(isModulesExpanded ? null : course.id)
+                                  }
+                                  className="course-modules-toggle-btn"
+                                >
+                                  <span>
+                                    Inspect Curriculum Modules ({course.modules.length})
+                                  </span>
+                                  <Icon
+                                    name={isModulesExpanded ? 'chevron-up' : 'chevron-down'}
+                                    size={15}
+                                  />
+                                </button>
+
+                                {isModulesExpanded && (
+                                  <div className="course-modules-preview-list">
+                                    {course.modules.map((m, idx) => (
+                                      <div key={m.id || idx} className="course-module-preview-item">
+                                        <div
+                                          style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '8px',
+                                            overflow: 'hidden',
+                                          }}
+                                        >
+                                          <span className="course-module-num">M{m.moduleNumber || idx + 1}:</span>
+                                          <span
+                                            style={{
+                                              whiteSpace: 'nowrap',
+                                              overflow: 'hidden',
+                                              textOverflow: 'ellipsis',
+                                              fontWeight: '600',
+                                            }}
+                                          >
+                                            {m.title}
+                                          </span>
+                                        </div>
+                                        <span
+                                          style={{
+                                            fontSize: '11px',
+                                            color: '#64748B',
+                                            whiteSpace: 'nowrap',
+                                          }}
+                                        >
+                                          {m.lessons?.length || 0} lessons
+                                        </span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            )}
+
+                            {/* Actions Bar */}
+                            <div className="course-actions-bar">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setSelectedCourseForCurriculum(course);
+                                  setIsCurriculumModalOpen(true);
+                                }}
+                                className="btn-course-action-inspect"
+                              >
+                                <Icon name="book-open" size={14} />
+                                <span>Inspect Full Syllabus</span>
+                              </button>
+
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setSelectedStudentForAssign(null);
+                                  setIsAssignModalOpen(true);
+                                }}
+                                title="Assign or reassign faculty scholar"
+                                style={{
+                                  padding: '9px 12px',
+                                  borderRadius: '10px',
+                                  border: '1px solid #CBD5E1',
+                                  background: '#FFFFFF',
+                                  color: '#334155',
+                                  fontSize: '12px',
+                                  fontWeight: '600',
+                                  cursor: 'pointer',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '4px',
+                                }}
+                              >
+                                <Icon name="link" size={13} />
+                                <span>Scholar</span>
+                              </button>
+
+                              <Link
+                                href={`/dashboard`}
+                                className="btn-course-action-lms"
+                                title="Preview course in student LMS"
+                              >
+                                <span>LMS Preview</span>
+                                <Icon name="arrow-right" size={13} />
+                              </Link>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
-            </div>
-          )}
+            );
+          })()}
 
           {/* ==========================================================
               TAB 5: SYSTEM SETTINGS & GLOBAL NOTIFICATIONS
@@ -1380,6 +1986,60 @@ export default function AdminWorkspace({ initialTab }) {
         isOpen={isInvoiceModalOpen}
         onClose={() => setIsInvoiceModalOpen(false)}
         currentUser={adminUser}
+      />
+
+      {/* Teacher Per-Class Honorarium Rate & Cumulative Calculator Modal */}
+      <AdminTeacherRateModal
+        isOpen={isRateModalOpen}
+        onClose={() => {
+          setIsRateModalOpen(false);
+          setSelectedTeacherForRate(null);
+        }}
+        teacher={selectedTeacherForRate}
+        month="October 2026"
+        onRateUpdated={() => {
+          fetchAdminData();
+        }}
+      />
+
+      {/* Teacher Successful Classes Audit Ledger Modal */}
+      <AdminTeacherClassesLedgerModal
+        isOpen={isClassesModalOpen}
+        onClose={() => {
+          setIsClassesModalOpen(false);
+          setSelectedTeacherForClasses(null);
+        }}
+        teacher={selectedTeacherForClasses}
+        month="October 2026"
+        onOpenRateModal={(t) => {
+          setSelectedTeacherForRate(t);
+          setIsRateModalOpen(true);
+        }}
+      />
+
+      {/* Author New Course Modal */}
+      <AdminNewCourseModal
+        isOpen={isNewCourseModalOpen}
+        onClose={() => setIsNewCourseModalOpen(false)}
+        teachers={verifiedTeachersList}
+        onCourseCreated={(newCourse) => {
+          fetchAdminData();
+          setFeedbackMsg(`Academic course "${newCourse.title}" successfully created and published!`);
+        }}
+      />
+
+      {/* Course Full Curriculum & Syllabus Inspector Modal */}
+      <AdminCourseCurriculumModal
+        isOpen={isCurriculumModalOpen}
+        onClose={() => {
+          setIsCurriculumModalOpen(false);
+          setSelectedCourseForCurriculum(null);
+        }}
+        course={selectedCourseForCurriculum}
+        onOpenAssignTeacher={() => {
+          setIsCurriculumModalOpen(false);
+          setIsAssignModalOpen(true);
+        }}
       />
     </div>
   );

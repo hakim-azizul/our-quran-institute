@@ -29,7 +29,10 @@ const initialUsers = [
     sanadCertification: '10 Qira’at Mutawatirah with Connected Chain (Al-Azhar Al-Sharif)',
     specialization: 'Qira’at, Tajweed Sanad & Advanced Hifz',
     yearsExperience: '14+ years',
-    hourlyRate: 30,
+    ratePerClass: 35,
+    hourlyRate: 35,
+    totalClassesTaught: 34,
+    allTimeSuccessfulClasses: 96,
     studentsCount: 18,
     nextSession: 'Today at 5:00 PM with Tariq Al-Mansoor',
     avatar: 'scholar',
@@ -45,7 +48,10 @@ const initialUsers = [
     sanadCertification: 'Ijazah in Warsh ‘an Nafi’ & Hafs (Madinah University)',
     specialization: 'Tajweed Rules & Arabic Makharij',
     yearsExperience: '9 years',
+    ratePerClass: 25,
     hourlyRate: 25,
+    totalClassesTaught: 28,
+    allTimeSuccessfulClasses: 74,
     studentsCount: 12,
     nextSession: 'Thursday at 4:30 PM',
     avatar: 'scholar',
@@ -61,7 +67,10 @@ const initialUsers = [
     sanadCertification: 'Ijaza in Qaloon & Hafs from University of Jordan',
     specialization: 'Hifz Revision & Tajweed Application',
     yearsExperience: '5 years',
+    ratePerClass: 25,
     hourlyRate: 25,
+    totalClassesTaught: 19,
+    allTimeSuccessfulClasses: 52,
     studentsCount: 0,
     nextSession: 'Faculty Onboarding Interview (Upcoming)',
     avatar: 'scholar',
@@ -187,6 +196,7 @@ const initialCourses = [
     title: 'Quran Reading Foundation & Tajweed Mastery: How to Read the Quran',
     arabicTitle: 'تَعَلُّمُ قِرَاءَةِ القُرْآنِ الكَرِيمِ وَأَحْكَامِ التَّجْوِيدِ',
     slug: 'how-to-read-quran',
+    category: 'quran',
     level: 'Beginner to Fluent',
     authorId: 'QI-ADM-001',
     assignedTeacherId: 'QI-FAC-014',
@@ -386,9 +396,73 @@ const initialCourses = [
       },
     ],
   },
+  {
+    id: 'QI-CRS-002',
+    title: 'Classical Arabic Grammar & Morphology (Lisan Al-Arab)',
+    arabicTitle: 'قَوَاعِدُ اللُّغَةِ العَرَبِيَّةِ وَعِلْمُ الصَّرْفِ',
+    slug: 'classical-arabic-grammar',
+    category: 'arabic',
+    level: 'Intermediate',
+    authorId: 'QI-ADM-001',
+    assignedTeacherId: 'QI-FAC-028',
+    teacherName: 'Ustadh Mahmoud Al-Misri',
+    thumbnail: '/assets/hero_stand_book.png',
+    description:
+      'A structured curriculum exploring classical Arabic grammar, noun declension (I’rab), verb conjugations, and sentence analysis.',
+    totalDuration: '8 Weeks • 4 Modules • 12 Lessons • 4 Quizzes',
+    passingGrade: 75,
+    status: 'published',
+    modules: [
+      {
+        id: 'mod-arab-1',
+        moduleNumber: 1,
+        title: 'Parts of Speech (Kalimah) & The Nominal Sentence',
+        arabicTitle: 'أَقْسَامُ الكَلِمَةِ وَالجُمْلَةُ الاسْمِيَّةُ',
+        description: 'Understanding Ism, Fi’l, and Harf, plus Subject and Predicate (Mubtada and Khabar).',
+        lessons: [
+          {
+            id: 'les-arab-1-1',
+            title: 'Lesson 1.1: The Three Types of Words (Ism, Fi’l, Harf)',
+            duration: '30 mins',
+            content: 'Foundations of Arabic syntax and word classification.',
+            practiceText: 'الكَلِمَةُ اسْمٌ وَفِعْلٌ وَحَرْفٌ',
+          },
+        ],
+        quizId: null,
+      },
+    ],
+  },
 ];
-globalThis.__QURAN_COURSES__ = globalThis.__QURAN_COURSES__ || initialCourses;
+globalThis.__QURAN_COURSES__ = initialCourses;
 const courses = globalThis.__QURAN_COURSES__;
+
+// Helper to check if a course is a Holy Quran / Tajweed / Hifz course
+export function isQuranCourse(courseOrEnrollment) {
+  if (!courseOrEnrollment) return true;
+  const category = (courseOrEnrollment.category || courseOrEnrollment.courseCategory || '').toLowerCase();
+  if (category) {
+    return category === 'quran' || category === 'tajweed' || category === 'hifz';
+  }
+  const courseId = courseOrEnrollment.courseId || courseOrEnrollment.id || '';
+  if (courseId === 'QI-CRS-001') return true;
+  if (courseId === 'QI-CRS-002') return false;
+
+  const title = (courseOrEnrollment.title || courseOrEnrollment.courseTitle || '').toLowerCase();
+  const slug = (courseOrEnrollment.slug || '').toLowerCase();
+  const desc = (courseOrEnrollment.description || '').toLowerCase();
+
+  if (title.includes('arabic') && !title.includes('quran')) return false;
+
+  return (
+    title.includes('quran') ||
+    title.includes('tajweed') ||
+    title.includes('hifz') ||
+    title.includes('mushaf') ||
+    title.includes('recitation') ||
+    slug.includes('quran') ||
+    desc.includes('quran')
+  );
+}
 
 export function ensureCourseHasModules(c) {
   if (!c) return c;
@@ -760,6 +834,7 @@ const initialMistakes = [
     id: 'MSTK-004',
     studentId: 'QI-STU-9904',
     studentName: 'Maryam Al-Qasim',
+    courseId: 'QI-CRS-001',
     teacherId: 'QI-FAC-014',
     teacherName: 'Dr. Sheikh Ahmad Al-Azhari',
     surahNumber: 113,
@@ -777,8 +852,74 @@ const initialMistakes = [
     resolvedAt: null,
     resolvedNote: '',
   },
+  {
+    id: 'MSTK-005',
+    studentId: 'QI-STU-9904',
+    studentName: 'Maryam Al-Qasim',
+    courseId: 'QI-CRS-001',
+    teacherId: 'QI-FAC-014',
+    teacherName: 'Dr. Sheikh Ahmad Al-Azhari',
+    surahNumber: 1,
+    surahName: 'Al-Fatihah',
+    ayahNumber: 4,
+    wordIndex: 1,
+    wordText: 'مَالِكِ',
+    mistakeCategory: 'tajweed_rule',
+    categoryLabel: 'Madd Asli Prolonged Beyond 2 Counts',
+    severity: 'minor',
+    correctionNote:
+      'Held the Alif in Maaliki for 4 counts. In Hafs recitation this is a Madd Tabee/Asli of exactly 2 harakat.',
+    status: 'resolved',
+    flaggedAt: '2026-10-02T11:00:00Z',
+    resolvedAt: '2026-10-06T11:30:00Z',
+    resolvedNote: 'Cleared: Maryam adjusted to exactly 2 counts rhythmically with ease.',
+  },
+  {
+    id: 'MSTK-006',
+    studentId: 'QI-STU-7721',
+    studentName: 'Zaid bin Harith',
+    courseId: 'QI-CRS-001',
+    teacherId: 'QI-FAC-028',
+    teacherName: 'Ustadh Mahmoud Al-Misri',
+    surahNumber: 114,
+    surahName: 'An-Nas',
+    ayahNumber: 4,
+    wordIndex: 2,
+    wordText: 'الْوَسْوَاسِ',
+    mistakeCategory: 'makhraj_letter',
+    categoryLabel: 'Seen Whispering (Hams & Safeer)',
+    severity: 'major',
+    correctionNote:
+      'The letter Seen (س) requires audible whistle (Safeer) and flowing breath (Hams). Zaid stopped the airflow prematurely.',
+    status: 'active',
+    flaggedAt: '2026-10-10T16:20:00Z',
+    resolvedAt: null,
+    resolvedNote: '',
+  },
+  {
+    id: 'MSTK-007',
+    studentId: 'QI-STU-7721',
+    studentName: 'Zaid bin Harith',
+    courseId: 'QI-CRS-001',
+    teacherId: 'QI-FAC-028',
+    teacherName: 'Ustadh Mahmoud Al-Misri',
+    surahNumber: 1,
+    surahName: 'Al-Fatihah',
+    ayahNumber: 5,
+    wordIndex: 1,
+    wordText: 'إِيَّاكَ',
+    mistakeCategory: 'harakah_jaliyy',
+    categoryLabel: 'Shaddah Contact on Yaa',
+    severity: 'minor',
+    correctionNote:
+      'Ensure the Yaa receives full Nabrah/pressure on the Shaddah without slurring into an elongated vowel.',
+    status: 'resolved',
+    flaggedAt: '2026-10-04T15:10:00Z',
+    resolvedAt: '2026-10-09T16:00:00Z',
+    resolvedNote: 'Cleared: Zaid pronounced the Shaddah firmly with excellent articulation.',
+  },
 ];
-globalThis.__QURAN_MISTAKES__ = globalThis.__QURAN_MISTAKES__ || initialMistakes;
+globalThis.__QURAN_MISTAKES__ = initialMistakes;
 const studentMistakes = globalThis.__QURAN_MISTAKES__;
 
 // ==========================================
@@ -840,7 +981,33 @@ export function createUser(userData) {
 }
 
 export function getAllUsers() {
-  return users.map(({ password: _, ...safeUser }) => safeUser);
+  const currentSalaries = globalThis.__QURAN_TEACHER_SALARIES__ || [];
+  return users.map(({ password: _, ...safeUser }) => {
+    if (safeUser.role === 'teacher') {
+      const activeSalary = currentSalaries.find(
+        (s) => s.teacherId === safeUser.id && s.month === 'October 2026'
+      ) || currentSalaries.find((s) => s.teacherId === safeUser.id);
+
+      const allTimeClasses = currentSalaries
+        .filter((s) => s.teacherId === safeUser.id)
+        .reduce((sum, s) => sum + (s.totalClassesTaught || s.sessionsCount || 0), 0);
+
+      const currentCycleClasses = activeSalary?.totalClassesTaught ?? safeUser.totalClassesTaught ?? 0;
+      const rate = safeUser.ratePerClass || activeSalary?.ratePerClass || 35;
+
+      return {
+        ...safeUser,
+        ratePerClass: rate,
+        hourlyRate: rate,
+        totalClassesTaught: currentCycleClasses,
+        allTimeSuccessfulClasses: allTimeClasses || safeUser.allTimeSuccessfulClasses || currentCycleClasses,
+        calculatedSalary: activeSalary?.calculatedSalary ?? (currentCycleClasses * rate),
+        totalPayable: activeSalary?.totalPayable ?? (currentCycleClasses * rate),
+        salaryStatus: activeSalary?.status || 'Pending Approval',
+      };
+    }
+    return safeUser;
+  });
 }
 
 export function getAllTeachers() {
@@ -908,7 +1075,8 @@ export function getInstituteStats() {
 
   const salariesList = globalThis.__QURAN_TEACHER_SALARIES__ || [];
   const monthlyPayroll = salariesList.reduce((sum, s) => sum + (s.totalPayable || 0), 0);
-  const totalHoursTaught = salariesList.reduce((sum, s) => sum + (s.totalHoursTaught || 0), 0);
+  const totalClassesTaught = salariesList.reduce((sum, s) => sum + (s.totalClassesTaught || s.sessionsCount || 0), 0);
+  const totalHoursTaught = salariesList.reduce((sum, s) => sum + (s.totalHoursTaught || s.totalClassesTaught || 0), 0);
 
   return {
     totalStudents: students.length,
@@ -930,6 +1098,7 @@ export function getInstituteStats() {
     monthlyRevenue,
     pendingRevenue,
     monthlyPayroll,
+    totalClassesTaught,
     totalHoursTaught,
   };
 }
@@ -1154,8 +1323,12 @@ export function getEnrollmentsForTeacher(teacherId) {
     .map((e) => {
       const studentUser = findUserById(e.studentId);
       const studentMistakesList = getMistakesForStudent(e.studentId);
+      const courseObj = getCourseById(e.courseId);
       return {
         ...e,
+        courseTitle: courseObj?.title || 'Quran Reading Foundation & Tajweed Mastery',
+        courseCategory: courseObj?.category || 'quran',
+        isQuranCourse: isQuranCourse(courseObj),
         studentEmail: studentUser?.email || '',
         studentAvatar: studentUser?.avatar || 'student',
         memorizedJuz: studentUser?.memorizedJuz || 0,
@@ -1278,6 +1451,7 @@ export function addStudentMistake({
   categoryLabel,
   severity = 'major',
   correctionNote,
+  courseId,
 }) {
   const student = findUserById(studentId);
   const teacher = findUserById(teacherId);
@@ -1293,10 +1467,11 @@ export function addStudentMistake({
     studentName: student.name,
     teacherId,
     teacherName: teacher.name,
+    courseId: courseId || 'QI-CRS-001',
     surahNumber: Number(surahNumber),
     surahName: surahInfo?.name || `Surah ${surahNumber}`,
     ayahNumber: Number(ayahNumber),
-    wordIndex: wordIndex !== undefined ? Number(wordIndex) : null,
+    wordIndex: wordIndex !== undefined && wordIndex !== null ? Number(wordIndex) : null,
     wordText: wordText || '',
     mistakeCategory: mistakeCategory || 'tajweed_rule',
     categoryLabel: categoryLabel || 'Recitation Slip',
@@ -2042,34 +2217,197 @@ const initialTeacherSalaries = [
     teacherId: 'QI-FAC-014',
     teacherName: 'Dr. Sheikh Ahmad Al-Azhari',
     month: 'October 2026',
-    hourlyRate: 30.0,
-    totalHoursTaught: 38.5,
-    calculatedSalary: 1155.0,
-    bonus: 50.0,
-    totalPayable: 1205.0,
-    sessionsCount: 26,
+    ratePerClass: 35.0,
+    hourlyRate: 35.0, // Backwards-compatible alias
+    totalClassesTaught: 34,
+    calculatedSalary: 1190.0, // 34 classes * $35.00 = $1,190.00
+    bonus: 50.0, // Mumtaz Faculty Tier retention & perfection bonus
+    totalPayable: 1240.0,
+    sessionsCount: 34,
+    totalHoursTaught: 34.0,
     status: 'Approved', // 'Pending Approval' | 'Approved' | 'Disbursed'
     approvedBy: 'QI-ADM-001',
     approvedAt: '2026-10-15T12:00:00Z',
     disbursedAt: null,
-    notes: 'Approved for outstanding faculty performance and perfect attendance.',
+    notes: 'Approved for outstanding faculty performance across 34 verified classes and perfect student attendance.',
+    classesList: [
+      {
+        id: 'CLS-OCT-01',
+        date: '2026-10-16',
+        time: '10:00 AM - 10:50 AM',
+        studentName: 'Tariq Al-Mansoor',
+        courseTitle: 'Memorization & Recitation (Hifz) with Tajweed',
+        topic: 'Surah Yusuf (Ayahs 1-22) - Hifz & Tajweed Assessment',
+        classType: '1-on-1 Quran Recitation',
+        ratePerClass: 35.0,
+        amount: 35.0,
+        status: 'Verified',
+      },
+      {
+        id: 'CLS-OCT-02',
+        date: '2026-10-16',
+        time: '11:15 AM - 12:05 PM',
+        studentName: 'Maryam Al-Qasim',
+        courseTitle: 'Memorization & Recitation (Hifz) with Tajweed',
+        topic: 'Surah Al-Mumtahanah & Tajweed Evaluation',
+        classType: '1-on-1 Tajweed Assessment',
+        ratePerClass: 35.0,
+        amount: 35.0,
+        status: 'Verified',
+      },
+      {
+        id: 'CLS-OCT-03',
+        date: '2026-10-15',
+        time: '10:00 AM - 10:50 AM',
+        studentName: 'Tariq Al-Mansoor',
+        courseTitle: 'Memorization & Recitation (Hifz) with Tajweed',
+        topic: 'Surah Hud (Ayahs 80-115) - Makharij Precision',
+        classType: '1-on-1 Hifz Memorization',
+        ratePerClass: 35.0,
+        amount: 35.0,
+        status: 'Verified',
+      },
+      {
+        id: 'CLS-OCT-04',
+        date: '2026-10-15',
+        time: '04:00 PM - 04:50 PM',
+        studentName: 'Zaid Bin Khalid',
+        courseTitle: 'Memorization & Recitation (Hifz) with Tajweed',
+        topic: 'Surah Al-Baqarah (Ayat al-Kursi) - Stopping Signs & Waqf',
+        classType: '1-on-1 Quran Recitation',
+        ratePerClass: 35.0,
+        amount: 35.0,
+        status: 'Verified',
+      },
+      {
+        id: 'CLS-OCT-05',
+        date: '2026-10-14',
+        time: '10:00 AM - 10:50 AM',
+        studentName: 'Tariq Al-Mansoor',
+        courseTitle: 'Memorization & Recitation (Hifz) with Tajweed',
+        topic: 'Para 11 Sabqi Revision & Stopping Signs (Waqf)',
+        classType: '1-on-1 Sabqi Revision',
+        ratePerClass: 35.0,
+        amount: 35.0,
+        status: 'Verified',
+      },
+      {
+        id: 'CLS-OCT-06',
+        date: '2026-10-14',
+        time: '11:15 AM - 12:05 PM',
+        studentName: 'Maryam Al-Qasim',
+        courseTitle: 'Memorization & Recitation (Hifz) with Tajweed',
+        topic: 'Juz 27 Revision (Ar-Rahman to Al-Hadid)',
+        classType: '1-on-1 Hifz Revision',
+        ratePerClass: 35.0,
+        amount: 35.0,
+        status: 'Verified',
+      },
+      {
+        id: 'CLS-OCT-07',
+        date: '2026-10-13',
+        time: '10:00 AM - 10:50 AM',
+        studentName: 'Tariq Al-Mansoor',
+        courseTitle: 'Memorization & Recitation (Hifz) with Tajweed',
+        topic: 'Surah Yunus (Ayahs 60-109) - Madd Lazim Corrections',
+        classType: '1-on-1 Tajweed & Recitation',
+        ratePerClass: 35.0,
+        amount: 35.0,
+        status: 'Verified',
+      },
+      {
+        id: 'CLS-OCT-08',
+        date: '2026-10-12',
+        time: '04:00 PM - 04:50 PM',
+        studentName: 'Zaid Bin Khalid',
+        courseTitle: 'Memorization & Recitation (Hifz) with Tajweed',
+        topic: 'Noorani Qaida & Basic Makharij Articulation Points',
+        classType: '1-on-1 Qaida & Tajweed Foundation',
+        ratePerClass: 35.0,
+        amount: 35.0,
+        status: 'Verified',
+      },
+    ],
+  },
+  {
+    id: 'SAL-202609-01',
+    teacherId: 'QI-FAC-014',
+    teacherName: 'Dr. Sheikh Ahmad Al-Azhari',
+    month: 'September 2026',
+    ratePerClass: 35.0,
+    hourlyRate: 35.0,
+    totalClassesTaught: 32,
+    calculatedSalary: 1120.0, // 32 * $35.00 = $1,120.00
+    bonus: 50.0,
+    totalPayable: 1170.0,
+    sessionsCount: 32,
+    totalHoursTaught: 32.0,
+    status: 'Disbursed',
+    approvedBy: 'QI-ADM-001',
+    approvedAt: '2026-09-28T10:00:00Z',
+    disbursedAt: '2026-09-30T14:30:00Z',
+    notes: 'Disbursed via Direct Bank Transfer (Ref #BT-9902148). 32 verified classes completed.',
+    classesList: [],
+  },
+  {
+    id: 'SAL-202608-01',
+    teacherId: 'QI-FAC-014',
+    teacherName: 'Dr. Sheikh Ahmad Al-Azhari',
+    month: 'August 2026',
+    ratePerClass: 35.0,
+    hourlyRate: 35.0,
+    totalClassesTaught: 30,
+    calculatedSalary: 1050.0, // 30 * $35.00 = $1,050.00
+    bonus: 50.0,
+    totalPayable: 1100.0,
+    sessionsCount: 30,
+    totalHoursTaught: 30.0,
+    status: 'Disbursed',
+    approvedBy: 'QI-ADM-001',
+    approvedAt: '2026-08-28T10:00:00Z',
+    disbursedAt: '2026-08-31T14:30:00Z',
+    notes: 'Disbursed via Direct Bank Transfer (Ref #BT-8812903). 30 verified classes completed.',
+    classesList: [],
   },
   {
     id: 'SAL-202610-02',
     teacherId: 'QI-FAC-028',
     teacherName: 'Ustadh Mahmoud Al-Misri',
     month: 'October 2026',
+    ratePerClass: 25.0,
     hourlyRate: 25.0,
-    totalHoursTaught: 30.0,
-    calculatedSalary: 750.0,
+    totalClassesTaught: 28,
+    calculatedSalary: 700.0, // 28 classes * $25.00 = $700.00
     bonus: 0.0,
-    totalPayable: 750.0,
-    sessionsCount: 20,
+    totalPayable: 700.0,
+    sessionsCount: 28,
+    totalHoursTaught: 28.0,
     status: 'Pending Approval',
     approvedBy: null,
     approvedAt: null,
     disbursedAt: null,
-    notes: 'Regular faculty payroll under administrative review.',
+    notes: 'Regular faculty payroll under administrative review (28 verified classes).',
+    classesList: [],
+  },
+  {
+    id: 'SAL-202610-03',
+    teacherId: 'QI-FAC-035',
+    teacherName: 'Ustadh Bilal Al-Hashemi',
+    month: 'October 2026',
+    ratePerClass: 25.0,
+    hourlyRate: 25.0,
+    totalClassesTaught: 19,
+    calculatedSalary: 475.0, // 19 classes * $25.00 = $475.00
+    bonus: 0.0,
+    totalPayable: 475.0,
+    sessionsCount: 19,
+    totalHoursTaught: 19.0,
+    status: 'Pending Approval',
+    approvedBy: null,
+    approvedAt: null,
+    disbursedAt: null,
+    notes: 'Junior faculty onboarding payroll (19 verified classes).',
+    classesList: [],
   },
 ];
 globalThis.__QURAN_TEACHER_SALARIES__ = globalThis.__QURAN_TEACHER_SALARIES__ || initialTeacherSalaries;
@@ -2108,7 +2446,9 @@ export function getAllTeacherSalaries() {
 }
 
 export function getTeacherSalary(teacherId, month = 'October 2026') {
-  return teacherSalaries.find((s) => s.teacherId === teacherId && s.month === month) || null;
+  const match = teacherSalaries.find((s) => s.teacherId === teacherId && s.month === month);
+  if (match) return match;
+  return teacherSalaries.find((s) => s.teacherId === teacherId) || null;
 }
 
 export function approveTeacherSalary(salaryId, adminId = 'QI-ADM-001') {
@@ -2130,6 +2470,86 @@ export function disburseTeacherSalary(salaryId, adminId = 'QI-ADM-001') {
   salary.disbursedAt = new Date().toISOString();
 
   return salary;
+}
+
+export function updateTeacherClassRate(teacherId, newRate, month = null) {
+  const rateNum = Number(newRate);
+  if (isNaN(rateNum) || rateNum <= 0) {
+    throw new Error('Valid positive per-class rate is required.');
+  }
+
+  // 1. Update user profile
+  const teacherUser = users.find((u) => u.id === teacherId);
+  if (!teacherUser) throw new Error(`Teacher with ID ${teacherId} not found.`);
+  teacherUser.ratePerClass = rateNum;
+  teacherUser.hourlyRate = rateNum;
+
+  // 2. Update active / matching teacher salaries and recalculate
+  const affectedSalaries = teacherSalaries.filter((s) => {
+    if (s.teacherId !== teacherId) return false;
+    if (month && s.month !== month) return false;
+    if (!month && s.status === 'Disbursed') return false;
+    return true;
+  });
+
+  affectedSalaries.forEach((sal) => {
+    sal.ratePerClass = rateNum;
+    sal.hourlyRate = rateNum;
+    sal.calculatedSalary = Number(((sal.totalClassesTaught || sal.sessionsCount || 0) * rateNum).toFixed(2));
+    sal.totalPayable = Number((sal.calculatedSalary + (sal.bonus || 0)).toFixed(2));
+
+    if (Array.isArray(sal.classesList)) {
+      sal.classesList.forEach((cls) => {
+        cls.ratePerClass = rateNum;
+        cls.amount = rateNum;
+      });
+    }
+  });
+
+  const currentSalary =
+    teacherSalaries.find((s) => s.teacherId === teacherId && (month ? s.month === month : s.status !== 'Disbursed')) ||
+    teacherSalaries.find((s) => s.teacherId === teacherId && s.month === 'October 2026') ||
+    teacherSalaries.find((s) => s.teacherId === teacherId);
+
+  const { password: _, ...safeTeacher } = teacherUser;
+  return {
+    user: safeTeacher,
+    salary: currentSalary,
+    affectedCount: affectedSalaries.length,
+    newRate: rateNum,
+  };
+}
+
+export function getTeacherSuccessfulClassesData(teacherId, month = 'October 2026') {
+  const teacherUser = users.find((u) => u.id === teacherId);
+  if (!teacherUser) throw new Error(`Teacher with ID ${teacherId} not found.`);
+
+  const allTeacherSalaries = teacherSalaries.filter((s) => s.teacherId === teacherId);
+  const totalAllTimeClasses = allTeacherSalaries.reduce(
+    (sum, s) => sum + (s.totalClassesTaught || s.sessionsCount || 0),
+    0
+  );
+
+  const currentSalary = allTeacherSalaries.find((s) => s.month === month) || allTeacherSalaries[0];
+  const cycleClasses = currentSalary?.totalClassesTaught || teacherUser.totalClassesTaught || 0;
+  const classesList = currentSalary?.classesList || [];
+
+  return {
+    teacherId,
+    teacherName: teacherUser.name,
+    specialization: teacherUser.specialization,
+    avatar: teacherUser.avatar,
+    ratePerClass: teacherUser.ratePerClass || currentSalary?.ratePerClass || 35,
+    cycleMonth: month,
+    cycleClassesCount: cycleClasses,
+    totalAllTimeClasses: totalAllTimeClasses || teacherUser.allTimeSuccessfulClasses || cycleClasses,
+    calculatedSalary: currentSalary?.calculatedSalary || (cycleClasses * (teacherUser.ratePerClass || 35)),
+    bonus: currentSalary?.bonus || 0,
+    totalPayable: currentSalary?.totalPayable || (cycleClasses * (teacherUser.ratePerClass || 35)),
+    status: currentSalary?.status || 'Pending Approval',
+    classesList,
+    allSalaries: allTeacherSalaries,
+  };
 }
 
 export function getFinancialAnalytics() {

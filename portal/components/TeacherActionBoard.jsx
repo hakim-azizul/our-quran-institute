@@ -8,6 +8,7 @@ import { ALL_114_SURAH_METADATA } from '../lib/quranData';
 export default function TeacherActionBoard({
   teacherUser,
   studentsList = [],
+  course,
   selectedStudentId,
   onSelectStudent,
   onOpenQuranForStudent,
@@ -240,9 +241,10 @@ export default function TeacherActionBoard({
                 type="button"
                 className="btn-open-quran-live"
                 onClick={() => onOpenQuranForStudent(activeStudent.studentId || activeStudent.id)}
+                title={`Launch interactive Quran mistake annotator for ${activeStudent.studentName || activeStudent.name}`}
               >
                 <Icon name="search" size={15} style={{ marginRight: 6 }} />
-                Live Mistake Annotator
+                <span>Annotate {activeStudent.studentName ? activeStudent.studentName.split(' ')[0] : (activeStudent.name ? activeStudent.name.split(' ')[0] : 'Student')}&apos;s Quran</span>
               </button>
             )}
           </div>

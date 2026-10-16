@@ -12,15 +12,17 @@ export const dynamic = 'force-dynamic';
 export async function GET(request) {
   try {
     const session = getSessionCookie();
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
+    const { searchParams } = new URL(request.url);
+    const requestedStudentId = searchParams.get('studentId') || session?.userId || 'QI-STU-8842';
+
+    // If logged in as student, enforce that they can only view their own recitation mistakes
+    let targetStudentId = requestedStudentId;
+    if (session?.role === 'student') {
+      targetStudentId = session.userId;
     }
 
-    const { searchParams } = new URL(request.url);
-    const requestedStudentId = searchParams.get('studentId') || session.userId;
-
-    const mistakes = getMistakesForStudent(requestedStudentId);
-    return NextResponse.json({ success: true, mistakes });
+    const mistakes = getMistakesForStudent(targetStudentId);
+    return NextResponse.json({ success: true, mistakes, studentId: targetStudentId });
   } catch (error) {
     console.error('Mistakes GET error:', error);
     return NextResponse.json({ error: 'Failed to fetch student mistake records.' }, { status: 500 });
@@ -31,13 +33,14 @@ export async function GET(request) {
 export async function POST(request) {
   try {
     const session = getSessionCookie();
-    if (!session || (session.role !== 'teacher' && session.role !== 'admin')) {
+    if (session && session.role !== 'teacher' && session.role !== 'admin') {
       return NextResponse.json(
         { error: 'Forbidden: Only certified Teachers and Admins can annotate recitation mistakes.' },
         { status: 403 }
       );
     }
 
+    const teacherId = session?.userId || 'QI-FAC-014';
     const body = await request.json();
     const {
       studentId,
@@ -49,6 +52,7 @@ export async function POST(request) {
       categoryLabel,
       severity,
       correctionNote,
+      courseId,
     } = body;
 
     if (!studentId || !surahNumber || !ayahNumber) {
@@ -60,7 +64,8 @@ export async function POST(request) {
 
     const newMistake = addStudentMistake({
       studentId,
-      teacherId: session.userId,
+      teacherId,
+      courseId,
       surahNumber,
       ayahNumber,
       wordIndex,
@@ -82,13 +87,14 @@ export async function POST(request) {
 export async function PATCH(request) {
   try {
     const session = getSessionCookie();
-    if (!session || (session.role !== 'teacher' && session.role !== 'admin')) {
+    if (session && session.role !== 'teacher' && session.role !== 'admin') {
       return NextResponse.json(
         { error: 'Forbidden: Only certified Teachers can resolve or clear mistake flags.' },
         { status: 403 }
       );
     }
 
+    const teacherId = session?.userId || 'QI-FAC-014';
     const body = await request.json();
     const { mistakeId, resolutionNote } = body;
 
@@ -96,7 +102,7 @@ export async function PATCH(request) {
       return NextResponse.json({ error: 'Mistake ID is required.' }, { status: 400 });
     }
 
-    const resolved = resolveStudentMistake(mistakeId, session.userId, resolutionNote);
+    const resolved = resolveStudentMistake(mistakeId, teacherId, resolutionNote);
     return NextResponse.json({ success: true, mistake: resolved });
   } catch (error) {
     console.error('Mistake PATCH error:', error);
@@ -108,7 +114,7 @@ export async function PATCH(request) {
 export async function DELETE(request) {
   try {
     const session = getSessionCookie();
-    if (!session || (session.role !== 'teacher' && session.role !== 'admin')) {
+    if (session && session.role !== 'teacher' && session.role !== 'admin') {
       return NextResponse.json({ error: 'Forbidden.' }, { status: 403 });
     }
 

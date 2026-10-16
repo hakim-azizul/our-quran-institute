@@ -112,14 +112,14 @@ export default function UserProfilePanel({
           ========================================================================= */}
       <div
         style={{
-          background: 'linear-gradient(135deg, #062A1F 0%, #0D4A38 60%, #175F4A 100%)',
+          background: '#0D4A38',
           borderRadius: '20px',
           padding: '28px 32px',
           color: '#FFFFFF',
           position: 'relative',
           overflow: 'hidden',
-          boxShadow: '0 8px 30px rgba(13, 74, 56, 0.25)',
-          border: '1.5px solid rgba(197, 164, 90, 0.35)',
+          boxShadow: '0 4px 16px rgba(13, 74, 56, 0.16)',
+          border: '2px solid #D4AF37',
         }}
       >
         {/* Subtle decorative background pattern */}
@@ -361,8 +361,8 @@ export default function UserProfilePanel({
                 <div style={{ fontSize: '18px', fontWeight: '800' }}>14+ Years</div>
               </div>
               <div style={{ background: 'rgba(255, 255, 255, 0.08)', padding: '10px 14px', borderRadius: '10px' }}>
-                <span style={{ fontSize: '11px', color: '#FFDF85' }}>Hourly Honorarium</span>
-                <div style={{ fontSize: '18px', fontWeight: '800', color: '#34D399' }}>$30 / Hour</div>
+                <span style={{ fontSize: '11px', color: '#FFDF85' }}>Per-Class Honorarium</span>
+                <div style={{ fontSize: '18px', fontWeight: '800', color: '#34D399' }}>${user?.ratePerClass || user?.hourlyRate || 35} / Class</div>
               </div>
               <div style={{ background: 'rgba(255, 255, 255, 0.08)', padding: '10px 14px', borderRadius: '10px' }}>
                 <span style={{ fontSize: '11px', color: '#FFDF85' }}>Council Status</span>
@@ -692,7 +692,7 @@ export default function UserProfilePanel({
                       style={{
                         height: '100%',
                         width: `${enrollment?.progressPercent || 40}%`,
-                        background: 'linear-gradient(90deg, #0D4A38, #C5A45A)',
+                        background: '#D4AF37',
                         borderRadius: '999px',
                       }}
                     />

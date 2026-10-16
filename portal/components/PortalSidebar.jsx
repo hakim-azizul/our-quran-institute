@@ -10,6 +10,7 @@ export default function PortalSidebar({
   activeTab,
   onTabChange,
   enrollment,
+  course,
   coursesCount = 1,
   pendingUsersCount = 0,
   isMobileOpen = false,
@@ -27,6 +28,24 @@ export default function PortalSidebar({
   const isTeacherPending =
     isTeacher && user?.status !== 'Verified Scholar' && user?.status !== 'Active';
   const isEnrolled = isStudent ? !!enrollment : true;
+
+  const isQuranTrack = (() => {
+    const target = course || enrollment;
+    if (!target) return true;
+    const cat = (target.category || target.courseCategory || '').toLowerCase();
+    if (cat === 'quran' || cat === 'tajweed' || cat === 'hifz') return true;
+    if (cat === 'arabic' || cat === 'islamic_studies') return false;
+    const title = (target.title || target.courseTitle || '').toLowerCase();
+    if (title.includes('arabic') && !title.includes('quran')) return false;
+    return (
+      title.includes('quran') ||
+      title.includes('tajweed') ||
+      title.includes('hifz') ||
+      title.includes('mushaf') ||
+      target.id === 'QI-CRS-001' ||
+      target.courseId === 'QI-CRS-001'
+    );
+  })();
 
   const slugMap = {
     progress: '/dashboard/progress',
@@ -231,11 +250,17 @@ export default function PortalSidebar({
                     type="button"
                     onClick={() => handleItemClick('quran')}
                     className={`portal-nav-item ${currentTab === 'quran' ? 'active' : ''}`}
+                    title={isQuranTrack ? 'Interactive Quran Recitation Mistake Annotator' : 'Available for Quran courses'}
                   >
                     <div className="portal-nav-item-content">
                       <span className="nav-icon"><Icon name="flag" size={17} /></span>
                       <span>Annotator</span>
                     </div>
+                    {isQuranTrack && (
+                      <span className="portal-nav-badge" style={{ background: 'var(--color-green-light)', color: 'var(--color-green-deep)', border: '1px solid var(--color-green-mint)' }}>
+                        Quran
+                      </span>
+                    )}
                   </button>
 
                   <div className="portal-nav-section-title">FACULTY TOOLS</div>
@@ -335,11 +360,22 @@ export default function PortalSidebar({
                 type="button"
                 onClick={() => handleItemClick('quran')}
                 className={`portal-nav-item ${currentTab === 'quran' ? 'active' : ''}`}
+                title={isQuranTrack ? 'Quran Recitation Mistake Slips' : 'Exclusive to Quran Recitation Courses'}
               >
                 <div className="portal-nav-item-content">
                   <span className="nav-icon"><Icon name="flag" size={17} /></span>
                   <span>Mistakes</span>
                 </div>
+                <span
+                  className="portal-nav-badge"
+                  style={{
+                    background: isQuranTrack ? 'var(--color-green-light)' : '#FEF3C7',
+                    color: isQuranTrack ? 'var(--color-green-deep)' : '#92400E',
+                    border: isQuranTrack ? '1px solid var(--color-green-mint)' : '1px solid #FCD34D',
+                  }}
+                >
+                  {isQuranTrack ? 'Quran' : 'Quran Only'}
+                </span>
               </button>
 
               <button

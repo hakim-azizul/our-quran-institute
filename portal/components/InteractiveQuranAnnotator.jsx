@@ -8,13 +8,116 @@ import SurahSearchSelect from './SurahSearchSelect';
 export default function InteractiveQuranAnnotator({
   currentUser,
   studentsList = [],
+  studentList,
   selectedStudentId,
+  initialStudentId,
   onSelectStudent,
+  course,
+  coursesList = [],
 }) {
-  const isTeacherOrAdmin = currentUser.role === 'teacher' || currentUser.role === 'admin';
-  const effectiveStudentId = isTeacherOrAdmin
-    ? selectedStudentId || (studentsList[0]?.id || 'QI-STU-8842')
-    : currentUser.id;
+  const isTeacherOrAdmin = currentUser?.role === 'teacher' || currentUser?.role === 'admin';
+  const isParent = currentUser?.role === 'parent';
+  const isStudent = currentUser?.role === 'student';
+
+  // Normalize student list from either studentsList or studentList prop, with realistic fallbacks
+  const normalizedStudentsList = React.useMemo(() => {
+    const list = (studentsList && studentsList.length > 0)
+      ? studentsList
+      : (studentList && studentList.length > 0)
+      ? studentList
+      : [];
+
+    if (list.length > 0) {
+      return list.map((s) => ({
+        id: s.id || s.studentId,
+        studentId: s.studentId || s.id,
+        name: s.name || s.studentName,
+        courseId: s.courseId || 'QI-CRS-001',
+        courseTitle: s.courseTitle || 'Quran Reading Foundation & Tajweed Mastery',
+        activeMistakesCount: s.activeMistakesCount || 0,
+        resolvedMistakesCount: s.resolvedMistakesCount || 0,
+      }));
+    }
+
+    if (isTeacherOrAdmin) {
+      return [
+        { id: 'QI-STU-8842', studentId: 'QI-STU-8842', name: 'Tariq Al-Mansoor', courseId: 'QI-CRS-001', courseTitle: 'Quran Reading Foundation & Tajweed Mastery' },
+        { id: 'QI-STU-9904', studentId: 'QI-STU-9904', name: 'Maryam Al-Qasim', courseId: 'QI-CRS-001', courseTitle: 'Quran Reading Foundation & Tajweed Mastery' },
+        { id: 'QI-STU-7721', studentId: 'QI-STU-7721', name: 'Zaid bin Harith', courseId: 'QI-CRS-001', courseTitle: 'Quran Reading Foundation & Tajweed Mastery' },
+      ];
+    }
+
+    if (isParent) {
+      return [
+        { id: 'QI-STU-8842', studentId: 'QI-STU-8842', name: 'Tariq Al-Mansoor (Child)', courseId: 'QI-CRS-001', courseTitle: 'Quran Reading Foundation & Tajweed Mastery' },
+        { id: 'QI-STU-7721', studentId: 'QI-STU-7721', name: 'Zaid bin Harith (Child)', courseId: 'QI-CRS-001', courseTitle: 'Quran Reading Foundation & Tajweed Mastery' },
+      ];
+    }
+
+    return [{
+      id: currentUser?.id || 'QI-STU-8842',
+      studentId: currentUser?.id || 'QI-STU-8842',
+      name: currentUser?.name || 'Tariq Al-Mansoor',
+      courseId: course?.id || 'QI-CRS-001',
+      courseTitle: course?.title || 'Quran Reading Foundation & Tajweed Mastery',
+    }];
+  }, [studentsList, studentList, currentUser, isTeacherOrAdmin, isParent, course]);
+
+  // Determine active student ID
+  const defaultStudentId = isStudent
+    ? (currentUser?.id || 'QI-STU-8842')
+    : selectedStudentId || initialStudentId || normalizedStudentsList[0]?.id || normalizedStudentsList[0]?.studentId || 'QI-STU-8842';
+
+  const [activeStudentId, setActiveStudentId] = useState(defaultStudentId);
+
+  // Sync when selectedStudentId / initialStudentId updates from parent
+  useEffect(() => {
+    const nextId = selectedStudentId || initialStudentId;
+    if (nextId && nextId !== activeStudentId) {
+      setActiveStudentId(nextId);
+    }
+  }, [selectedStudentId, initialStudentId]);
+
+  const effectiveStudentId = isStudent ? (currentUser?.id || 'QI-STU-8842') : activeStudentId;
+
+  // Find metadata for currently active student
+  const currentStudent = normalizedStudentsList.find(
+    (s) => (s.id || s.studentId) === effectiveStudentId
+  ) || {
+    id: effectiveStudentId,
+    studentId: effectiveStudentId,
+    name: effectiveStudentId === 'QI-STU-8842'
+      ? 'Tariq Al-Mansoor'
+      : effectiveStudentId === 'QI-STU-9904'
+      ? 'Maryam Al-Qasim'
+      : effectiveStudentId === 'QI-STU-7721'
+      ? 'Zaid bin Harith'
+      : (effectiveStudentId === currentUser?.id ? currentUser.name : `Student ${effectiveStudentId}`),
+    courseTitle: course?.title || 'Quran Reading Foundation & Tajweed Mastery',
+  };
+
+  // Quran Course Check: Ensure this feature is exclusively for Quran courses
+  const activeCourse = course || (coursesList && coursesList.find((c) => c.id === currentStudent.courseId)) || {
+    id: currentStudent.courseId || 'QI-CRS-001',
+    category: 'quran',
+    title: currentStudent.courseTitle || 'Quran Reading Foundation & Tajweed Mastery',
+  };
+
+  const isQuranCourseActive = (() => {
+    if (!activeCourse) return true;
+    const cat = (activeCourse.category || '').toLowerCase();
+    if (cat === 'quran' || cat === 'tajweed' || cat === 'hifz') return true;
+    if (cat === 'arabic' || cat === 'islamic_studies') return false;
+    const title = (activeCourse.title || '').toLowerCase();
+    if (title.includes('arabic') && !title.includes('quran')) return false;
+    return (
+      title.includes('quran') ||
+      title.includes('tajweed') ||
+      title.includes('hifz') ||
+      title.includes('mushaf') ||
+      activeCourse.id === 'QI-CRS-001'
+    );
+  })();
 
   const [activeSurahNumber, setActiveSurahNumber] = useState(1);
   const [mistakes, setMistakes] = useState([]);
@@ -174,7 +277,135 @@ export default function InteractiveQuranAnnotator({
   };
 
   const activeMistakes = mistakes.filter((m) => m.status === 'active');
-  const resolvedMistakes = mistakes.filter((m) => m.status === 'resolved');
+  const handleStudentSwitch = (newStuId) => {
+    setActiveStudentId(newStuId);
+    if (onSelectStudent) {
+      onSelectStudent(newStuId);
+    }
+  };
+
+  // IF NOT A QURAN COURSE: Render clean gatekeeper card
+  if (!isQuranCourseActive) {
+    return (
+      <div
+        style={{
+          background: 'var(--color-white)',
+          border: '1.5px solid var(--border-medium)',
+          borderRadius: '16px',
+          padding: '40px 32px',
+          textAlign: 'center',
+          maxWidth: '720px',
+          margin: '30px auto',
+          boxShadow: 'var(--shadow-card)',
+        }}
+      >
+        <div
+          style={{
+            width: '64px',
+            height: '64px',
+            borderRadius: '50%',
+            background: 'var(--color-gold-light)',
+            border: '1.5px solid var(--color-gold-primary)',
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginBottom: '16px',
+          }}
+        >
+          <Icon name="book-open" size={32} color="var(--color-gold-deep)" />
+        </div>
+        <span
+          style={{
+            display: 'inline-block',
+            fontSize: '11px',
+            fontWeight: '800',
+            textTransform: 'uppercase',
+            letterSpacing: '0.08em',
+            padding: '4px 12px',
+            borderRadius: '999px',
+            background: 'rgba(197, 164, 90, 0.15)',
+            color: 'var(--color-gold-deep)',
+            marginBottom: '12px',
+          }}
+        >
+          Quran Courses Only
+        </span>
+        <h2
+          style={{
+            fontFamily: 'var(--font-serif)',
+            fontSize: '26px',
+            fontWeight: '700',
+            color: 'var(--color-green-deep)',
+            marginBottom: '10px',
+          }}
+        >
+          Interactive Mushaf &amp; Recitation Mistake Tracker
+        </h2>
+        <p
+          style={{
+            fontSize: '14.5px',
+            color: 'var(--text-muted)',
+            lineHeight: '1.6',
+            maxWidth: '560px',
+            margin: '0 auto 24px auto',
+          }}
+        >
+          This recitation mistake marking tool is exclusively designed for students enrolled in
+          <strong> Holy Quran Reading, Tajweed, and Hifz Memorization programs</strong>.
+        </p>
+
+        <div
+          style={{
+            background: 'var(--bg-canvas-subtle)',
+            border: '1px solid var(--border-light)',
+            borderRadius: '12px',
+            padding: '16px 20px',
+            textAlign: 'left',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '8px',
+            marginBottom: '24px',
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
+            <span style={{ color: 'var(--text-dim)' }}>Selected Student:</span>
+            <strong style={{ color: 'var(--color-green-deep)' }}>
+              {currentStudent.name} ({effectiveStudentId})
+            </strong>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
+            <span style={{ color: 'var(--text-dim)' }}>Active Course:</span>
+            <strong style={{ color: 'var(--color-gold-deep)' }}>
+              {activeCourse.title} (Academic / Language Track)
+            </strong>
+          </div>
+        </div>
+
+        {isTeacherOrAdmin && normalizedStudentsList.length > 0 && (
+          <div style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+            <span style={{ fontSize: '12.5px', fontWeight: '700', color: 'var(--color-green-deep)' }}>
+              Switch to a student enrolled in a Quran recitation course:
+            </span>
+            <select
+              value={effectiveStudentId}
+              onChange={(e) => handleStudentSwitch(e.target.value)}
+              className="form-input form-select"
+              style={{ padding: '8px 32px 8px 14px', fontSize: '13.5px', fontWeight: '700' }}
+            >
+              {normalizedStudentsList.map((stu) => {
+                const sId = stu.id || stu.studentId;
+                return (
+                  <option key={sId} value={sId}>
+                    {stu.name} ({sId}) — {stu.courseTitle || 'Quran Reading Foundation'}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -182,7 +413,7 @@ export default function InteractiveQuranAnnotator({
       <div
         style={{
           background: 'var(--color-white)',
-          border: '1.5px solid var(--color-gold-primary)',
+          border: '1.5px solid var(--border-medium)',
           borderRadius: '16px',
           padding: '20px 24px',
           display: 'flex',
@@ -190,7 +421,7 @@ export default function InteractiveQuranAnnotator({
           alignItems: 'center',
           flexWrap: 'wrap',
           gap: '16px',
-          boxShadow: 'var(--shadow-card)',
+          boxShadow: 'var(--shadow-sm)',
         }}
       >
         <div>
@@ -199,34 +430,102 @@ export default function InteractiveQuranAnnotator({
             <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '24px', fontWeight: '700', color: 'var(--color-green-primary)' }}>
               Interactive Mushaf &amp; Recitation Mistake Tracker
             </h2>
+            <span
+              style={{
+                fontSize: '11px',
+                fontWeight: '800',
+                textTransform: 'uppercase',
+                letterSpacing: '0.06em',
+                padding: '3px 10px',
+                borderRadius: '999px',
+                background: 'var(--color-green-light)',
+                border: '1px solid var(--color-green-mint)',
+                color: 'var(--color-green-deep)',
+              }}
+            >
+              Quran Course Exclusive
+            </span>
           </div>
           <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
             {isTeacherOrAdmin
-              ? 'Click any Arabic Ayah or word to flag a recitation error with scholarly guidance. Mark resolved once the student recites with precision.'
+              ? 'Click any Arabic Ayah or word to flag a recitation error with scholarly guidance. Each student maintains an independent mistake map.'
               : 'Review your teacher’s real-time Tajweed notes directly on the Holy Quran verses to target your practice.'}
           </p>
         </div>
 
-        {/* Teacher Student Switcher */}
-        {isTeacherOrAdmin && studentsList.length > 0 && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', background: 'var(--color-green-surface)', padding: '8px 14px', borderRadius: '12px', border: '1px solid rgba(13, 74, 56, 0.15)' }}>
-            <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--color-green-primary)' }}>
-              Annotating Student:
+        {/* Dedicated Student Selector & Mistakes Counter Pill */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+          {isTeacherOrAdmin && normalizedStudentsList.length > 0 && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', background: 'var(--color-green-surface)', padding: '8px 14px', borderRadius: '12px', border: '1.5px solid var(--border-medium)' }}>
+              <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--color-green-primary)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                Annotating Student:
+              </span>
+              <select
+                value={effectiveStudentId}
+                onChange={(e) => handleStudentSwitch(e.target.value)}
+                className="form-input form-select"
+                style={{ width: 'auto', padding: '6px 28px 6px 12px', fontSize: '13px', fontWeight: '700' }}
+              >
+                {normalizedStudentsList.map((stu) => {
+                  const sId = stu.id || stu.studentId;
+                  return (
+                    <option key={sId} value={sId}>
+                      {stu.name} ({sId})
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
+          )}
+
+          {isParent && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', background: 'var(--color-green-surface)', padding: '8px 14px', borderRadius: '12px', border: '1.5px solid var(--border-medium)' }}>
+              <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--color-green-primary)' }}>
+                Child:
+              </span>
+              <select
+                value={effectiveStudentId}
+                onChange={(e) => handleStudentSwitch(e.target.value)}
+                className="form-input form-select"
+                style={{ width: 'auto', padding: '6px 28px 6px 12px', fontSize: '13px', fontWeight: '700' }}
+              >
+                <option value="QI-STU-8842">Tariq Al-Mansoor</option>
+                <option value="QI-STU-7721">Zaid bin Harith</option>
+              </select>
+            </div>
+          )}
+
+          {/* Student Dossier Badge */}
+          <div
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '10px',
+              padding: '6px 14px',
+              background: '#FFFFFF',
+              border: '1px solid var(--border-medium)',
+              borderRadius: '12px',
+              boxShadow: '0 1px 3px rgba(13, 74, 56, 0.05)',
+            }}
+          >
+            <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--color-green-deep)' }}>
+              {currentStudent.name}
             </span>
-            <select
-              value={effectiveStudentId}
-              onChange={(e) => onSelectStudent && onSelectStudent(e.target.value)}
-              className="form-input form-select"
-              style={{ width: 'auto', padding: '6px 28px 6px 12px', fontSize: '13px', fontWeight: '700' }}
+            <span
+              style={{
+                fontSize: '12px',
+                fontWeight: '700',
+                padding: '2px 8px',
+                borderRadius: '6px',
+                background: activeMistakes.length > 0 ? '#FEE2E2' : '#DCFCE7',
+                color: activeMistakes.length > 0 ? '#991B1B' : '#166534',
+                border: activeMistakes.length > 0 ? '1px solid #FCA5A5' : '1px solid #86EFAC',
+              }}
             >
-              {studentsList.map((stu) => (
-                <option key={stu.id} value={stu.id}>
-                  {stu.name} ({stu.id})
-                </option>
-              ))}
-            </select>
+              {activeMistakes.length} Active {activeMistakes.length === 1 ? 'Slip' : 'Slips'}
+            </span>
           </div>
-        )}
+        </div>
       </div>
 
       {/* Tabs & Surah Picker */}
@@ -815,7 +1114,7 @@ export default function InteractiveQuranAnnotator({
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
               <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px', fontFamily: 'var(--font-serif)', fontSize: '22px', fontWeight: '700', color: 'var(--color-green-primary)' }}>
                 <Icon name="flag" size={22} color="var(--color-gold-deep)" />
-                <span>Flag Recitation Mistake for Student</span>
+                <span>Flag Recitation Mistake for {currentStudent.name}</span>
               </h3>
               <button
                 onClick={() => setIsModalOpen(false)}
@@ -827,9 +1126,9 @@ export default function InteractiveQuranAnnotator({
 
             {/* Target Summary */}
             <div style={{ background: 'var(--color-green-surface)', border: '1px solid rgba(13, 74, 56, 0.15)', borderRadius: '10px', padding: '12px', marginBottom: '18px' }}>
-              <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Verse / Word Target:</span>
+              <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Student &amp; Verse Target:</span>
               <p style={{ fontSize: '14px', fontWeight: '700', color: 'var(--color-green-deep)', margin: '2px 0' }}>
-                Surah {activeSurah.name} • Verse {targetAyah?.number} {targetWord ? `• Word: "${targetWord.text}"` : ''}
+                {currentStudent.name} ({effectiveStudentId}) • Surah {activeSurah.name} • Verse {targetAyah?.number} {targetWord ? `• Word: "${targetWord.text}"` : ''}
               </p>
             </div>
 
@@ -896,7 +1195,7 @@ export default function InteractiveQuranAnnotator({
                   className="btn-auth-submit"
                   style={{ margin: 0 }}
                 >
-                  {isSubmitting ? 'Saving Mistake Marker...' : 'Save Flag to Student Quran'}
+                  {isSubmitting ? 'Saving Mistake Marker...' : `Save Flag to ${currentStudent.name}'s Mushaf`}
                 </button>
                 <button
                   type="button"
