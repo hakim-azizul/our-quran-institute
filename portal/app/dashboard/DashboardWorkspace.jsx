@@ -505,10 +505,16 @@ export default function DashboardWorkspace({ initialTab }) {
 
               {activeTab === 'catalog' && (
                 <CourseEnrollmentCatalog
+                  course={course || coursesList[0]}
+                  courses={coursesList}
                   coursesList={coursesList}
                   teachers={teachers}
                   currentUser={user}
                   currentEnrollment={enrollment}
+                  onSelectCourse={(c) => {
+                    setCourse(c);
+                    setSelectedCourseId(c.id);
+                  }}
                   onEnrollSuccess={handleEnrollSuccess}
                 />
               )}

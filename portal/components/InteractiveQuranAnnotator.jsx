@@ -276,7 +276,8 @@ export default function InteractiveQuranAnnotator({
     }
   };
 
-  const activeMistakes = mistakes.filter((m) => m.status === 'active');
+  const activeMistakes = (mistakes || []).filter((m) => m.status === 'active');
+  const resolvedMistakes = (mistakes || []).filter((m) => m.status === 'resolved');
   const handleStudentSwitch = (newStuId) => {
     setActiveStudentId(newStuId);
     if (onSelectStudent) {

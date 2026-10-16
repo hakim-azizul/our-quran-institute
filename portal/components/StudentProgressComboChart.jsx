@@ -57,13 +57,13 @@ export default function StudentProgressComboChart({
 
   const activeDataset = timeframe === 'weekly' ? weeklyData : monthlyData;
 
-  // Compact, executive chart dimensions (reduced height for better proportion)
+  // Proportional SVG canvas dimensions
   const svgWidth = 760;
-  const svgHeight = 195;
-  const paddingLeft = 44;
-  const paddingRight = 44;
-  const paddingTop = 24;
-  const paddingBottom = 32;
+  const svgHeight = 205;
+  const paddingLeft = 46;
+  const paddingRight = 46;
+  const paddingTop = 26;
+  const paddingBottom = 34;
 
   const chartWidth = svgWidth - paddingLeft - paddingRight;
   const chartHeight = svgHeight - paddingTop - paddingBottom;
@@ -74,14 +74,15 @@ export default function StudentProgressComboChart({
   const minAcc = 70;
   const maxAcc = 100;
 
-  // Coordinate calculations
+  // Coordinate calculations with smartly proportioned bar width
   const numPoints = activeDataset.length;
   const stepX = chartWidth / numPoints;
-  const barWidth = 18; // Sleek, refined bar width (not oversized)
+  // Substantial, refined bar width (occupies ~38% of step width, eliminating isolated needle look)
+  const barWidth = Math.round(Math.min(32, Math.max(26, stepX * 0.38)));
 
   const points = activeDataset.map((d, i) => {
     const x = paddingLeft + i * stepX + stepX / 2;
-    const barHeight = Math.max(4, (d.pages / maxPages) * chartHeight);
+    const barHeight = Math.max(6, (d.pages / maxPages) * chartHeight);
     const barY = paddingTop + (chartHeight - barHeight);
     const lineY = paddingTop + (1 - (d.accuracy - minAcc) / (maxAcc - minAcc)) * chartHeight;
 
@@ -97,13 +98,36 @@ export default function StudentProgressComboChart({
     };
   });
 
-  // Polyline coordinates for line chart
-  const polylinePoints = points.map((p) => `${p.x},${p.lineY}`).join(' ');
+  // Generate ultra-smooth cubic Bezier spline path for the Tajweed accuracy line
+  function getCurvedPath(pts) {
+    if (!pts || pts.length === 0) return '';
+    if (pts.length === 1) return `M ${pts[0].x},${pts[0].lineY}`;
+
+    let d = `M ${pts[0].x.toFixed(1)},${pts[0].lineY.toFixed(1)}`;
+
+    for (let i = 0; i < pts.length - 1; i++) {
+      const pPrev = i > 0 ? pts[i - 1] : pts[i];
+      const pCurr = pts[i];
+      const pNext = pts[i + 1];
+      const pNextNext = i + 2 < pts.length ? pts[i + 2] : pNext;
+
+      // Smooth C1-continuous control points
+      const cp1x = pCurr.x + (pNext.x - pPrev.x) / 5.5;
+      const cp1y = pCurr.lineY + (pNext.lineY - pPrev.lineY) / 5.5;
+
+      const cp2x = pNext.x - (pNextNext.x - pCurr.x) / 5.5;
+      const cp2y = pNext.lineY - (pNextNext.lineY - pCurr.lineY) / 5.5;
+
+      d += ` C ${cp1x.toFixed(1)},${cp1y.toFixed(1)} ${cp2x.toFixed(1)},${cp2y.toFixed(1)} ${pNext.x.toFixed(1)},${pNext.lineY.toFixed(1)}`;
+    }
+    return d;
+  }
+
+  const smoothLinePath = getCurvedPath(points);
 
   // Summary Metrics
-  const avgPages = Math.round(
-    activeDataset.reduce((sum, d) => sum + d.pages, 0) / activeDataset.length
-  );
+  const totalPages = activeDataset.reduce((sum, d) => sum + d.pages, 0);
+  const avgPages = Math.round(totalPages / activeDataset.length);
   const avgAccuracy = (
     activeDataset.reduce((sum, d) => sum + d.accuracy, 0) / activeDataset.length
   ).toFixed(1);
@@ -116,16 +140,16 @@ export default function StudentProgressComboChart({
       style={{
         background: '#FFFFFF',
         border: '1.5px solid #E6DEC9',
-        borderRadius: '14px',
-        padding: '16px 20px',
-        boxShadow: '0 2px 8px rgba(13, 74, 56, 0.04)',
+        borderRadius: '16px',
+        padding: '20px 22px',
+        boxShadow: '0 4px 16px rgba(13, 74, 56, 0.04)',
         display: 'flex',
         flexDirection: 'column',
-        gap: '12px',
+        gap: '16px',
         marginTop: '16px',
       }}
     >
-      {/* Chart Top Header & Controls */}
+      {/* Top Header & Executive Controls */}
       <div
         style={{
           display: 'flex',
@@ -133,70 +157,101 @@ export default function StudentProgressComboChart({
           alignItems: 'center',
           flexWrap: 'wrap',
           gap: '12px',
+          paddingBottom: '12px',
+          borderBottom: '1px solid #F1EAD8',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <span
             style={{
-              width: '28px',
-              height: '28px',
-              borderRadius: '7px',
+              width: '32px',
+              height: '32px',
+              borderRadius: '8px',
               background: '#FDF8EC',
               border: '1.5px solid #D4AF37',
               display: 'inline-flex',
               alignItems: 'center',
               justifyContent: 'center',
               color: '#B8860B',
+              flexShrink: 0,
             }}
           >
-            <Icon name="activity" size={15} />
+            <Icon name="activity" size={17} />
           </span>
           <div>
-            <h3
-              style={{
-                fontFamily: 'var(--font-serif)',
-                fontSize: '17px',
-                fontWeight: '700',
-                color: '#0D4A38',
-                margin: 0,
-                lineHeight: '1.2',
-              }}
-            >
-              Weekly Memorization &amp; Accuracy
-            </h3>
-            <p style={{ fontSize: '12px', color: '#64748B', margin: '2px 0 0' }}>
-              Pages memorized (solid gold bars) and Tajweed recitation score (solid emerald line).
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+              <h3
+                style={{
+                  fontFamily: 'var(--font-serif)',
+                  fontSize: '18px',
+                  fontWeight: '700',
+                  color: '#0D4A38',
+                  margin: 0,
+                  lineHeight: '1.2',
+                }}
+              >
+                Weekly Memorization &amp; Accuracy
+              </h3>
+              <span
+                style={{
+                  fontSize: '10.5px',
+                  fontWeight: '700',
+                  color: '#0D4A38',
+                  background: '#E8F5E9',
+                  border: '1px solid #C8E6C9',
+                  padding: '2px 8px',
+                  borderRadius: '12px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.4px',
+                }}
+              >
+                Live Analytics
+              </span>
+            </div>
+            <p style={{ fontSize: '12.5px', color: '#64748B', margin: '3px 0 0' }}>
+              Memorization volume (solid gold pillars) overlaid with Tajweed pronunciation accuracy (smooth emerald spline).
             </p>
           </div>
         </div>
 
         {/* Legend & Filter Controls */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
           {/* Legend with ONLY solid colors */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '11.5px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '14px',
+              fontSize: '12px',
+              background: '#FAF8F3',
+              padding: '5px 12px',
+              borderRadius: '8px',
+              border: '1px solid #EEDFB8',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <span
                 style={{
                   width: '12px',
                   height: '10px',
-                  borderRadius: '2px',
+                  borderRadius: '3px',
                   background: '#D4AF37',
                   display: 'inline-block',
                 }}
               />
-              <span style={{ fontWeight: '600', color: '#1E293B' }}>Pages Read (Bar)</span>
+              <span style={{ fontWeight: '600', color: '#334155' }}>Pages Memorized</span>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <span
                 style={{
-                  width: '14px',
-                  height: '3px',
+                  width: '16px',
+                  height: '3.5px',
                   background: '#0D4A38',
                   borderRadius: '2px',
                   display: 'inline-block',
                 }}
               />
-              <span style={{ fontWeight: '600', color: '#0D4A38' }}>Accuracy % (Line)</span>
+              <span style={{ fontWeight: '600', color: '#0D4A38' }}>Accuracy % (Spline)</span>
             </div>
           </div>
 
@@ -205,8 +260,8 @@ export default function StudentProgressComboChart({
             style={{
               display: 'inline-flex',
               background: '#F8FAFC',
-              borderRadius: '7px',
-              padding: '2px',
+              borderRadius: '8px',
+              padding: '3px',
               border: '1px solid #E2E8F0',
             }}
           >
@@ -217,8 +272,8 @@ export default function StudentProgressComboChart({
                 border: 'none',
                 background: timeframe === 'weekly' ? '#D4AF37' : 'transparent',
                 color: timeframe === 'weekly' ? '#FFFFFF' : '#64748B',
-                padding: '4px 10px',
-                borderRadius: '5px',
+                padding: '5px 12px',
+                borderRadius: '6px',
                 fontSize: '11.5px',
                 fontWeight: '700',
                 cursor: 'pointer',
@@ -234,8 +289,8 @@ export default function StudentProgressComboChart({
                 border: 'none',
                 background: timeframe === 'monthly' ? '#D4AF37' : 'transparent',
                 color: timeframe === 'monthly' ? '#FFFFFF' : '#64748B',
-                padding: '4px 10px',
-                borderRadius: '5px',
+                padding: '5px 12px',
+                borderRadius: '6px',
                 fontSize: '11.5px',
                 fontWeight: '700',
                 cursor: 'pointer',
@@ -248,33 +303,41 @@ export default function StudentProgressComboChart({
         </div>
       </div>
 
-      {/* SVG Combo Chart Visualization - Compact & Solid Golden */}
-      <div style={{ position: 'relative', width: '100%', overflowX: 'auto' }}>
+      {/* SVG Combo Chart Visualization with Guide Tracks & Smooth Spline */}
+      <div
+        style={{
+          position: 'relative',
+          width: '100%',
+          overflowX: 'auto',
+          background: '#FFFFFF',
+          borderRadius: '10px',
+        }}
+      >
         <svg
           viewBox={`0 0 ${svgWidth} ${svgHeight}`}
-          style={{ width: '100%', height: 'auto', display: 'block', maxHeight: '210px' }}
+          style={{ width: '100%', height: 'auto', display: 'block', maxHeight: '225px' }}
         >
-          {/* Background Horizontal Grid Lines & Y-Axis */}
-          {[0, 0.33, 0.66, 1].map((ratio, idx) => {
+          {/* Background Horizontal Grid Lines & Dual Y-Axes */}
+          {[0, 0.25, 0.5, 0.75, 1].map((ratio, idx) => {
             const y = paddingTop + chartHeight * (1 - ratio);
             const valPages = Math.round(maxPages * ratio);
             const valAcc = Math.round(minAcc + (maxAcc - minAcc) * ratio);
 
             return (
-              <g key={idx}>
-                {/* Clean Solid Grid Line */}
+              <g key={`grid-${idx}`}>
+                {/* Horizontal Solid Grid Line */}
                 <line
-                  x1={paddingLeft}
+                  x1={paddingLeft - 6}
                   y1={y}
-                  x2={svgWidth - paddingRight}
+                  x2={svgWidth - paddingRight + 6}
                   y2={y}
                   stroke="#F1F5F9"
-                  strokeDasharray="3 3"
+                  strokeDasharray="4 4"
                   strokeWidth="1"
                 />
-                {/* Left Y-Axis Label (Pages) */}
+                {/* Left Y-Axis Label (Pages Memorized) */}
                 <text
-                  x={paddingLeft - 8}
+                  x={paddingLeft - 10}
                   y={y + 3.5}
                   textAnchor="end"
                   fontSize="10"
@@ -285,11 +348,11 @@ export default function StudentProgressComboChart({
                 </text>
                 {/* Right Y-Axis Label (Accuracy %) */}
                 <text
-                  x={svgWidth - paddingRight + 8}
+                  x={svgWidth - paddingRight + 10}
                   y={y + 3.5}
                   textAnchor="start"
                   fontSize="10"
-                  fontWeight="600"
+                  fontWeight="700"
                   fill="#0D4A38"
                 >
                   {valAcc}%
@@ -298,51 +361,65 @@ export default function StudentProgressComboChart({
             );
           })}
 
-          {/* Render Bars (Pages Memorized - Pure Solid Gold) */}
+          {/* Column Guide Tracks (Grounds empty space with deliberate executive pillars) */}
           {points.map((p) => {
             const isHovered = hoveredIndex === p.index;
 
             return (
               <g
-                key={`bar-${p.index}`}
+                key={`track-${p.index}`}
                 onMouseEnter={() => setHoveredIndex(p.index)}
                 onMouseLeave={() => setHoveredIndex(null)}
                 style={{ cursor: 'pointer' }}
               >
-                {/* Vertical hover strip */}
-                {isHovered && (
-                  <rect
-                    x={p.x - stepX / 2}
-                    y={paddingTop}
-                    width={stepX}
-                    height={chartHeight}
-                    fill="#FDF8EC"
-                    rx="4"
-                  />
-                )}
+                {/* Subtle Pillar Track */}
+                <rect
+                  x={p.barX - 2}
+                  y={paddingTop}
+                  width={p.barWidth + 4}
+                  height={chartHeight}
+                  fill={isHovered ? '#FDF8EC' : '#F8FAFC'}
+                  stroke={isHovered ? '#EEDFB8' : '#F1F5F9'}
+                  strokeWidth="1"
+                  rx="6"
+                  ry="6"
+                />
 
-                {/* Bar (SOLID GOLDEN: #D4AF37, on hover: #B8860B) */}
+                {/* Solid Golden Progress Bar */}
                 <rect
                   x={p.barX}
                   y={p.barY}
                   width={p.barWidth}
                   height={p.barHeight}
                   fill={isHovered ? '#B8860B' : '#D4AF37'}
-                  rx="4"
-                  ry="4"
+                  rx="5"
+                  ry="5"
                 />
 
-                {/* Page number badge over bar */}
-                <text
-                  x={p.x}
-                  y={p.barY - 5}
-                  textAnchor="middle"
-                  fontSize="10"
-                  fontWeight="700"
-                  fill={isHovered ? '#B8860B' : '#8C6819'}
-                >
-                  {p.pages}p
-                </text>
+                {/* Page Number Label - Placed INSIDE the bar to completely eliminate collision with the line */}
+                {p.barHeight >= 22 ? (
+                  <text
+                    x={p.x}
+                    y={p.barY + 14}
+                    textAnchor="middle"
+                    fontSize="10"
+                    fontWeight="800"
+                    fill="#FFFFFF"
+                  >
+                    {p.pages}p
+                  </text>
+                ) : (
+                  <text
+                    x={p.x}
+                    y={p.barY - 5}
+                    textAnchor="middle"
+                    fontSize="9.5"
+                    fontWeight="700"
+                    fill={isHovered ? '#B8860B' : '#8C6819'}
+                  >
+                    {p.pages}p
+                  </text>
+                )}
 
                 {/* X-Axis Period Label */}
                 <text
@@ -358,10 +435,11 @@ export default function StudentProgressComboChart({
 
                 <text
                   x={p.x}
-                  y={paddingTop + chartHeight + 26}
+                  y={paddingTop + chartHeight + 27}
                   textAnchor="middle"
                   fontSize="9.5"
-                  fill="#94A3B8"
+                  fontWeight={isHovered ? '600' : '400'}
+                  fill={isHovered ? '#B8860B' : '#94A3B8'}
                 >
                   {p.date}
                 </text>
@@ -369,17 +447,17 @@ export default function StudentProgressComboChart({
             );
           })}
 
-          {/* Render Line (Tajweed Accuracy % - Pure Solid Deep Emerald #0D4A38) */}
-          <polyline
-            points={polylinePoints}
+          {/* Smooth Cubic Spline Curve for Tajweed Accuracy */}
+          <path
+            d={smoothLinePath}
             fill="none"
             stroke="#0D4A38"
-            strokeWidth="2.5"
+            strokeWidth="2.75"
             strokeLinecap="round"
             strokeLinejoin="round"
           />
 
-          {/* Render Line Data Point Dots (Solid Colors: #D4AF37 and #FFFFFF) */}
+          {/* Line Data Point Dots & Interactive Hover Badges */}
           {points.map((p) => {
             const isHovered = hoveredIndex === p.index;
 
@@ -390,32 +468,34 @@ export default function StudentProgressComboChart({
                 onMouseLeave={() => setHoveredIndex(null)}
                 style={{ cursor: 'pointer' }}
               >
-                {/* Point Node */}
+                {/* Node Outer Ring & Center */}
                 <circle
                   cx={p.x}
                   cy={p.lineY}
-                  r={isHovered ? '5.5' : '3.8'}
+                  r={isHovered ? '6' : '4'}
                   fill={isHovered ? '#0D4A38' : '#FFFFFF'}
                   stroke={isHovered ? '#D4AF37' : '#0D4A38'}
-                  strokeWidth="2"
+                  strokeWidth={isHovered ? '2.5' : '2'}
                 />
 
-                {/* Compact Accuracy tooltip on hover */}
+                {/* Floating Precision Tooltip Badge on Hover */}
                 {isHovered && (
                   <g>
                     <rect
-                      x={p.x - 24}
-                      y={p.lineY - 22}
-                      width="48"
-                      height="16"
+                      x={p.x - 30}
+                      y={p.lineY - 26}
+                      width="60"
+                      height="18"
                       rx="4"
                       fill="#0D4A38"
+                      stroke="#D4AF37"
+                      strokeWidth="1"
                     />
                     <text
                       x={p.x}
-                      y={p.lineY - 10}
+                      y={p.lineY - 13}
                       textAnchor="middle"
-                      fontSize="9.5"
+                      fontSize="10"
                       fontWeight="800"
                       fill="#FFFFFF"
                     >
@@ -429,57 +509,131 @@ export default function StudentProgressComboChart({
         </svg>
       </div>
 
-      {/* Sleek, Compact Footer Metric Strip (Solid Colors Only) */}
+      {/* Smart Space KPI Matrix - Balanced 4-Card Executive Row (Solid Colors Only) */}
       <div
         style={{
-          background: '#FAF8F3',
-          border: '1px solid #EEDFB8',
-          borderRadius: '8px',
-          padding: '8px 14px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '8px',
-          fontSize: '12px',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
+          gap: '10px',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span
-            style={{
-              padding: '2px 8px',
-              borderRadius: '4px',
-              background: '#D4AF37',
-              color: '#FFFFFF',
-              fontSize: '11px',
-              fontWeight: '700',
-            }}
-          >
+        {/* Card 1: Active Focus Period */}
+        <div
+          style={{
+            background: '#FAF8F3',
+            border: '1px solid #EEDFB8',
+            borderRadius: '10px',
+            padding: '10px 14px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '3px',
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: '10px', fontWeight: '700', color: '#8C6819', textTransform: 'uppercase' }}>
+              Selected Period
+            </span>
+            <span
+              style={{
+                fontSize: '9.5px',
+                fontWeight: '700',
+                background: '#D4AF37',
+                color: '#FFFFFF',
+                padding: '1px 6px',
+                borderRadius: '4px',
+              }}
+            >
+              {activePoint.label}
+            </span>
+          </div>
+          <div style={{ fontSize: '14px', fontWeight: '700', color: '#1E293B' }}>
             {activePoint.period}
-          </span>
-          <span style={{ color: '#475569' }}>
-            Read: <strong style={{ color: '#B8860B' }}>{activePoint.pages} Pages</strong>
-          </span>
-          <span style={{ color: '#CBD5E1' }}>•</span>
-          <span style={{ color: '#475569' }}>
-            Tajweed Accuracy: <strong style={{ color: '#0D4A38' }}>{activePoint.accuracy}%</strong>
-          </span>
-          <span style={{ color: '#CBD5E1' }}>•</span>
-          <span style={{ color: '#64748B' }}>
-            Rating: <strong style={{ color: '#1E293B' }}>{activePoint.status}</strong>
-          </span>
+          </div>
+          <div style={{ fontSize: '11px', color: '#64748B' }}>
+            Date: <strong style={{ color: '#0D4A38' }}>{activePoint.date}</strong>
+          </div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '11.5px', color: '#64748B' }}>
-          <span>
-            Period Average: <strong style={{ color: '#B8860B' }}>{avgPages} pages</strong>
+        {/* Card 2: Memorization Volume */}
+        <div
+          style={{
+            background: '#FAF8F3',
+            border: '1px solid #EEDFB8',
+            borderRadius: '10px',
+            padding: '10px 14px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '3px',
+          }}
+        >
+          <span style={{ fontSize: '10px', fontWeight: '700', color: '#8C6819', textTransform: 'uppercase' }}>
+            Pages Memorized
           </span>
-          <span style={{ color: '#CBD5E1' }}>•</span>
-          <span>
+          <div style={{ fontSize: '16px', fontWeight: '800', color: '#B8860B' }}>
+            {activePoint.pages} Pages
+          </div>
+          <div style={{ fontSize: '11px', color: '#64748B' }}>
+            Period Avg: <strong style={{ color: '#1E293B' }}>{avgPages} p/wk</strong>
+          </div>
+        </div>
+
+        {/* Card 3: Tajweed Recitation Score */}
+        <div
+          style={{
+            background: '#FAF8F3',
+            border: '1px solid #EEDFB8',
+            borderRadius: '10px',
+            padding: '10px 14px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '3px',
+          }}
+        >
+          <span style={{ fontSize: '10px', fontWeight: '700', color: '#0D4A38', textTransform: 'uppercase' }}>
+            Tajweed Accuracy
+          </span>
+          <div style={{ fontSize: '16px', fontWeight: '800', color: '#0D4A38' }}>
+            {activePoint.accuracy}%
+          </div>
+          <div style={{ fontSize: '11px', color: '#64748B' }}>
             Avg Accuracy: <strong style={{ color: '#0D4A38' }}>{avgAccuracy}%</strong>
+          </div>
+        </div>
+
+        {/* Card 4: Qualitative Status / Standing */}
+        <div
+          style={{
+            background: '#FAF8F3',
+            border: '1px solid #EEDFB8',
+            borderRadius: '10px',
+            padding: '10px 14px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '3px',
+          }}
+        >
+          <span style={{ fontSize: '10px', fontWeight: '700', color: '#64748B', textTransform: 'uppercase' }}>
+            Academic Rating
           </span>
+          <div
+            style={{
+              fontSize: '13px',
+              fontWeight: '700',
+              color: '#0D4A38',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
+            title={activePoint.status}
+          >
+            {activePoint.status}
+          </div>
+          <div style={{ fontSize: '11px', color: '#64748B' }}>
+            Cadence: <strong style={{ color: '#B8860B' }}>Hafiz Track</strong>
+          </div>
         </div>
       </div>
     </div>
   );
 }
+

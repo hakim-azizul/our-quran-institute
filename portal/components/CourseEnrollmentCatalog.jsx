@@ -4,13 +4,49 @@ import React, { useState } from 'react';
 import { Icon } from './Icons';
 
 export default function CourseEnrollmentCatalog({
-  course,
-  courses = [],
-  teachers = [],
+  course: propCourse,
+  courses: propCourses = [],
+  coursesList = [],
+  teachers: propTeachers = [],
   currentUser,
+  currentEnrollment,
   onSelectCourse,
   onEnrollSuccess,
 }) {
+  const allCourses = coursesList?.length > 0 ? coursesList : propCourses;
+  const [selectedCourseState, setSelectedCourseState] = useState(null);
+
+  const course = selectedCourseState || propCourse || allCourses[0] || null;
+
+  const defaultTeachers = [
+    {
+      id: 'QI-FAC-014',
+      name: 'Dr. Sheikh Ahmad Al-Azhari',
+      status: 'Verified Scholar',
+      sanadCertification: 'Certified in 10 Qira’at (Al-Azhar University)',
+      specialization: 'Tajweed & Advanced Hifz',
+      yearsExperience: '16+ yrs experience',
+    },
+    {
+      id: 'QI-FAC-028',
+      name: 'Ustadh Mahmoud Al-Misri',
+      status: 'Senior Reciter',
+      sanadCertification: 'Ijaza in Hafs & Shu’bah',
+      specialization: 'Noorani Qaida & Makharij',
+      yearsExperience: '12+ yrs experience',
+    },
+    {
+      id: 'QI-FAC-035',
+      name: 'Ustadhah Maryam Al-Zahra',
+      status: 'Faculty Mentor',
+      sanadCertification: 'Ijaza in Warsh ‘an Nafi’',
+      specialization: 'Qur’anic Arabic & Phonetics',
+      yearsExperience: '9+ yrs experience',
+    },
+  ];
+
+  const teachers = propTeachers?.length > 0 ? propTeachers : defaultTeachers;
+
   const [selectedTeacherId, setSelectedTeacherId] = useState(
     teachers[0]?.id || course?.assignedTeacherId || 'QI-FAC-014'
   );
@@ -108,18 +144,21 @@ export default function CourseEnrollmentCatalog({
       </div>
 
       {/* Optional Course Selection Bar if Institute Has Multiple Courses */}
-      {courses.length > 1 && (
+      {allCourses.length > 1 && (
         <div className="dash-panel" style={{ padding: '16px 20px', background: '#FFFFFF' }}>
           <span style={{ fontSize: '11px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--color-gold-deep)' }}>
-            Available Courses ({courses.length})
+            Available Courses ({allCourses.length})
           </span>
           <div style={{ display: 'flex', gap: '10px', marginTop: '10px', flexWrap: 'wrap' }}>
-            {courses.map((c) => {
+            {allCourses.map((c) => {
               const isSelected = c.id === course?.id;
               return (
                 <button
                   key={c.id}
-                  onClick={() => onSelectCourse && onSelectCourse(c)}
+                  onClick={() => {
+                    setSelectedCourseState(c);
+                    if (onSelectCourse) onSelectCourse(c);
+                  }}
                   className="btn-table-action"
                   style={{
                     padding: '8px 16px',
