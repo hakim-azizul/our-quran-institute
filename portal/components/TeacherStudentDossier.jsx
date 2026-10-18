@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Icon } from './Icons';
+import TeacherStudentBehaviorCharts from './TeacherStudentBehaviorCharts';
 
 export default function TeacherStudentDossier({
   currentUser,
@@ -549,6 +550,30 @@ export default function TeacherStudentDossier({
                 {studentMistakes.filter(m => m.status === 'resolved').length} Resolved &amp; Cleared
               </div>
             </div>
+
+            <div
+              style={{
+                background: 'var(--bg-canvas-subtle)',
+                borderRadius: '12px',
+                padding: '16px',
+                border: '1px solid var(--border-light)',
+                cursor: 'pointer',
+                transition: 'border-color 0.15s ease',
+              }}
+              onClick={() => setInnerTab('analytics')}
+              title="Click to inspect student behavioral learning charts"
+            >
+              <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '4px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span>Practice Habit &amp; Streak</span>
+                <span style={{ color: 'var(--color-green-primary)', fontWeight: '700', fontSize: '11px' }}>Charts →</span>
+              </div>
+              <div style={{ fontSize: '22px', fontWeight: '800', color: 'var(--color-green-primary)' }}>
+                {activeStudent.attendanceStreak || 19} Days
+              </div>
+              <div style={{ fontSize: '11.5px', color: '#047857', marginTop: '4px', fontWeight: '600' }}>
+                5.4 hrs/wk • 98.5% Punctual
+              </div>
+            </div>
           </div>
 
           {/* Dossier Detail Sub-Tabs */}
@@ -561,6 +586,27 @@ export default function TeacherStudentDossier({
               flexWrap: 'wrap',
             }}
           >
+            <button
+              type="button"
+              onClick={() => setInnerTab('analytics')}
+              className="btn-table-action"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '9px 18px',
+                fontSize: '13.5px',
+                fontWeight: '700',
+                borderRadius: '10px',
+                background: innerTab === 'analytics' ? 'var(--color-green-primary)' : 'var(--color-white)',
+                color: innerTab === 'analytics' ? '#FFFFFF' : 'var(--text-body)',
+                borderColor: innerTab === 'analytics' ? 'var(--color-gold-primary)' : 'var(--border-light)',
+              }}
+            >
+              <Icon name="analytics" size={15} color="currentColor" />
+              <span>Behavior &amp; Learning Analytics</span>
+            </button>
+
             <button
               type="button"
               onClick={() => setInnerTab('materials')}
@@ -1132,6 +1178,15 @@ export default function TeacherStudentDossier({
                 </button>
               </div>
             </div>
+          )}
+
+          {/* ================= TAB 5: STUDENT BEHAVIOR & LEARNING ANALYTICS ================= */}
+          {innerTab === 'analytics' && (
+            <TeacherStudentBehaviorCharts
+              student={activeStudent}
+              mistakes={studentMistakes}
+              onOpenQuran={onOpenQuranForStudent}
+            />
           )}
         </div>
       ) : (

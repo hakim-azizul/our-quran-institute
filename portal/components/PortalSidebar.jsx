@@ -57,6 +57,7 @@ export default function PortalSidebar({
     dictionary: '/dashboard/dictionary',
     catalog: '/dashboard/catalog',
     profile: '/dashboard/profile',
+    teacherdashboard: '/dashboard/teacher',
     actionboard: '/dashboard/action-board',
     salary: '/dashboard/salary',
     overview: '/dashboard/students',
@@ -73,7 +74,7 @@ export default function PortalSidebar({
     for (const [k, url] of Object.entries(slugMap)) {
       if (pathname === url || pathname?.startsWith(url)) return k;
     }
-    return portalType === 'admin' ? 'analytics' : 'progress';
+    return portalType === 'admin' ? 'analytics' : isTeacher ? 'teacherdashboard' : 'progress';
   })();
 
   const handleItemClick = (tabKey) => {
@@ -220,6 +221,20 @@ export default function PortalSidebar({
               ) : (
                 <>
                   <div className="portal-nav-section-title">TEACHING</div>
+
+                  <button
+                    type="button"
+                    onClick={() => handleItemClick('teacherdashboard')}
+                    className={`portal-nav-item ${currentTab === 'teacherdashboard' ? 'active' : ''}`}
+                  >
+                    <div className="portal-nav-item-content">
+                      <span className="nav-icon"><Icon name="dashboard" size={17} /></span>
+                      <span>Dashboard</span>
+                    </div>
+                    <span className="portal-nav-badge" style={{ background: '#0D4A38', color: '#FFDF85' }}>
+                      Overview
+                    </span>
+                  </button>
 
                   <button
                     type="button"
@@ -386,6 +401,17 @@ export default function PortalSidebar({
                 <div className="portal-nav-item-content">
                   <span className="nav-icon"><Icon name="award" size={17} /></span>
                   <span>Quizzes</span>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleItemClick('dictionary')}
+                className={`portal-nav-item ${currentTab === 'dictionary' ? 'active' : ''}`}
+              >
+                <div className="portal-nav-item-content">
+                  <span className="nav-icon"><Icon name="book-marked" size={17} /></span>
+                  <span>Tajweed Tools</span>
                 </div>
               </button>
 

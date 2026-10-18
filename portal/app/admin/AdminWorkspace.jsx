@@ -12,6 +12,7 @@ import AdminTeacherClassesLedgerModal from '../../components/AdminTeacherClasses
 import AdminNewCourseModal from '../../components/AdminNewCourseModal';
 import AdminCourseCurriculumModal from '../../components/AdminCourseCurriculumModal';
 import AdminStatusFilterDropdown from '../../components/AdminStatusFilterDropdown';
+import AdminAnalyticsCharts from '../../components/AdminAnalyticsCharts';
 
 const mapAdminSlug = (slug) => {
   if (!slug) return 'analytics';
@@ -573,6 +574,14 @@ export default function AdminWorkspace({ initialTab }) {
                   </div>
                 </div>
               </div>
+
+              {/* Visual Data Analytics & Strategic Performance Charts */}
+              <AdminAnalyticsCharts
+                stats={stats}
+                financialAnalytics={financialAnalytics}
+                attendanceAnalytics={attendanceAnalytics}
+                usersList={usersList}
+              />
 
               {/* Attendance Analytics & Progress Report Overview */}
               <div className="analytics-double-row">

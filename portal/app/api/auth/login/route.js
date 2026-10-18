@@ -69,7 +69,12 @@ export async function POST(request) {
     const { password: _, ...userSafe } = user;
 
     // Determine redirect destination based on role
-    const redirectUrl = user.role === 'admin' ? '/admin' : '/dashboard';
+    const redirectUrl =
+      user.role === 'admin'
+        ? '/admin'
+        : user.role === 'teacher'
+        ? '/dashboard/teacher'
+        : '/dashboard';
 
     const response = NextResponse.json({
       success: true,

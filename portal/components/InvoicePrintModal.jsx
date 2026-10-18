@@ -172,9 +172,11 @@ export default function InvoicePrintModal({
               </div>
 
               <div className="payment-status-box">
-                <span className="address-label">PAYMENT STATUS:</span>
-                <div className={`status-badge-large status-${activeInvoice.status.toLowerCase()}`}>
-                  {activeInvoice.status === 'Paid' ? 'PAID IN FULL' : 'PAYMENT DUE'}
+                <div className="payment-status-header">
+                  <span className="address-label">PAYMENT STATUS:</span>
+                  <span className={`status-badge-large status-${activeInvoice.status.toLowerCase()}`}>
+                    {activeInvoice.status === 'Paid' ? 'PAID IN FULL' : 'PAYMENT DUE'}
+                  </span>
                 </div>
 
                 {activeInvoice.status === 'Paid' ? (

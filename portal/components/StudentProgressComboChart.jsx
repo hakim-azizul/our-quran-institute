@@ -11,6 +11,8 @@ export default function StudentProgressComboChart({
 }) {
   const [timeframe, setTimeframe] = useState('weekly'); // 'weekly' | 'monthly'
   const [hoveredIndex, setHoveredIndex] = useState(null);
+  const [pieMode, setPieMode] = useState('curriculum'); // 'curriculum' | 'quality'
+  const [hoveredSlice, setHoveredSlice] = useState(null);
 
   // Dynamic datasets based on student
   const isSecondStudent = studentId === 'QI-STU-7721' || memorizedJuz < 10;
@@ -57,11 +59,11 @@ export default function StudentProgressComboChart({
 
   const activeDataset = timeframe === 'weekly' ? weeklyData : monthlyData;
 
-  // Proportional SVG canvas dimensions
-  const svgWidth = 760;
+  // Proportional SVG canvas dimensions for Left Combo Chart
+  const svgWidth = 520;
   const svgHeight = 205;
-  const paddingLeft = 46;
-  const paddingRight = 46;
+  const paddingLeft = 40;
+  const paddingRight = 40;
   const paddingTop = 26;
   const paddingBottom = 34;
 
@@ -77,8 +79,7 @@ export default function StudentProgressComboChart({
   // Coordinate calculations with smartly proportioned bar width
   const numPoints = activeDataset.length;
   const stepX = chartWidth / numPoints;
-  // Substantial, refined bar width (occupies ~38% of step width, eliminating isolated needle look)
-  const barWidth = Math.round(Math.min(32, Math.max(26, stepX * 0.38)));
+  const barWidth = Math.round(Math.min(26, Math.max(20, stepX * 0.44)));
 
   const points = activeDataset.map((d, i) => {
     const x = paddingLeft + i * stepX + stepX / 2;
@@ -111,7 +112,6 @@ export default function StudentProgressComboChart({
       const pNext = pts[i + 1];
       const pNextNext = i + 2 < pts.length ? pts[i + 2] : pNext;
 
-      // Smooth C1-continuous control points
       const cp1x = pCurr.x + (pNext.x - pPrev.x) / 5.5;
       const cp1y = pCurr.lineY + (pNext.lineY - pPrev.lineY) / 5.5;
 
@@ -134,6 +134,170 @@ export default function StudentProgressComboChart({
 
   const activePoint = hoveredIndex !== null ? points[hoveredIndex] : points[points.length - 1];
 
+  // =========================================================================
+  // PIE / DONUT CHART DATASETS (Curriculum Focus vs Recitation Quality)
+  // =========================================================================
+  const curriculumSlices = isSecondStudent
+    ? [
+        {
+          id: 'sabaq',
+          label: 'Sabaq (New Lesson)',
+          shortLabel: 'Sabaq',
+          percent: 40,
+          hours: '12.0h',
+          desc: 'Daily new Ayahs memorization',
+          color: '#D4AF37', // Solid Bright Gold
+          lightBg: '#FDF8EC',
+        },
+        {
+          id: 'sabqi',
+          label: 'Sabqi (Recent Revision)',
+          shortLabel: 'Sabqi',
+          percent: 25,
+          hours: '7.5h',
+          desc: 'Para 4–5 continuous review',
+          color: '#0D4A38', // Solid Emerald Green
+          lightBg: '#EBF5F0',
+        },
+        {
+          id: 'manzil',
+          label: 'Manzil (All-Juz Cycle)',
+          shortLabel: 'Manzil',
+          percent: 15,
+          hours: '4.5h',
+          desc: 'Para 1–3 long-term retention',
+          color: '#15664F', // Solid Forest Accent
+          lightBg: '#F0F7F4',
+        },
+        {
+          id: 'tajweed',
+          label: 'Tajweed & Makharij',
+          shortLabel: 'Tajweed',
+          percent: 20,
+          hours: '6.0h',
+          desc: 'Heavy letters & Qalqalah drills',
+          color: '#9F7C35', // Antique Gold / Bronze
+          lightBg: '#F8F4EA',
+        },
+      ]
+    : [
+        {
+          id: 'sabaq',
+          label: 'Sabaq (New Lesson)',
+          shortLabel: 'Sabaq',
+          percent: 35,
+          hours: '12.0h',
+          desc: 'Surah Yusuf (Juz 12) memorization',
+          color: '#D4AF37', // Solid Bright Gold
+          lightBg: '#FDF8EC',
+        },
+        {
+          id: 'sabqi',
+          label: 'Sabqi (Recent Revision)',
+          shortLabel: 'Sabqi',
+          percent: 30,
+          hours: '10.5h',
+          desc: 'Recent 5 Juz (Juz 7–11) polish',
+          color: '#0D4A38', // Solid Emerald Green
+          lightBg: '#EBF5F0',
+        },
+        {
+          id: 'manzil',
+          label: 'Manzil (All-Juz Cycle)',
+          shortLabel: 'Manzil',
+          percent: 22,
+          hours: '7.5h',
+          desc: 'Juz 1–6 cumulative cycle',
+          color: '#15664F', // Solid Forest Accent
+          lightBg: '#F0F7F4',
+        },
+        {
+          id: 'tajweed',
+          label: 'Tajweed & Makharij',
+          shortLabel: 'Tajweed',
+          percent: 13,
+          hours: '4.5h',
+          desc: 'Madd Lazim & Sifaat rules',
+          color: '#9F7C35', // Antique Gold / Bronze
+          lightBg: '#F8F4EA',
+        },
+      ];
+
+  const qualitySlices = [
+    {
+      id: 'mumtaz',
+      label: 'Mumtaz (Flawless Recitation)',
+      shortLabel: 'Mumtaz',
+      percent: 72,
+      hours: '24.5h',
+      desc: 'Top scholar grade • 0 major slips',
+      color: '#0D4A38', // Solid Emerald
+      lightBg: '#EBF5F0',
+    },
+    {
+      id: 'jayyid',
+      label: 'Jayyid Jiddan (Proficient)',
+      shortLabel: 'Jayyid',
+      percent: 20,
+      hours: '7.0h',
+      desc: 'Minor breath & pacing guidance',
+      color: '#D4AF37', // Solid Gold
+      lightBg: '#FDF8EC',
+    },
+    {
+      id: 'needs_work',
+      label: 'Review Focus (Active Annotations)',
+      shortLabel: 'Revision',
+      percent: 8,
+      hours: '3.0h',
+      desc: 'Ayah slips flagged by Ustadh',
+      color: '#9F7C35', // Bronze / Warm Accent
+      lightBg: '#F8F4EA',
+    },
+  ];
+
+  const currentPieSlices = pieMode === 'curriculum' ? curriculumSlices : qualitySlices;
+
+  // Donut Geometry Parameters
+  const donutCx = 90;
+  const donutCy = 90;
+  const donutOuterR = 70;
+  const donutInnerR = 45;
+
+  let cumulativeAngle = -Math.PI / 2;
+  const computedSlices = currentPieSlices.map((slice, idx) => {
+    const sliceAngle = (slice.percent / 100) * 2 * Math.PI;
+    const startAngle = cumulativeAngle;
+    const endAngle = cumulativeAngle + sliceAngle;
+    cumulativeAngle = endAngle;
+
+    return {
+      ...slice,
+      index: idx,
+      startAngle,
+      endAngle,
+    };
+  });
+
+  // Calculate SVG arc path with optional hover expansion
+  function getDonutSlicePath(cx, cy, innerR, outerR, startAngle, endAngle) {
+    const x1 = cx + outerR * Math.cos(startAngle);
+    const y1 = cy + outerR * Math.sin(startAngle);
+    const x2 = cx + outerR * Math.cos(endAngle);
+    const y2 = cy + outerR * Math.sin(endAngle);
+    const x3 = cx + innerR * Math.cos(endAngle);
+    const y3 = cy + innerR * Math.sin(endAngle);
+    const x4 = cx + innerR * Math.cos(startAngle);
+    const y4 = cy + innerR * Math.sin(startAngle);
+
+    const largeArc = endAngle - startAngle > Math.PI ? 1 : 0;
+
+    return `M ${x1.toFixed(2)} ${y1.toFixed(2)} A ${outerR} ${outerR} 0 ${largeArc} 1 ${x2.toFixed(2)} ${y2.toFixed(2)} L ${x3.toFixed(2)} ${y3.toFixed(2)} A ${innerR} ${innerR} 0 ${largeArc} 0 ${x4.toFixed(2)} ${y4.toFixed(2)} Z`;
+  }
+
+  const activeSliceItem =
+    hoveredSlice !== null ? computedSlices[hoveredSlice] : null;
+
   return (
     <div
       className="student-progress-combo-chart-card"
@@ -149,6 +313,20 @@ export default function StudentProgressComboChart({
         marginTop: '16px',
       }}
     >
+      <style>{`
+        .combo-analytics-split-grid {
+          display: grid;
+          grid-template-columns: minmax(0, 1.48fr) minmax(0, 1fr);
+          gap: 16px;
+          align-items: stretch;
+        }
+        @media (max-width: 1040px) {
+          .combo-analytics-split-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+      `}</style>
+
       {/* Top Header & Executive Controls */}
       <div
         style={{
@@ -209,19 +387,19 @@ export default function StudentProgressComboChart({
               </span>
             </div>
             <p style={{ fontSize: '12.5px', color: '#64748B', margin: '3px 0 0' }}>
-              Memorization volume (solid gold pillars) overlaid with Tajweed pronunciation accuracy (smooth emerald spline).
+              Memorization volume (solid gold pillars) &amp; Tajweed accuracy (emerald spline) with curriculum focus allocation.
             </p>
           </div>
         </div>
 
         {/* Legend & Filter Controls */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
-          {/* Legend with ONLY solid colors */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap' }}>
+          {/* Legend with solid colors */}
           <div
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '14px',
+              gap: '12px',
               fontSize: '12px',
               background: '#FAF8F3',
               padding: '5px 12px',
@@ -239,7 +417,7 @@ export default function StudentProgressComboChart({
                   display: 'inline-block',
                 }}
               />
-              <span style={{ fontWeight: '600', color: '#334155' }}>Pages Memorized</span>
+              <span style={{ fontWeight: '600', color: '#334155' }}>Pages</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <span
@@ -251,7 +429,7 @@ export default function StudentProgressComboChart({
                   display: 'inline-block',
                 }}
               />
-              <span style={{ fontWeight: '600', color: '#0D4A38' }}>Accuracy % (Spline)</span>
+              <span style={{ fontWeight: '600', color: '#0D4A38' }}>Accuracy %</span>
             </div>
           </div>
 
@@ -303,213 +481,550 @@ export default function StudentProgressComboChart({
         </div>
       </div>
 
-      {/* SVG Combo Chart Visualization with Guide Tracks & Smooth Spline */}
-      <div
-        style={{
-          position: 'relative',
-          width: '100%',
-          overflowX: 'auto',
-          background: '#FFFFFF',
-          borderRadius: '10px',
-        }}
-      >
-        <svg
-          viewBox={`0 0 ${svgWidth} ${svgHeight}`}
-          style={{ width: '100%', height: 'auto', display: 'block', maxHeight: '225px' }}
+      {/* =====================================================================
+          TWO-COLUMN EXECUTIVE ANALYTICS: COMBO CHART + PIE / DONUT BREAKDOWN
+          ===================================================================== */}
+      <div className="combo-analytics-split-grid">
+        {/* LEFT COLUMN: Weekly Memorization Pillars & Tajweed Accuracy Spline */}
+        <div
+          style={{
+            background: '#FAF8F3',
+            border: '1px solid #EEDFB8',
+            borderRadius: '12px',
+            padding: '12px 14px 10px',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+          }}
         >
-          {/* Background Horizontal Grid Lines & Dual Y-Axes */}
-          {[0, 0.25, 0.5, 0.75, 1].map((ratio, idx) => {
-            const y = paddingTop + chartHeight * (1 - ratio);
-            const valPages = Math.round(maxPages * ratio);
-            const valAcc = Math.round(minAcc + (maxAcc - minAcc) * ratio);
+          {/* Subheader */}
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '6px',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#D4AF37' }} />
+              <span style={{ fontSize: '11.5px', fontWeight: '700', color: '#0D4A38', textTransform: 'uppercase', letterSpacing: '0.4px' }}>
+                Volume &amp; Tajweed Trajectory
+              </span>
+            </div>
+            <span
+              style={{
+                fontSize: '11px',
+                fontWeight: '700',
+                color: '#8C6819',
+                background: '#FDF8EC',
+                padding: '2px 8px',
+                borderRadius: '6px',
+                border: '1px solid #EEDFB8',
+              }}
+            >
+              Period Avg: {avgPages} p/wk • {avgAccuracy}% Acc
+            </span>
+          </div>
 
-            return (
-              <g key={`grid-${idx}`}>
-                {/* Horizontal Solid Grid Line */}
-                <line
-                  x1={paddingLeft - 6}
-                  y1={y}
-                  x2={svgWidth - paddingRight + 6}
-                  y2={y}
-                  stroke="#F1F5F9"
-                  strokeDasharray="4 4"
-                  strokeWidth="1"
-                />
-                {/* Left Y-Axis Label (Pages Memorized) */}
-                <text
-                  x={paddingLeft - 10}
-                  y={y + 3.5}
-                  textAnchor="end"
-                  fontSize="10"
-                  fontWeight="600"
-                  fill="#94A3B8"
-                >
-                  {valPages}p
-                </text>
-                {/* Right Y-Axis Label (Accuracy %) */}
-                <text
-                  x={svgWidth - paddingRight + 10}
-                  y={y + 3.5}
-                  textAnchor="start"
-                  fontSize="10"
-                  fontWeight="700"
-                  fill="#0D4A38"
-                >
-                  {valAcc}%
-                </text>
-              </g>
-            );
-          })}
+          {/* Left Chart SVG Container */}
+          <div style={{ position: 'relative', width: '100%', overflowX: 'auto' }}>
+            <svg
+              viewBox={`0 0 ${svgWidth} ${svgHeight}`}
+              style={{ width: '100%', height: 'auto', display: 'block', maxHeight: '210px' }}
+            >
+              {/* Background Horizontal Grid Lines & Dual Y-Axes */}
+              {[0, 0.25, 0.5, 0.75, 1].map((ratio, idx) => {
+                const y = paddingTop + chartHeight * (1 - ratio);
+                const valPages = Math.round(maxPages * ratio);
+                const valAcc = Math.round(minAcc + (maxAcc - minAcc) * ratio);
 
-          {/* Column Guide Tracks (Grounds empty space with deliberate executive pillars) */}
-          {points.map((p) => {
-            const isHovered = hoveredIndex === p.index;
-
-            return (
-              <g
-                key={`track-${p.index}`}
-                onMouseEnter={() => setHoveredIndex(p.index)}
-                onMouseLeave={() => setHoveredIndex(null)}
-                style={{ cursor: 'pointer' }}
-              >
-                {/* Subtle Pillar Track */}
-                <rect
-                  x={p.barX - 2}
-                  y={paddingTop}
-                  width={p.barWidth + 4}
-                  height={chartHeight}
-                  fill={isHovered ? '#FDF8EC' : '#F8FAFC'}
-                  stroke={isHovered ? '#EEDFB8' : '#F1F5F9'}
-                  strokeWidth="1"
-                  rx="6"
-                  ry="6"
-                />
-
-                {/* Solid Golden Progress Bar */}
-                <rect
-                  x={p.barX}
-                  y={p.barY}
-                  width={p.barWidth}
-                  height={p.barHeight}
-                  fill={isHovered ? '#B8860B' : '#D4AF37'}
-                  rx="5"
-                  ry="5"
-                />
-
-                {/* Page Number Label - Placed INSIDE the bar to completely eliminate collision with the line */}
-                {p.barHeight >= 22 ? (
-                  <text
-                    x={p.x}
-                    y={p.barY + 14}
-                    textAnchor="middle"
-                    fontSize="10"
-                    fontWeight="800"
-                    fill="#FFFFFF"
-                  >
-                    {p.pages}p
-                  </text>
-                ) : (
-                  <text
-                    x={p.x}
-                    y={p.barY - 5}
-                    textAnchor="middle"
-                    fontSize="9.5"
-                    fontWeight="700"
-                    fill={isHovered ? '#B8860B' : '#8C6819'}
-                  >
-                    {p.pages}p
-                  </text>
-                )}
-
-                {/* X-Axis Period Label */}
-                <text
-                  x={p.x}
-                  y={paddingTop + chartHeight + 15}
-                  textAnchor="middle"
-                  fontSize="11"
-                  fontWeight={isHovered ? '800' : '600'}
-                  fill={isHovered ? '#0D4A38' : '#334155'}
-                >
-                  {p.label}
-                </text>
-
-                <text
-                  x={p.x}
-                  y={paddingTop + chartHeight + 27}
-                  textAnchor="middle"
-                  fontSize="9.5"
-                  fontWeight={isHovered ? '600' : '400'}
-                  fill={isHovered ? '#B8860B' : '#94A3B8'}
-                >
-                  {p.date}
-                </text>
-              </g>
-            );
-          })}
-
-          {/* Smooth Cubic Spline Curve for Tajweed Accuracy */}
-          <path
-            d={smoothLinePath}
-            fill="none"
-            stroke="#0D4A38"
-            strokeWidth="2.75"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-
-          {/* Line Data Point Dots & Interactive Hover Badges */}
-          {points.map((p) => {
-            const isHovered = hoveredIndex === p.index;
-
-            return (
-              <g
-                key={`point-${p.index}`}
-                onMouseEnter={() => setHoveredIndex(p.index)}
-                onMouseLeave={() => setHoveredIndex(null)}
-                style={{ cursor: 'pointer' }}
-              >
-                {/* Node Outer Ring & Center */}
-                <circle
-                  cx={p.x}
-                  cy={p.lineY}
-                  r={isHovered ? '6' : '4'}
-                  fill={isHovered ? '#0D4A38' : '#FFFFFF'}
-                  stroke={isHovered ? '#D4AF37' : '#0D4A38'}
-                  strokeWidth={isHovered ? '2.5' : '2'}
-                />
-
-                {/* Floating Precision Tooltip Badge on Hover */}
-                {isHovered && (
-                  <g>
-                    <rect
-                      x={p.x - 30}
-                      y={p.lineY - 26}
-                      width="60"
-                      height="18"
-                      rx="4"
-                      fill="#0D4A38"
-                      stroke="#D4AF37"
+                return (
+                  <g key={`grid-${idx}`}>
+                    <line
+                      x1={paddingLeft - 4}
+                      y1={y}
+                      x2={svgWidth - paddingRight + 4}
+                      y2={y}
+                      stroke="#F1EAD8"
+                      strokeDasharray="4 4"
                       strokeWidth="1"
                     />
+                    {/* Left Y-Axis Label (Pages Memorized) */}
                     <text
-                      x={p.x}
-                      y={p.lineY - 13}
-                      textAnchor="middle"
-                      fontSize="10"
-                      fontWeight="800"
-                      fill="#FFFFFF"
+                      x={paddingLeft - 8}
+                      y={y + 3.5}
+                      textAnchor="end"
+                      fontSize="9.5"
+                      fontWeight="600"
+                      fill="#94A3B8"
                     >
-                      {p.accuracy}% Acc
+                      {valPages}p
+                    </text>
+                    {/* Right Y-Axis Label (Accuracy %) */}
+                    <text
+                      x={svgWidth - paddingRight + 8}
+                      y={y + 3.5}
+                      textAnchor="start"
+                      fontSize="9.5"
+                      fontWeight="700"
+                      fill="#0D4A38"
+                    >
+                      {valAcc}%
                     </text>
                   </g>
-                )}
-              </g>
-            );
-          })}
-        </svg>
+                );
+              })}
+
+              {/* Column Guide Tracks and Golden Pillars */}
+              {points.map((p) => {
+                const isHovered = hoveredIndex === p.index;
+
+                return (
+                  <g
+                    key={`track-${p.index}`}
+                    onMouseEnter={() => setHoveredIndex(p.index)}
+                    onMouseLeave={() => setHoveredIndex(null)}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    {/* Pillar Guide Track */}
+                    <rect
+                      x={p.barX - 2}
+                      y={paddingTop}
+                      width={p.barWidth + 4}
+                      height={chartHeight}
+                      fill={isHovered ? '#FDF8EC' : '#FFFFFF'}
+                      stroke={isHovered ? '#D4AF37' : '#F1EAD8'}
+                      strokeWidth="1"
+                      rx="5"
+                      ry="5"
+                    />
+
+                    {/* Solid Golden Progress Bar */}
+                    <rect
+                      x={p.barX}
+                      y={p.barY}
+                      width={p.barWidth}
+                      height={p.barHeight}
+                      fill={isHovered ? '#B8860B' : '#D4AF37'}
+                      rx="4"
+                      ry="4"
+                    />
+
+                    {/* Page Number Label */}
+                    {p.barHeight >= 22 ? (
+                      <text
+                        x={p.x}
+                        y={p.barY + 13}
+                        textAnchor="middle"
+                        fontSize="9.5"
+                        fontWeight="800"
+                        fill="#FFFFFF"
+                      >
+                        {p.pages}p
+                      </text>
+                    ) : (
+                      <text
+                        x={p.x}
+                        y={p.barY - 5}
+                        textAnchor="middle"
+                        fontSize="9.5"
+                        fontWeight="700"
+                        fill={isHovered ? '#B8860B' : '#8C6819'}
+                      >
+                        {p.pages}p
+                      </text>
+                    )}
+
+                    {/* X-Axis Period Label */}
+                    <text
+                      x={p.x}
+                      y={paddingTop + chartHeight + 14}
+                      textAnchor="middle"
+                      fontSize="10.5"
+                      fontWeight={isHovered ? '800' : '600'}
+                      fill={isHovered ? '#0D4A38' : '#334155'}
+                    >
+                      {p.label}
+                    </text>
+
+                    <text
+                      x={p.x}
+                      y={paddingTop + chartHeight + 26}
+                      textAnchor="middle"
+                      fontSize="9"
+                      fontWeight={isHovered ? '600' : '400'}
+                      fill={isHovered ? '#B8860B' : '#94A3B8'}
+                    >
+                      {p.date}
+                    </text>
+                  </g>
+                );
+              })}
+
+              {/* Smooth Cubic Spline Curve for Tajweed Accuracy */}
+              <path
+                d={smoothLinePath}
+                fill="none"
+                stroke="#0D4A38"
+                strokeWidth="2.75"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+
+              {/* Line Data Point Dots & Interactive Hover Badges */}
+              {points.map((p) => {
+                const isHovered = hoveredIndex === p.index;
+
+                return (
+                  <g
+                    key={`point-${p.index}`}
+                    onMouseEnter={() => setHoveredIndex(p.index)}
+                    onMouseLeave={() => setHoveredIndex(null)}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <circle
+                      cx={p.x}
+                      cy={p.lineY}
+                      r={isHovered ? '5.5' : '3.5'}
+                      fill={isHovered ? '#0D4A38' : '#FFFFFF'}
+                      stroke={isHovered ? '#D4AF37' : '#0D4A38'}
+                      strokeWidth={isHovered ? '2.5' : '2'}
+                    />
+
+                    {/* Precision Tooltip Badge on Hover */}
+                    {isHovered && (
+                      <g>
+                        <rect
+                          x={p.x - 28}
+                          y={p.lineY - 24}
+                          width="56"
+                          height="18"
+                          rx="4"
+                          fill="#0D4A38"
+                          stroke="#D4AF37"
+                          strokeWidth="1"
+                        />
+                        <text
+                          x={p.x}
+                          y={p.lineY - 12}
+                          textAnchor="middle"
+                          fontSize="9.5"
+                          fontWeight="800"
+                          fill="#FFFFFF"
+                        >
+                          {p.accuracy}% Acc
+                        </text>
+                      </g>
+                    )}
+                  </g>
+                );
+              })}
+            </svg>
+          </div>
+        </div>
+
+        {/* RIGHT COLUMN: Interactive Donut / Pie Chart (Curriculum Focus Allocation) */}
+        <div
+          style={{
+            background: '#FAF8F3',
+            border: '1px solid #EEDFB8',
+            borderRadius: '12px',
+            padding: '12px 14px 10px',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            gap: '8px',
+          }}
+        >
+          {/* Header of Donut Section with Tab Switcher */}
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: '6px',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span
+                style={{
+                  width: '20px',
+                  height: '20px',
+                  borderRadius: '5px',
+                  background: '#FDF8EC',
+                  border: '1px solid #D4AF37',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#B8860B',
+                }}
+              >
+                <Icon name="pie-chart" size={12} />
+              </span>
+              <div>
+                <span
+                  style={{
+                    fontSize: '11.5px',
+                    fontWeight: '700',
+                    color: '#0D4A38',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.4px',
+                    display: 'block',
+                    lineHeight: '1.2',
+                  }}
+                >
+                  Curriculum Effort Split
+                </span>
+                <span style={{ fontSize: '10px', color: '#64748B' }}>
+                  {hoveredIndex !== null ? `Focus on ${activePoint.period}` : 'Weekly Hifz allocation'}
+                </span>
+              </div>
+            </div>
+
+            {/* Toggle between Curriculum and Quality Breakdown */}
+            <div
+              style={{
+                display: 'inline-flex',
+                background: '#FFFFFF',
+                borderRadius: '6px',
+                padding: '2px',
+                border: '1px solid #EEDFB8',
+              }}
+            >
+              <button
+                type="button"
+                onClick={() => setPieMode('curriculum')}
+                style={{
+                  border: 'none',
+                  background: pieMode === 'curriculum' ? '#0D4A38' : 'transparent',
+                  color: pieMode === 'curriculum' ? '#FFFFFF' : '#64748B',
+                  padding: '3px 8px',
+                  borderRadius: '4px',
+                  fontSize: '10px',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease',
+                }}
+              >
+                Curriculum
+              </button>
+              <button
+                type="button"
+                onClick={() => setPieMode('quality')}
+                style={{
+                  border: 'none',
+                  background: pieMode === 'quality' ? '#0D4A38' : 'transparent',
+                  color: pieMode === 'quality' ? '#FFFFFF' : '#64748B',
+                  padding: '3px 8px',
+                  borderRadius: '4px',
+                  fontSize: '10px',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease',
+                }}
+              >
+                Quality
+              </button>
+            </div>
+          </div>
+
+          {/* Donut Chart Visual & Dynamic Center Readout */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '12px',
+              padding: '4px 0',
+            }}
+          >
+            <div style={{ position: 'relative', width: '135px', height: '135px', flexShrink: 0 }}>
+              <svg viewBox="0 0 180 180" style={{ width: '100%', height: '100%', overflow: 'visible' }}>
+                {computedSlices.map((slice) => {
+                  const isHovered = hoveredSlice === slice.index;
+                  const currentOuterR = isHovered ? donutOuterR + 4 : donutOuterR;
+                  const currentInnerR = isHovered ? donutInnerR - 2 : donutInnerR;
+
+                  return (
+                    <g
+                      key={`slice-${slice.id}`}
+                      onMouseEnter={() => setHoveredSlice(slice.index)}
+                      onMouseLeave={() => setHoveredSlice(null)}
+                      style={{ cursor: 'pointer', transition: 'all 0.2s ease' }}
+                    >
+                      <path
+                        d={getDonutSlicePath(
+                          donutCx,
+                          donutCy,
+                          currentInnerR,
+                          currentOuterR,
+                          slice.startAngle,
+                          slice.endAngle
+                        )}
+                        fill={slice.color}
+                        stroke="#FAF8F3"
+                        strokeWidth="2.5"
+                        style={{
+                          filter: isHovered ? 'drop-shadow(0 2px 6px rgba(13,74,56,0.25))' : 'none',
+                        }}
+                      />
+                    </g>
+                  );
+                })}
+
+                {/* Central Readout in Donut Hole */}
+                <g pointerEvents="none">
+                  {activeSliceItem ? (
+                    <>
+                      <text
+                        x={donutCx}
+                        y={donutCy - 11}
+                        textAnchor="middle"
+                        fontSize="8.5"
+                        fontWeight="800"
+                        fill={activeSliceItem.color}
+                        letterSpacing="0.4"
+                      >
+                        {activeSliceItem.shortLabel.toUpperCase()}
+                      </text>
+                      <text
+                        x={donutCx}
+                        y={donutCy + 7}
+                        textAnchor="middle"
+                        fontSize="18"
+                        fontWeight="900"
+                        fill="#0D4A38"
+                      >
+                        {activeSliceItem.percent}%
+                      </text>
+                      <text
+                        x={donutCx}
+                        y={donutCy + 19}
+                        textAnchor="middle"
+                        fontSize="8.5"
+                        fontWeight="700"
+                        fill="#64748B"
+                      >
+                        {activeSliceItem.hours}
+                      </text>
+                    </>
+                  ) : (
+                    <>
+                      <text
+                        x={donutCx}
+                        y={donutCy - 11}
+                        textAnchor="middle"
+                        fontSize="8.5"
+                        fontWeight="700"
+                        fill="#8C6819"
+                        letterSpacing="0.4"
+                      >
+                        {pieMode === 'curriculum' ? 'TOTAL LOAD' : 'ACCURACY'}
+                      </text>
+                      <text
+                        x={donutCx}
+                        y={donutCy + 7}
+                        textAnchor="middle"
+                        fontSize="17"
+                        fontWeight="900"
+                        fill="#0D4A38"
+                      >
+                        {pieMode === 'curriculum' ? '34.5h' : `${activePoint.accuracy}%`}
+                      </text>
+                      <text
+                        x={donutCx}
+                        y={donutCy + 19}
+                        textAnchor="middle"
+                        fontSize="8.5"
+                        fontWeight="700"
+                        fill="#15664F"
+                      >
+                        {pieMode === 'curriculum' ? '100% Target' : 'Mumtaz Tier'}
+                      </text>
+                    </>
+                  )}
+                </g>
+              </svg>
+            </div>
+
+            {/* Compact Legend alongside Donut */}
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '5px',
+                flex: 1,
+                minWidth: '130px',
+              }}
+            >
+              {computedSlices.map((slice) => {
+                const isHovered = hoveredSlice === slice.index;
+
+                return (
+                  <div
+                    key={`legend-${slice.id}`}
+                    onMouseEnter={() => setHoveredSlice(slice.index)}
+                    onMouseLeave={() => setHoveredSlice(null)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      padding: '4px 8px',
+                      borderRadius: '6px',
+                      background: isHovered ? slice.lightBg : '#FFFFFF',
+                      border: `1px solid ${isHovered ? slice.color : '#F1EAD8'}`,
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease',
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0 }}>
+                      <span
+                        style={{
+                          width: '8px',
+                          height: '8px',
+                          borderRadius: '2.5px',
+                          background: slice.color,
+                          flexShrink: 0,
+                        }}
+                      />
+                      <span
+                        style={{
+                          fontSize: '11px',
+                          fontWeight: isHovered ? '800' : '600',
+                          color: isHovered ? '#0D4A38' : '#334155',
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                        }}
+                        title={slice.desc}
+                      >
+                        {slice.shortLabel}
+                      </span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
+                      <span
+                        style={{
+                          fontSize: '11px',
+                          fontWeight: '800',
+                          color: slice.color,
+                        }}
+                      >
+                        {slice.percent}%
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Smart Space KPI Matrix - Balanced 4-Card Executive Row (Solid Colors Only) */}
+      {/* =====================================================================
+          SMART SPACE KPI MATRIX — BALANCED 4-CARD EXECUTIVE ROW
+          ===================================================================== */}
       <div
         style={{
           display: 'grid',
@@ -636,4 +1151,3 @@ export default function StudentProgressComboChart({
     </div>
   );
 }
-

@@ -18,10 +18,13 @@ import StudentParentProgressView from '../../components/StudentParentProgressVie
 import DigitalQuranReader from '../../components/DigitalQuranReader';
 import ParentTeacherReviewModal from '../../components/ParentTeacherReviewModal';
 import TuitionInvoicesPageView from '../../components/TuitionInvoicesPageView';
+import TeacherDashboard from '../../components/TeacherDashboard';
+import TajweedToolsPageView from '../../components/TajweedToolsPageView';
 
 const mapSlugToTab = (slug) => {
   if (!slug) return null;
   const s = slug.toLowerCase();
+  if (s === 'teacherdashboard' || s === 'teacher' || s === 'teacher-dashboard' || s === 'instructor') return 'teacherdashboard';
   if (s === 'progress' || s === 'hifz') return 'progress';
   if (s === 'digital-quran' || s === 'digitalquran' || s === 'quran-studio') return 'digitalquran';
   if (s === 'curriculum' || s === 'syllabus' || s === 'modules') return 'curriculum';
@@ -34,12 +37,13 @@ const mapSlugToTab = (slug) => {
   if (s === 'profile' || s === 'account') return 'profile';
   if (s === 'reviews' || s === 'review') return 'reviews';
   if (s === 'invoices' || s === 'invoice') return 'invoices';
-  if (s === 'dictionary' || s === 'tools') return 'dictionary';
+  if (s === 'dictionary' || s === 'tools' || s === 'tajweed-tools' || s === 'tajweed') return 'dictionary';
   return s;
 };
 
 const mapTabToUrl = (tabKey) => {
   const reverseSlugMap = {
+    teacherdashboard: '/dashboard/teacher',
     progress: '/dashboard/progress',
     digitalquran: '/dashboard/digital-quran',
     curriculum: '/dashboard/curriculum',
@@ -86,7 +90,6 @@ export default function DashboardWorkspace({ initialTab }) {
     name: 'Dr. Sheikh Ahmad Al-Azhari',
     studentId: 'QI-STU-8842',
   });
-  const [isDictModalOpen, setIsDictModalOpen] = useState(resolvedInitialTab === 'dictionary');
 
   // Keep activeTab in sync if initialTab prop changes
   useEffect(() => {
@@ -95,7 +98,6 @@ export default function DashboardWorkspace({ initialTab }) {
       if (mapped) {
         setActiveTab(mapped);
         if (mapped === 'reviews') setIsReviewModalOpen(true);
-        if (mapped === 'dictionary') setIsDictModalOpen(true);
       }
     }
   }, [initialTab]);
@@ -125,9 +127,9 @@ export default function DashboardWorkspace({ initialTab }) {
         currentUserObj = data.user;
         setUser(data.user);
 
-        // If user is teacher and no explicit tab requested, default to actionboard
+        // If user is teacher and no explicit tab requested, default to teacherdashboard
         if (currentUserObj.role === 'teacher' && !initialTab) {
-          setActiveTab('actionboard');
+          setActiveTab('teacherdashboard');
         }
       } else {
         // Fallback demo student
@@ -210,8 +212,6 @@ export default function DashboardWorkspace({ initialTab }) {
     }
     if (tabKey === 'reviews') {
       setIsReviewModalOpen(true);
-    } else if (tabKey === 'dictionary') {
-      setIsDictModalOpen(true);
     } else {
       setActiveTab(tabKey);
     }
@@ -299,7 +299,9 @@ export default function DashboardWorkspace({ initialTab }) {
               <span className="crumb-root">Portal</span>
               <span className="crumb-sep">/</span>
               <span className="crumb-current">
-                {activeTab === 'actionboard'
+                {activeTab === 'teacherdashboard'
+                  ? 'Teacher Dashboard'
+                  : activeTab === 'actionboard'
                   ? 'Attendance & Lessons'
                   : activeTab === 'progress'
                   ? 'Progress'
@@ -317,6 +319,8 @@ export default function DashboardWorkspace({ initialTab }) {
                   ? 'Quizzes & Exams'
                   : activeTab === 'invoices'
                   ? 'Invoices'
+                  : activeTab === 'dictionary'
+                  ? 'Tajweed Tools'
                   : activeTab === 'catalog'
                   ? 'Courses'
                   : 'Profile & Settings'}
@@ -362,6 +366,22 @@ export default function DashboardWorkspace({ initialTab }) {
             {/* TEACHER WORKSPACE */}
           {isTeacher && (
             <>
+              {activeTab === 'teacherdashboard' && (
+                <TeacherDashboard
+                  currentUser={user}
+                  studentsList={studentsList}
+                  coursesList={coursesList}
+                  course={course}
+                  onNavigateTab={handleTabChange}
+                  onSelectStudent={(stuId) => setSelectedStudentId(stuId)}
+                  onOpenQuranForStudent={(stuId) => {
+                    setSelectedStudentId(stuId);
+                    handleTabChange('quran');
+                  }}
+                  onRefreshData={fetchDashboardData}
+                />
+              )}
+
               {activeTab === 'actionboard' && (
                 <TeacherActionBoard
                   teacherUser={user}
@@ -526,6 +546,14 @@ export default function DashboardWorkspace({ initialTab }) {
             <TuitionInvoicesPageView currentUser={user} />
           )}
 
+          {/* TAJWEED TOOLS TAB (Dedicated Page View - Not a modal) */}
+          {activeTab === 'dictionary' && (
+            <TajweedToolsPageView
+              currentUser={user}
+              onNavigateTab={handleTabChange}
+            />
+          )}
+
           {/* PROFILE TAB (Available for all roles) */}
           {activeTab === 'profile' && (
             <UserProfilePanel
@@ -553,16 +581,6 @@ export default function DashboardWorkspace({ initialTab }) {
         studentId={reviewTeacherInfo.studentId}
         onReviewSubmitted={() => {
           fetchDashboardData();
-        }}
-      />
-
-      <DigitalToolsDictionary
-        isOpen={isDictModalOpen}
-        onClose={() => {
-          setIsDictModalOpen(false);
-          if (activeTab === 'dictionary') {
-            handleTabChange(isTeacher ? 'actionboard' : 'progress');
-          }
         }}
       />
     </div>

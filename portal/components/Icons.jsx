@@ -24,6 +24,17 @@ export function Icon({
   };
 
   switch (name) {
+    case 'dashboard':
+    case 'layout-dashboard':
+      return (
+        <svg {...props} viewBox="0 0 24 24">
+          <rect width="7" height="9" x="3" y="3" rx="1" />
+          <rect width="7" height="5" x="14" y="3" rx="1" />
+          <rect width="7" height="9" x="14" y="12" rx="1" />
+          <rect width="7" height="5" x="3" y="16" rx="1" />
+        </svg>
+      );
+
     // ==========================================
     // BOOKS & SCRIPTURE
     // ==========================================
@@ -141,6 +152,15 @@ export function Icon({
           <line x1="12" x2="12" y1="20" y2="10" />
           <line x1="18" x2="18" y1="20" y2="4" />
           <line x1="6" x2="6" y1="20" y2="16" />
+        </svg>
+      );
+
+    case 'pie-chart':
+    case 'donut':
+      return (
+        <svg {...props} viewBox="0 0 24 24">
+          <path d="M21.21 15.89A10 10 0 1 1 8 2.83" />
+          <path d="M22 12A10 10 0 0 0 12 2v10z" />
         </svg>
       );
 
