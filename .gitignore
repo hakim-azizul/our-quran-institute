@@ -5,6 +5,8 @@ node_modules/
 .pnp.js
 
 # Production & Build outputs
+.next/
+*/.next/
 dist/
 */dist/
 dist-ssr/
