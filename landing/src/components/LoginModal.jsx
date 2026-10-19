@@ -241,13 +241,44 @@ export default function LoginModal({ isOpen, onClose }) {
             {/* Support and Admissions Note */}
             <div className="portal-help-note">
               <span>New student or haven't received login credentials?</span>
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'center', marginTop: '6px' }}>
+                <a
+                  href={`${process.env.NEXT_PUBLIC_PORTAL_URL || 'http://localhost:3001'}/register`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="portal-admissions-link"
+                  style={{ color: '#FFDF85', fontWeight: '700' }}
+                >
+                  Enroll &amp; Register Online ↗
+                </a>
+                <span style={{ opacity: 0.5 }}>•</span>
+                <a
+                  href="https://wa.me/201094714943"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="portal-admissions-link"
+                >
+                  Admissions on WhatsApp
+                </a>
+              </div>
+            </div>
+
+            <div style={{ textAlign: 'center', marginTop: '12px' }}>
               <a
-                href="https://wa.me/201094714943"
+                href={`${process.env.NEXT_PUBLIC_PORTAL_URL || 'http://localhost:3001'}/login`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="portal-admissions-link"
+                style={{
+                  fontSize: '12px',
+                  color: 'rgba(251, 246, 233, 0.75)',
+                  textDecoration: 'none',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                }}
               >
-                Contact Admissions Desk on WhatsApp
+                <span>Open Sanctuary Portal full window</span>
+                <span style={{ color: '#C5A45A' }}>↗</span>
               </a>
             </div>
           </>

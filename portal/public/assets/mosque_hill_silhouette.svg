@@ -1,0 +1,72 @@
+<svg viewBox="0 0 380 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="hillGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8DC63F"/>
+      <stop offset="60%" stop-color="#73A92A"/>
+      <stop offset="100%" stop-color="#55861B"/>
+    </linearGradient>
+    <linearGradient id="mosqueGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#B2E05E"/>
+      <stop offset="60%" stop-color="#8EC63E"/>
+      <stop offset="100%" stop-color="#6DA229"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Mosque Architectural Skyline -->
+  <g fill="url(#mosqueGradient)">
+    <!-- Far-Left Slender Minaret -->
+    <rect x="24" y="55" width="6" height="65" rx="1.5"/>
+    <polygon points="27,32 23,55 31,55"/>
+    <circle cx="27" cy="30" r="2.2"/>
+    <rect x="21" y="70" width="12" height="3" rx="1"/>
+
+    <!-- Main Left Tower Minaret -->
+    <rect x="48" y="40" width="9" height="80" rx="2"/>
+    <polygon points="52.5,14 47,40 58,40"/>
+    <circle cx="52.5" cy="12" r="3"/>
+    <rect x="44" y="60" width="17" height="4" rx="1.2"/>
+    <rect x="45" y="85" width="15" height="3.5" rx="1.2"/>
+
+    <!-- Secondary Minaret Tower -->
+    <rect x="82" y="52" width="7.5" height="68" rx="2"/>
+    <polygon points="85.75,30 81,52 90.5,52"/>
+    <circle cx="85.75" cy="28" r="2.5"/>
+    <rect x="79" y="72" width="13.5" height="3" rx="1"/>
+
+    <!-- Left Flanking Dome -->
+    <path d="M 100 100 C 100 72, 126 72, 126 100 Z"/>
+    <polygon points="113,64 111.5,72 114.5,72"/>
+    <circle cx="113" cy="62" r="2"/>
+
+    <!-- Central Grand Dome -->
+    <path d="M 132 100 C 132 42, 196 42, 196 100 Z"/>
+    <path d="M 164 36 L 164 22" stroke="url(#mosqueGradient)" stroke-width="2.5"/>
+    <circle cx="164" cy="20" r="3"/>
+    <!-- Crescent Finial -->
+    <path d="M 164.5 13 A 4.5 4.5 0 1 0 164.5 22 A 3.2 3.2 0 1 1 164.5 13 Z"/>
+    <!-- Dome Base Arched Accents -->
+    <rect x="136" y="92" width="56" height="8" rx="1.5" fill="#669D25" opacity="0.6"/>
+
+    <!-- Right Flanking Dome -->
+    <path d="M 202 105 C 202 78, 230 78, 230 105 Z"/>
+    <polygon points="216,70 214.5,78 217.5,78"/>
+    <circle cx="216" cy="68" r="2"/>
+
+    <!-- Main Right Tower Minaret -->
+    <rect x="242" y="38" width="9" height="85" rx="2"/>
+    <polygon points="246.5,12 241,38 252,38"/>
+    <circle cx="246.5" cy="10" r="3"/>
+    <rect x="238" y="58" width="17" height="4" rx="1.2"/>
+    <rect x="239" y="82" width="15" height="3.5" rx="1.2"/>
+
+    <!-- Far-Right Slender Minaret -->
+    <rect x="268" y="58" width="6" height="65" rx="1.5"/>
+    <polygon points="271,35 267,58 275,58"/>
+    <circle cx="271" cy="33" r="2"/>
+  </g>
+
+  <!-- Rolling Forefront Hill (Layer 1) -->
+  <path d="M 0 110 Q 140 98, 270 130 T 380 180 L 0 180 Z" fill="url(#hillGradient)"/>
+  <!-- Rolling Forefront Hill (Layer 2 Shadow Accent) -->
+  <path d="M 0 128 Q 160 120, 290 148 T 380 180 L 0 180 Z" fill="#4C7816" opacity="0.4"/>
+</svg>

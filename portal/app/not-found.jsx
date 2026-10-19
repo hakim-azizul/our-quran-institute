@@ -1,0 +1,46 @@
+import React from 'react';
+import Link from 'next/link';
+import { Icon } from '../components/Icons';
+
+export default function NotFound() {
+  return (
+    <div className="auth-page-wrapper" style={{ justifyContent: 'center', alignItems: 'center', padding: '24px' }}>
+      <div className="auth-ambient-glow" />
+      <div className="auth-trellis-bg" />
+
+      <div
+        className="auth-card"
+        style={{
+          maxWidth: '500px',
+          textAlign: 'center',
+          border: '1.5px solid var(--color-gold-primary)',
+          boxShadow: 'var(--shadow-card)',
+        }}
+      >
+        <div style={{ marginBottom: '16px' }}>
+          <Icon name="book-open" size={48} color="var(--color-green-primary)" />
+        </div>
+
+        <div className="auth-card-badge">
+          <span>404 — Page Not Found</span>
+        </div>
+
+        <h1 className="auth-card-title" style={{ fontSize: '26px', marginBottom: '8px' }}>
+          Page Not Found
+        </h1>
+
+        <p className="auth-card-subtitle" style={{ marginBottom: '24px', fontSize: '13.5px' }}>
+          The page you are looking for does not exist or has been moved.
+        </p>
+
+        <Link
+          href="/login"
+          className="btn-auth-submit"
+          style={{ textDecoration: 'none', display: 'inline-flex', width: 'auto', padding: '12px 24px' }}
+        >
+          <span>Return to Sign In</span>
+        </Link>
+      </div>
+    </div>
+  );
+}
