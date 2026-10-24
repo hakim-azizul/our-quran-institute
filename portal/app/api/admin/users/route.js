@@ -22,6 +22,8 @@ import {
   findUserById,
   updateTeacherClassRate,
   getTeacherSuccessfulClassesData,
+  setUserRole,
+  adminCreateUser,
 } from '../../../../lib/db';
 
 export const dynamic = 'force-dynamic';
@@ -205,6 +207,43 @@ export async function PATCH(request) {
         message: `Per-class rate for ${result.user.name} set to $${parsedRate.toFixed(2)}/class. Cumulative salary recalculated to $${result.salary?.totalPayable?.toFixed(2) || 0} (${result.salary?.totalClassesTaught || 0} classes × $${parsedRate.toFixed(2)}${result.salary?.bonus ? ` + $${result.salary.bonus} bonus` : ''}).`,
         user: result.user,
         salary: result.salary,
+      });
+    }
+
+    // 10. Administrator Role Assignment & Role Change
+    if (action === 'change_role' || action === 'assign_role') {
+      const { newRole } = body;
+      const targetId = userId || studentId || teacherId;
+      if (!targetId || !newRole) {
+        return NextResponse.json({ error: 'User ID and newRole (student or teacher) are required.' }, { status: 400 });
+      }
+      const updatedUser = setUserRole(targetId, newRole);
+      return NextResponse.json({
+        success: true,
+        message: `Role for ${updatedUser.name} successfully updated to ${updatedUser.role.toUpperCase()}!`,
+        user: updatedUser,
+      });
+    }
+
+    // 11. Administrator Direct User Creation / Provisioning
+    if (action === 'create_user' || action === 'provision_user') {
+      const { name, email, password, role = 'student', mentor, ratePerClass, specialization } = body;
+      if (!name || !email || !password) {
+        return NextResponse.json({ error: 'Name, email, and password are required to create an account.' }, { status: 400 });
+      }
+      const newUser = adminCreateUser({
+        name,
+        email,
+        password,
+        role,
+        mentor,
+        ratePerClass,
+        specialization,
+      });
+      return NextResponse.json({
+        success: true,
+        message: `Successfully provisioned ${newUser.role.toUpperCase()}: ${newUser.name} (Assigned ID: ${newUser.id})!`,
+        user: newUser,
       });
     }
 

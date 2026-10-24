@@ -13,6 +13,7 @@ import AdminNewCourseModal from '../../components/AdminNewCourseModal';
 import AdminCourseCurriculumModal from '../../components/AdminCourseCurriculumModal';
 import AdminStatusFilterDropdown from '../../components/AdminStatusFilterDropdown';
 import AdminAnalyticsCharts from '../../components/AdminAnalyticsCharts';
+import AdminProvisionUserModal from '../../components/AdminProvisionUserModal';
 
 const mapAdminSlug = (slug) => {
   if (!slug) return 'analytics';
@@ -75,6 +76,7 @@ export default function AdminWorkspace({ initialTab }) {
 
   // Modals state
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
+  const [isProvisionModalOpen, setIsProvisionModalOpen] = useState(false);
   const [selectedStudentForAssign, setSelectedStudentForAssign] = useState(null);
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
 
@@ -222,6 +224,27 @@ export default function AdminWorkspace({ initialTab }) {
         fetchAdminData();
       } else {
         alert(data.error || 'Failed to update status.');
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleChangeUserRole = async (userId, newRole) => {
+    if (!confirm(`Are you sure you want to change this account's role to ${newRole === 'teacher' ? 'Faculty Scholar' : 'Student'}?`)) return;
+    try {
+      setFeedbackMsg('');
+      const res = await fetch('/api/admin/users', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, newRole, action: 'change_role' }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setFeedbackMsg(data.message);
+        fetchAdminData();
+      } else {
+        alert(data.error || 'Failed to update user role.');
       }
     } catch (err) {
       console.error(err);
@@ -698,14 +721,25 @@ export default function AdminWorkspace({ initialTab }) {
                     Approve teacher, student, and guardian accounts, change roles, and assign faculty mentors.
                   </p>
                 </div>
-                <button
-                  type="button"
-                  className="btn-primary-action"
-                  onClick={() => setIsAssignModalOpen(true)}
-                >
-                  <Icon name="link" size={14} style={{ marginRight: 6 }} />
-                  <span>Create / Change Teacher-Student Assignment</span>
-                </button>
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                  <button
+                    type="button"
+                    className="btn-primary-action"
+                    style={{ background: '#0D4A38', borderColor: '#D4AF37' }}
+                    onClick={() => setIsProvisionModalOpen(true)}
+                  >
+                    <Icon name="user-plus" size={14} style={{ marginRight: 6 }} />
+                    <span>Provision User (Assign Role)</span>
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-primary-action"
+                    onClick={() => setIsAssignModalOpen(true)}
+                  >
+                    <Icon name="link" size={14} style={{ marginRight: 6 }} />
+                    <span>Assign Faculty Mentor</span>
+                  </button>
+                </div>
               </div>
 
               {/* Filters Toolbar */}
@@ -734,13 +768,6 @@ export default function AdminWorkspace({ initialTab }) {
                     onClick={() => setRoleFilter('student')}
                   >
                     Students ({usersList.filter((u) => u.role === 'student').length})
-                  </button>
-                  <button
-                    type="button"
-                    className={`filter-pill ${roleFilter === 'parent' ? 'active' : ''}`}
-                    onClick={() => setRoleFilter('parent')}
-                  >
-                    Parents / Guardians ({usersList.filter((u) => u.role === 'parent').length})
                   </button>
                   <button
                     type="button"
@@ -1036,6 +1063,23 @@ export default function AdminWorkspace({ initialTab }) {
 
                                 {user.role !== 'admin' && (
                                   <>
+                                    <button
+                                      type="button"
+                                      className="btn-action-assign"
+                                      style={{
+                                        fontSize: '11px',
+                                        padding: '4px 8px',
+                                        background: user.role === 'teacher' ? '#EFF6FF' : '#F0FDF4',
+                                        color: user.role === 'teacher' ? '#1D4ED8' : '#166534',
+                                        borderColor: user.role === 'teacher' ? '#93C5FD' : '#86EFAC',
+                                      }}
+                                      onClick={() => handleChangeUserRole(user.id, user.role === 'teacher' ? 'student' : 'teacher')}
+                                      title={`Assign / change role to ${user.role === 'teacher' ? 'Student' : 'Scholar'}`}
+                                    >
+                                      <Icon name="refresh-cw" size={11} style={{ marginRight: 3 }} />
+                                      <span>Make {user.role === 'teacher' ? 'Student' : 'Scholar'}</span>
+                                    </button>
+
                                     <button
                                       type="button"
                                       className="btn-action-toggle"
@@ -1988,6 +2032,14 @@ export default function AdminWorkspace({ initialTab }) {
         teachers={verifiedTeachersList}
         initialStudentId={selectedStudentForAssign}
         onAssignmentComplete={fetchAdminData}
+      />
+
+      {/* Admin User Provisioning with Assigned Role Modal */}
+      <AdminProvisionUserModal
+        isOpen={isProvisionModalOpen}
+        onClose={() => setIsProvisionModalOpen(false)}
+        onUserProvisioned={fetchAdminData}
+        teachers={verifiedTeachersList}
       />
 
       {/* Tuition Invoice & Receipt Modal */}

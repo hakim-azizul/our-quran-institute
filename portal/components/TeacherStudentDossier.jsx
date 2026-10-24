@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Icon } from './Icons';
 import TeacherStudentBehaviorCharts from './TeacherStudentBehaviorCharts';
+import TeacherBadgeApprovalPanel from './TeacherBadgeApprovalPanel';
 
 export default function TeacherStudentDossier({
   currentUser,
@@ -687,6 +688,31 @@ export default function TeacherStudentDossier({
             >
               <Icon name="edit" size={15} /> Scholar Guidance Notes
             </button>
+
+            <button
+              type="button"
+              onClick={() => setInnerTab('badges')}
+              className="btn-table-action"
+              style={{
+                padding: '9px 18px',
+                fontSize: '13.5px',
+                fontWeight: '700',
+                borderRadius: '10px',
+                background: innerTab === 'badges' ? 'var(--color-green-primary)' : 'var(--color-white)',
+                color: innerTab === 'badges' ? '#FFDF85' : 'var(--text-body)',
+                borderColor: innerTab === 'badges' ? '#D4AF37' : 'var(--border-light)',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+              }}
+              id="tab-teacher-badges-approval"
+            >
+              <Icon name="award" size={15} color={innerTab === 'badges' ? '#FFDF85' : '#D4AF37'} />
+              <span>গেমিফাইড ব্যাজ অনুমোদন (Badges &amp; Sanad)</span>
+              <span style={{ background: '#D4AF37', color: '#0D4A38', fontSize: '10.5px', fontWeight: '800', padding: '1px 6px', borderRadius: '999px' }}>
+                Hybrid
+              </span>
+            </button>
           </div>
 
           {/* ================= TAB 1: COURSE MATERIAL & LESSON PROGRESS ================= */}
@@ -1186,6 +1212,15 @@ export default function TeacherStudentDossier({
               student={activeStudent}
               mistakes={studentMistakes}
               onOpenQuran={onOpenQuranForStudent}
+            />
+          )}
+
+          {/* ================= TAB 6: GAMIFIED BADGES & SANAD APPROVAL (HYBRID) ================= */}
+          {innerTab === 'badges' && (
+            <TeacherBadgeApprovalPanel
+              student={activeStudent}
+              currentUser={currentUser}
+              onBadgeUpdated={onRefreshData}
             />
           )}
         </div>

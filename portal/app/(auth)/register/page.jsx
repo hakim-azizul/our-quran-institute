@@ -4,13 +4,11 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import AuthNavbar from '../../../components/AuthNavbar';
-import RoleSelector from '../../../components/RoleSelector';
-import TeacherRegisterFields from '../../../components/TeacherRegisterFields';
 import { Icon } from '../../../components/Icons';
 
 export default function RegisterPage() {
   const router = useRouter();
-  const [role, setRole] = useState('student'); // 'student' | 'teacher'
+  const [selectedRole, setSelectedRole] = useState('student'); // 'student' or 'teacher'
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -19,15 +17,27 @@ export default function RegisterPage() {
 
   // Form State
   const [formData, setFormData] = useState({
+    // Common
     name: '',
     email: '',
+    phone: '',
     password: '',
     confirmPassword: '',
-    // Teacher fields
-    sanadCertification: '',
-    qiraat: 'Hafs ‘an ‘Asim',
-    yearsExperience: '3-5 years',
-    specialization: '',
+
+    // Student specific
+    targetGoal: 'Hifz Memorization & Sanad',
+    tajweedLevel: 'Beginner (Learning letters and Noorani Qaida)',
+    studentDivision: 'brothers',
+
+    // Teacher specific
+    honorific: 'فضيلة الشيخ / Sheikh',
+    teacherDivision: 'brothers',
+    specialization: 'Hifz Memorization & Sanad',
+    credentials: 'Ph.D. / Sanad in Quranic Sciences (Al-Azhar / Madinah / Befaq)',
+    sanadCertification: 'Connected Chain back to the Prophet ﷺ (Sanad Mutawattir)',
+    yearsExperience: '5+ years',
+    ratePerClass: '30',
+    bio: '',
   });
 
   const handleInputChange = (e) => {
@@ -35,50 +45,72 @@ export default function RegisterPage() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleRoleChange = (newRole) => {
-    setRole(newRole);
-    setErrorMsg('');
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMsg('');
     setSuccessMsg('');
 
-    if (formData.password !== formData.confirmPassword) {
-      setErrorMsg('Passwords do not match. Please re-enter your password.');
+    // Edge Case 1: Required validation
+    if (!formData.name.trim()) {
+      setErrorMsg('Please enter your full name.');
       return;
     }
 
+    if (!formData.email.trim()) {
+      setErrorMsg('Please enter your email address or mobile phone number.');
+      return;
+    }
+
+    // Edge Case 2: Password mismatch
+    if (formData.password !== formData.confirmPassword) {
+      setErrorMsg('Passwords do not match. Please verify both password fields.');
+      return;
+    }
+
+    // Edge Case 3: Password length
     if (formData.password.length < 6) {
       setErrorMsg('Password must be at least 6 characters long.');
       return;
     }
 
+    // Edge Case 4: Terms agreement
     if (!agreedTerms) {
-      setErrorMsg('Please agree to the Institute Honor Code and Learning Terms.');
+      setErrorMsg('Please agree to the Institute Honor Code and Learning Terms to proceed.');
       return;
     }
 
     setIsSubmitting(true);
 
     try {
+      const payload = {
+        role: selectedRole,
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        phone: formData.phone.trim(),
+        password: formData.password,
+        ...(selectedRole === 'student'
+          ? {
+              targetGoal: formData.targetGoal,
+              tajweedLevel: formData.tajweedLevel,
+              division: formData.studentDivision,
+            }
+          : {
+              honorific: formData.honorific,
+              division: formData.teacherDivision,
+              specialization: formData.specialization,
+              credentials: formData.credentials,
+              sanadCertification: formData.sanadCertification,
+              yearsExperience: formData.yearsExperience,
+              ratePerClass: Number(formData.ratePerClass) || 25,
+              hourlyRate: Number(formData.ratePerClass) || 25,
+              bio: formData.bio,
+            }),
+      };
+
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          role,
-          name: formData.name,
-          email: formData.email,
-          password: formData.password,
-          // Teacher fields (only submitted if teacher)
-          ...(role === 'teacher' && {
-            sanadCertification: formData.sanadCertification,
-            qiraat: formData.qiraat,
-            yearsExperience: formData.yearsExperience,
-            specialization: formData.specialization,
-          }),
-        }),
+        body: JSON.stringify(payload),
       });
 
       const data = await res.json();
@@ -89,16 +121,28 @@ export default function RegisterPage() {
         return;
       }
 
+      // Teacher Registration: Academic verification message
+      if (selectedRole === 'teacher' || data.pendingApproval) {
+        setSuccessMsg(
+          `Alhamdulillah! Faculty application submitted for ${data.user.name}. Your academic credentials are under review by the Institute Administration. Redirecting to sign in...`
+        );
+        setTimeout(() => {
+          router.push(data.redirectUrl || '/login?pendingApproval=true');
+        }, 1500);
+        return;
+      }
+
+      // Student Registration: Instant token & enrollment
       setSuccessMsg(
-        `Alhamdulillah! Registration complete for ${data.user.name} (Assigned ID: ${data.user.id}). Opening your dashboard...`
+        `Alhamdulillah! Welcome to Our Quran Institute, ${data.user.name} (ID: ${data.user.id}). Opening your student dashboard...`
       );
 
       setTimeout(() => {
         router.push(data.redirectUrl || '/dashboard');
-      }, 850);
+      }, 950);
     } catch (err) {
       console.error(err);
-      setErrorMsg('Network error. Could not connect to the registration service.');
+      setErrorMsg('Network error. Could not connect to the registration service. Please verify your connection.');
       setIsSubmitting(false);
     }
   };
@@ -116,41 +160,85 @@ export default function RegisterPage() {
         <div className="auth-card auth-card-wide">
           <div className="auth-card-corner-ornament">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
 
-          {/* Header */}
+          {/* Role Switcher Tabs */}
+          <div className="auth-role-switcher-container">
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedRole('student');
+                setErrorMsg('');
+                setSuccessMsg('');
+              }}
+              className={`auth-role-tab-btn ${selectedRole === 'student' ? 'active' : ''}`}
+              id="btn-register-role-student"
+            >
+              <Icon name="award" size={17} />
+              <span>Student / Family Admission</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedRole('teacher');
+                setErrorMsg('');
+                setSuccessMsg('');
+              }}
+              className={`auth-role-tab-btn ${selectedRole === 'teacher' ? 'active' : ''}`}
+              id="btn-register-role-teacher"
+            >
+              <Icon name="book-open" size={17} />
+              <span>Teacher / Scholar Application</span>
+            </button>
+          </div>
+
+          {/* Dynamic Header */}
           <div className="auth-card-header">
             <div className="auth-card-badge">
-              <Icon name="award" size={13} color="#0D4A38" />
-              <span>Student &amp; Teacher Registration</span>
+              <Icon name={selectedRole === 'student' ? 'award' : 'shield-check'} size={13} color="#0D4A38" />
+              <span>
+                {selectedRole === 'student'
+                  ? 'Institute Student & Family Admission'
+                  : 'Faculty Accreditation & Teaching Application'}
+              </span>
             </div>
-            <h1 className="auth-card-title">Create Your Account</h1>
+            <h1 className="auth-card-title">
+              {selectedRole === 'student'
+                ? 'Register for Online Quran Learning'
+                : 'Apply for Institute Faculty & Scholarship'}
+            </h1>
             <p className="auth-card-subtitle">
-              Register for 1-on-1 online Quran classes with certified teachers and track progress in real time.
+              {selectedRole === 'student'
+                ? 'Join 1-on-1 Quran classes with certified teachers, live Tajweed feedback, and continuous progress tracking.'
+                : 'Join our global faculty of certified Huffaz & Tajweed scholars. Teach international students with verified Sanad and competitive compensation.'}
             </p>
           </div>
 
-          {/* Role Switcher (Student & Teacher Only) */}
-          <RoleSelector activeRole={role} onRoleChange={handleRoleChange} />
-
-          {/* Security Notice regarding Admin Accounts */}
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              padding: '8px 12px',
-              background: '#F0FDF4',
-              border: '1px solid #BBF7D0',
-              borderRadius: '10px',
-              fontSize: '11.5px',
-              color: '#166534',
-              marginBottom: '16px',
-            }}
-          >
-            <Icon name="shield-check" size={16} color="#166534" />
-            <span>
-              <strong>Registration Policy:</strong> Public registration is exclusively for Students and Certified Scholars. Admin accounts cannot be created online and are restricted to database configuration.
-            </span>
-          </div>
+          {/* Contextual Policy Notice */}
+          {selectedRole === 'student' ? (
+            <div className="auth-notice-card student">
+              <span style={{ marginTop: '2px', flexShrink: 0 }}>
+                <Icon name="check-circle" size={17} color="#166534" />
+              </span>
+              <div>
+                <strong>Instant Student Enrollment:</strong>
+                <div style={{ color: '#15803D', marginTop: '2px' }}>
+                  Student registrations are enrolled directly into the portal. You can choose your teacher, schedule evaluation sessions, and track your daily Hifz progress immediately.
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="auth-notice-card teacher">
+              <span style={{ marginTop: '2px', flexShrink: 0 }}>
+                <Icon name="shield-check" size={17} color="#92400E" />
+              </span>
+              <div>
+                <strong>Faculty Accreditation &amp; Sanad Review:</strong>
+                <div style={{ color: '#B45309', marginTop: '2px' }}>
+                  All scholar applications are verified by the Institute Academic Affairs committee. Once your Ijazah/Sanad credentials are confirmed, your public faculty profile goes live on the international directory.
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Alert feedback */}
           {errorMsg && (
@@ -169,11 +257,11 @@ export default function RegisterPage() {
 
           {/* Registration Form */}
           <form onSubmit={handleSubmit} className="auth-form">
-            {/* Core credentials */}
+            {/* Row 1: Name and Email/Phone */}
             <div className="form-row-two">
               <div className="form-group">
                 <label className="form-label" htmlFor="register-name">
-                  Full Name
+                  {selectedRole === 'student' ? 'Full Name of Student / Applicant' : 'Full Name of Scholar / Teacher'}
                 </label>
                 <div className="form-input-container">
                   <span className="form-input-icon">
@@ -186,7 +274,7 @@ export default function RegisterPage() {
                     required
                     value={formData.name}
                     onChange={handleInputChange}
-                    placeholder="e.g. Tariq Al-Mansoor"
+                    placeholder={selectedRole === 'student' ? 'e.g. Tariq Al-Mansoor' : 'e.g. Sheikh Dr. Ahmed Al-Azhari'}
                     className="form-input"
                   />
                 </div>
@@ -194,7 +282,7 @@ export default function RegisterPage() {
 
               <div className="form-group">
                 <label className="form-label" htmlFor="register-email">
-                  Email Address
+                  Email Address or Mobile Number
                 </label>
                 <div className="form-input-container">
                   <span className="form-input-icon">
@@ -202,18 +290,208 @@ export default function RegisterPage() {
                   </span>
                   <input
                     id="register-email"
-                    type="email"
+                    type="text"
+                    inputMode="email"
                     name="email"
                     required
                     value={formData.email}
                     onChange={handleInputChange}
-                    placeholder="name@quraninstitute.org"
+                    placeholder="name@example.com or 017XXXXXXXX"
                     className="form-input"
                   />
                 </div>
               </div>
             </div>
 
+            {/* Row 2: Phone & Division / Program */}
+            <div className="form-row-two">
+              <div className="form-group">
+                <label className="form-label" htmlFor="register-phone">
+                  Phone / WhatsApp Number (Required for Class Sync)
+                </label>
+                <div className="form-input-container">
+                  <span className="form-input-icon">
+                    <Icon name="phone" size={17} color="#0D4A38" />
+                  </span>
+                  <input
+                    id="register-phone"
+                    type="text"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    placeholder="+880 1711-XXXXXX or UK/USA number"
+                    className="form-input"
+                  />
+                </div>
+              </div>
+
+              {selectedRole === 'student' ? (
+                <div className="form-group">
+                  <label className="form-label" htmlFor="register-goal">
+                    Learning Goal &amp; Program
+                  </label>
+                  <div className="form-input-container">
+                    <select
+                      id="register-goal"
+                      name="targetGoal"
+                      value={formData.targetGoal}
+                      onChange={handleInputChange}
+                      className="form-input form-select"
+                    >
+                      <option value="Hifz Memorization & Sanad">Hifz Memorization &amp; Sanad (হিফজ ও সনদ)</option>
+                      <option value="Quran Reading Foundation & Noorani Qaida">Quran Reading Foundation &amp; Noorani Qaida (নূরানী কায়দা)</option>
+                      <option value="Tajweed Rules & Arabic Makharij">Tajweed Rules &amp; Arabic Makharij (তাজবীদ ও মাখরাজ)</option>
+                      <option value="Advanced 10 Qira’at Mastery">Advanced 10 Qira’at Mastery (দশ ক্বিরাআত)</option>
+                      <option value="Kids Quran & Adab Circle">Kids Quran &amp; Adab Circle (ছোটদের কোরআন)</option>
+                    </select>
+                  </div>
+                </div>
+              ) : (
+                <div className="form-group">
+                  <label className="form-label" htmlFor="register-teacher-division">
+                    Faculty Division
+                  </label>
+                  <div className="form-input-container">
+                    <select
+                      id="register-teacher-division"
+                      name="teacherDivision"
+                      value={formData.teacherDivision}
+                      onChange={handleInputChange}
+                      className="form-input form-select"
+                    >
+                      <option value="brothers">Brothers Section (পুরুষ শিক্ষক শাখা)</option>
+                      <option value="sisters">Sisters Section (মহিলা শিক্ষিকা শাখা)</option>
+                    </select>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Role-Specific Row: Student Details vs Teacher Credentials */}
+            {selectedRole === 'student' ? (
+              <div className="form-row-two">
+                <div className="form-group">
+                  <label className="form-label" htmlFor="register-student-division">
+                    Preferred Division
+                  </label>
+                  <div className="form-input-container">
+                    <select
+                      id="register-student-division"
+                      name="studentDivision"
+                      value={formData.studentDivision}
+                      onChange={handleInputChange}
+                      className="form-input form-select"
+                    >
+                      <option value="brothers">Brothers Section (Male Scholar)</option>
+                      <option value="sisters">Sisters Section (Female Scholar)</option>
+                      <option value="kids">Kids Quran Circle (Under 12)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label" htmlFor="register-tajweed-level">
+                    Current Quranic Background
+                  </label>
+                  <div className="form-input-container">
+                    <select
+                      id="register-tajweed-level"
+                      name="tajweedLevel"
+                      value={formData.tajweedLevel}
+                      onChange={handleInputChange}
+                      className="form-input form-select"
+                    >
+                      <option value="Beginner (Learning letters and Noorani Qaida)">Beginner (Learning Arabic letters / Noorani Qaida)</option>
+                      <option value="Intermediate (Can read Mushaf with pauses)">Intermediate (Can read Mushaf, needs Tajweed polishing)</option>
+                      <option value="Advanced (Hifz candidate / seeking Sanad)">Advanced (Memorizing Juz / seeking Ijazah &amp; Sanad)</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="form-row-two">
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="register-specialization">
+                      Primary Teaching Specialization
+                    </label>
+                    <div className="form-input-container">
+                      <select
+                        id="register-specialization"
+                        name="specialization"
+                        value={formData.specialization}
+                        onChange={handleInputChange}
+                        className="form-input form-select"
+                      >
+                        <option value="Hifz Memorization & Sanad">Hifz Memorization &amp; Sanad (হিফজ ও সনদ)</option>
+                        <option value="Tajweed & Acoustic Makharij">Tajweed &amp; Acoustic Makharij (তাজবীদ ও মাখরাজ)</option>
+                        <option value="Ten Qira’at Ijazah">Ten Qira’at Ijazah (দশ ক্বিরাআত ইজাজাহ)</option>
+                        <option value="Quranic Arabic & Waqf Theory">Quranic Arabic &amp; Waqf Theory (কোরআনিক আরবি)</option>
+                        <option value="Noorani Qaida for Kids">Noorani Qaida for Kids (ছোটদের নূরানী কায়দা)</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="register-experience">
+                      Years of Teaching Experience
+                    </label>
+                    <div className="form-input-container">
+                      <select
+                        id="register-experience"
+                        name="yearsExperience"
+                        value={formData.yearsExperience}
+                        onChange={handleInputChange}
+                        className="form-input form-select"
+                      >
+                        <option value="2+ years">2+ Years Active Instruction</option>
+                        <option value="5+ years">5+ Years Academic Instruction</option>
+                        <option value="10+ years">10+ Years Senior Instruction</option>
+                        <option value="15+ years">15+ Years Master Scholar</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="form-row-two">
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="register-credentials">
+                      Highest Academic Degree / Institution
+                    </label>
+                    <div className="form-input-container">
+                      <input
+                        id="register-credentials"
+                        type="text"
+                        name="credentials"
+                        value={formData.credentials}
+                        onChange={handleInputChange}
+                        placeholder="e.g. Al-Azhar, Islamic Univ Madinah, Befaq"
+                        className="form-input form-input-noicon"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="register-sanad">
+                      Sanad / Ijazah Status
+                    </label>
+                    <div className="form-input-container">
+                      <input
+                        id="register-sanad"
+                        type="text"
+                        name="sanadCertification"
+                        value={formData.sanadCertification}
+                        onChange={handleInputChange}
+                        placeholder="e.g. Connected Chain in Hafs ‘an ‘Asim"
+                        className="form-input form-input-noicon"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* Password Row */}
             <div className="form-row-two">
               <div className="form-group">
                 <label className="form-label" htmlFor="register-password">
@@ -266,11 +544,6 @@ export default function RegisterPage() {
               </div>
             </div>
 
-            {/* Scholar / Teacher Credential Fields */}
-            {role === 'teacher' && (
-              <TeacherRegisterFields formData={formData} onChange={handleInputChange} />
-            )}
-
             {/* Agreement Terms */}
             <div className="form-checkbox-row">
               <input
@@ -281,22 +554,27 @@ export default function RegisterPage() {
                 className="form-checkbox"
               />
               <label htmlFor="portal-terms-agree" className="form-checkbox-text">
-                I agree to the Institute Terms of Service and Code of Conduct.
+                I agree to the Institute Terms of Service, Academic Integrity Honor Code, and Privacy Policy.
               </label>
             </div>
 
+            {/* Submit Button */}
             <button
               type="submit"
               disabled={isSubmitting}
               className="btn-auth-submit"
+              id="btn-complete-registration"
             >
               {isSubmitting ? (
-                <span>Registering Account...</span>
+                <span>Processing Application...</span>
+              ) : selectedRole === 'student' ? (
+                <>
+                  <span>Complete Student Registration</span>
+                  <Icon name="arrow-right" size={16} color="#FFDF85" />
+                </>
               ) : (
                 <>
-                  <span>
-                    Complete Registration as {role === 'student' ? 'Student' : 'Teacher'}
-                  </span>
+                  <span>Submit Faculty Scholar Application</span>
                   <Icon name="arrow-right" size={16} color="#FFDF85" />
                 </>
               )}
@@ -306,7 +584,7 @@ export default function RegisterPage() {
           {/* Footer */}
           <div className="auth-card-footer">
             <p className="auth-footer-prompt">
-              Already have an account?
+              Already have an account?{' '}
               <Link href="/login" className="auth-footer-link">
                 Sign In
               </Link>

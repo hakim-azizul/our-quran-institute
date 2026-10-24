@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Icon } from './Icons';
 
 export default function UserProfilePanel({
@@ -21,6 +21,39 @@ export default function UserProfilePanel({
   const [emailAlerts, setEmailAlerts] = useState(true);
   const [smsAlerts, setSmsAlerts] = useState(true);
 
+  // Teacher-Specific Rich Scholarly Portfolio States
+  const [honorific, setHonorific] = useState(user?.honorific || 'فضيلة الشيخ د. أحمد الأزهري');
+  const [title, setTitle] = useState(user?.title || user?.role || 'Dean of Quranic Studies & Ten Qira\'at Master');
+  const [category, setCategory] = useState(user?.category || 'hifz');
+  const [division, setDivision] = useState(user?.division || 'brothers');
+  const [bio, setBio] = useState(user?.bio || 'A distinguished graduate and former lecturer at the Faculty of Quranic Recitations at Al-Azhar University. Guiding international students from novice reciters to certified Ijazah holders with extraordinary patience, precision, and classical adab.');
+  const [teachingPhilosophy, setTeachingPhilosophy] = useState(user?.teachingPhilosophy || 'Knowledge of the Noble Quran is light passed from chest to chest. We cultivate phonetic perfection through patient, gentle guidance, ensuring every student develops an intimate, reverent bond with the Sacred Words.');
+  const [credentials, setCredentials] = useState(user?.credentials || 'Ph.D. in Quranic Sciences, Al-Azhar University, Cairo');
+  const [sanad, setSanad] = useState(user?.sanad || user?.sanadCertification || 'Connected Chain in Ten Minor & Major Qira\'at (Shatibiyyah & Tayyibah) back to the Prophet ﷺ (28 links unbroken)');
+  const [specialties, setSpecialties] = useState(
+    user?.specialties || ['Ten Qira\'at Ijazah', 'Hifz & Itqan', 'Waqf & Ibtida Theory', 'Al-Jazariyyah Matn']
+  );
+  const [languages, setLanguages] = useState(user?.languages || 'Arabic (Native), English (Fluent)');
+  const [experience, setExperience] = useState(user?.experience || user?.yearsExperience || '18+ Years Academic & Sanad Instruction');
+  const [graduates, setGraduates] = useState(user?.graduates || '180+ Sanad & Ijazah Recipients');
+  const [ratePerClass, setRatePerClass] = useState(user?.ratePerClass || user?.hourlyRate || 35);
+  const [location, setLocation] = useState(user?.location || 'Cairo, Egypt');
+  const [certificates, setCertificates] = useState(user?.certificates || []);
+
+  // Modal / Form state for Adding Certificate
+  const [showCertForm, setShowCertForm] = useState(false);
+  const [newCert, setNewCert] = useState({
+    title: '',
+    issuer: '',
+    year: '2023',
+    degreeLevel: 'Ijazah Sanad',
+    grade: 'Mumtaz (Distinction)',
+    credentialId: '',
+    verificationUrl: '',
+    description: '',
+  });
+  const [newSpecialtyInput, setNewSpecialtyInput] = useState('');
+
   const [saving, setSaving] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
@@ -32,6 +65,29 @@ export default function UserProfilePanel({
   const isParent = user?.role === 'parent';
   const isAdmin = user?.role === 'admin';
 
+  // Synchronize state when user prop updates
+  useEffect(() => {
+    if (user) {
+      if (user.name) setName(user.name);
+      if (user.phone) setPhone(user.phone);
+      if (user.honorific) setHonorific(user.honorific);
+      if (user.title) setTitle(user.title);
+      if (user.category) setCategory(user.category);
+      if (user.division) setDivision(user.division);
+      if (user.bio) setBio(user.bio);
+      if (user.teachingPhilosophy) setTeachingPhilosophy(user.teachingPhilosophy);
+      if (user.credentials) setCredentials(user.credentials);
+      if (user.sanad || user.sanadCertification) setSanad(user.sanad || user.sanadCertification);
+      if (user.specialties && Array.isArray(user.specialties)) setSpecialties(user.specialties);
+      if (user.languages) setLanguages(user.languages);
+      if (user.experience || user.yearsExperience) setExperience(user.experience || user.yearsExperience);
+      if (user.graduates) setGraduates(user.graduates);
+      if (user.ratePerClass || user.hourlyRate) setRatePerClass(user.ratePerClass || user.hourlyRate);
+      if (user.location) setLocation(user.location);
+      if (user.certificates && Array.isArray(user.certificates)) setCertificates(user.certificates);
+    }
+  }, [user]);
+
   const handleCopyId = () => {
     if (user?.id) {
       navigator.clipboard.writeText(user.id);
@@ -40,23 +96,98 @@ export default function UserProfilePanel({
     }
   };
 
-  const handleSaveProfile = async (e) => {
+  const handleAddCertificate = (e) => {
     e.preventDefault();
+    if (!newCert.title.trim() || !newCert.issuer.trim()) {
+      alert('Please enter both Certificate Title and Issuing University/Institution.');
+      return;
+    }
+    const certItem = {
+      id: 'cert-' + Date.now(),
+      title: newCert.title.trim(),
+      issuer: newCert.issuer.trim(),
+      year: newCert.year.trim() || new Date().getFullYear().toString(),
+      degreeLevel: newCert.degreeLevel || 'Ijazah Sanad',
+      grade: newCert.grade || 'Mumtaz (Distinction)',
+      credentialId: newCert.credentialId.trim() || `QI-CERT-${Math.floor(1000 + Math.random() * 9000)}`,
+      verificationUrl: newCert.verificationUrl.trim(),
+      description: newCert.description.trim(),
+      verified: true,
+    };
+    setCertificates((prev) => [...prev, certItem]);
+    setNewCert({
+      title: '',
+      issuer: '',
+      year: new Date().getFullYear().toString(),
+      degreeLevel: 'Ijazah Sanad',
+      grade: 'Mumtaz (Distinction)',
+      credentialId: '',
+      verificationUrl: '',
+      description: '',
+    });
+    setShowCertForm(false);
+  };
+
+  const handleRemoveCertificate = (certId) => {
+    if (window.confirm('Are you sure you want to remove this certificate from your profile?')) {
+      setCertificates((prev) => prev.filter((c) => c.id !== certId));
+    }
+  };
+
+  const handleAddSpecialty = () => {
+    if (!newSpecialtyInput.trim()) return;
+    const val = newSpecialtyInput.trim();
+    if (!specialties.includes(val)) {
+      setSpecialties((prev) => [...prev, val]);
+    }
+    setNewSpecialtyInput('');
+  };
+
+  const handleRemoveSpecialty = (item) => {
+    setSpecialties((prev) => prev.filter((s) => s !== item));
+  };
+
+  const handleSaveProfile = async (e) => {
+    if (e) e.preventDefault();
     setSaving(true);
     setSuccessMsg('');
     setErrorMsg('');
 
     try {
+      const payload = {
+        name,
+        phone,
+        preferredLanguage: language,
+        ...(isStudent ? { tajweedLevel, targetGoal } : {}),
+        ...(isTeacher
+          ? {
+              honorific,
+              title,
+              category,
+              division,
+              bio,
+              teachingPhilosophy,
+              credentials,
+              sanad,
+              sanadCertification: sanad,
+              specialties,
+              specialization: specialties.join(', '),
+              languages,
+              experience,
+              yearsExperience: experience,
+              graduates,
+              ratePerClass: Number(ratePerClass) || 35,
+              hourlyRate: Number(ratePerClass) || 35,
+              location,
+              certificates,
+            }
+          : {}),
+      };
+
       const res = await fetch('/api/auth/me', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name,
-          tajweedLevel,
-          targetGoal,
-          phone,
-          preferredLanguage: language,
-        }),
+        body: JSON.stringify(payload),
       });
 
       const data = await res.json();
@@ -64,7 +195,7 @@ export default function UserProfilePanel({
         throw new Error(data.error || 'Failed to update profile.');
       }
 
-      setSuccessMsg('Profile settings updated successfully!');
+      setSuccessMsg('Scholarly profile & accreditation updated successfully! Live on catalog.');
       if (onProfileUpdated) {
         onProfileUpdated(data.user);
       }
@@ -535,6 +666,119 @@ export default function UserProfilePanel({
               </>
             )}
 
+            {isTeacher && (
+              <>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                  <div>
+                    <label className="form-label" style={{ marginBottom: '6px' }}>
+                      Arabic Honorific Title
+                    </label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={honorific}
+                      onChange={(e) => setHonorific(e.target.value)}
+                      placeholder="e.g. فضيلة الشيخ د. أحمد الأزهري"
+                      style={{ direction: 'rtl', fontFamily: 'var(--font-serif, serif)' }}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="form-label" style={{ marginBottom: '6px' }}>
+                      Academic Role / Chair
+                    </label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                      placeholder="e.g. Dean of Quranic Studies & Ten Qira'at Master"
+                    />
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                  <div>
+                    <label className="form-label" style={{ marginBottom: '6px' }}>
+                      Faculty Department / Category
+                    </label>
+                    <select
+                      className="form-input"
+                      value={category}
+                      onChange={(e) => setCategory(e.target.value)}
+                    >
+                      <option value="hifz">Hifz &amp; Qira'at</option>
+                      <option value="tajweed">Tajweed Specialists</option>
+                      <option value="arabic">Quranic Arabic &amp; Grammar</option>
+                      <option value="islamic-studies">Islamic Studies &amp; Seerah</option>
+                      <option value="sisters">Sisters Division</option>
+                      <option value="foundations">Foundations &amp; Qaida</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="form-label" style={{ marginBottom: '6px' }}>
+                      Faculty Division
+                    </label>
+                    <select
+                      className="form-input"
+                      value={division}
+                      onChange={(e) => setDivision(e.target.value)}
+                    >
+                      <option value="brothers">Brothers Faculty</option>
+                      <option value="sisters">Sisters Faculty</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="form-label" style={{ marginBottom: '6px' }}>
+                    Primary Academic Degree &amp; Al-Azhar Accreditations
+                  </label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={credentials}
+                    onChange={(e) => setCredentials(e.target.value)}
+                    placeholder="e.g. Ph.D. in Quranic Sciences, Al-Azhar University, Cairo"
+                  />
+                </div>
+
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                    <label className="form-label" style={{ margin: 0 }}>
+                      Biography &amp; Scholarly Background
+                    </label>
+                    <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+                      Auto-synced to public landing page
+                    </span>
+                  </div>
+                  <textarea
+                    className="form-input"
+                    rows={4}
+                    value={bio}
+                    onChange={(e) => setBio(e.target.value)}
+                    placeholder="Describe your academic lineage, Al-Azhar training, teaching journey, and devotion to the Noble Quran..."
+                    style={{ resize: 'vertical', lineHeight: '1.5' }}
+                  />
+                </div>
+
+                <div>
+                  <label className="form-label" style={{ marginBottom: '6px' }}>
+                    Teaching Philosophy &amp; Pedagogical Adab
+                  </label>
+                  <textarea
+                    className="form-input"
+                    rows={3}
+                    value={teachingPhilosophy}
+                    onChange={(e) => setTeachingPhilosophy(e.target.value)}
+                    placeholder="Explain your approach to student patience, gentle correction, spiritual grounding, and memorization pacing..."
+                    style={{ resize: 'vertical', lineHeight: '1.5' }}
+                  />
+                </div>
+              </>
+            )}
+
             <div>
               <label className="form-label" style={{ marginBottom: '6px' }}>
                 Preferred Interface Language
@@ -592,10 +836,17 @@ export default function UserProfilePanel({
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: '8px',
+                background: '#0D4A38',
+                color: '#FFDF85',
+                border: '1px solid #D4AF37',
+                padding: '14px 20px',
+                borderRadius: '10px',
+                fontWeight: '700',
+                cursor: 'pointer',
               }}
             >
               <Icon name="check" size={16} color="#FFDF85" />
-              <span>{saving ? 'Saving Changes...' : 'Save Profile Changes'}</span>
+              <span>{saving ? 'Saving Scholarly Profile...' : 'Save Profile & Scholarly Portfolio'}</span>
             </button>
           </form>
         </div>
@@ -838,7 +1089,7 @@ export default function UserProfilePanel({
           )}
 
           {/* ====================================================================
-              TEACHER VIEW: Faculty Scholar Accreditation Card
+              TEACHER VIEW: Comprehensive Scholarly Portfolio & Certificates Manager
               ==================================================================== */}
           {isTeacher && (
             <div
@@ -848,42 +1099,619 @@ export default function UserProfilePanel({
                 borderRadius: '16px',
                 padding: '24px',
                 boxShadow: 'var(--shadow-sm)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '20px',
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+              {/* Header with Title and Public Preview Button */}
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  flexWrap: 'wrap',
+                  gap: '12px',
+                  borderBottom: '1px solid #E2E8F0',
+                  paddingBottom: '16px',
+                }}
+              >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <Icon name="award" size={20} color="var(--color-gold-deep)" />
-                  <h3 style={{ margin: 0, fontSize: '17px', fontWeight: '800', color: 'var(--color-green-deep)' }}>
-                    Teacher Credentials &amp; Certifications
-                  </h3>
+                  <div
+                    style={{
+                      width: '36px',
+                      height: '36px',
+                      borderRadius: '10px',
+                      background: 'rgba(13, 74, 56, 0.1)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Icon name="award" size={20} color="var(--color-gold-deep)" />
+                  </div>
+                  <div>
+                    <h3 style={{ margin: 0, fontSize: '17px', fontWeight: '800', color: 'var(--color-green-deep)' }}>
+                      Scholarly Portfolio &amp; Accreditation
+                    </h3>
+                    <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+                      Manage your Sanad chains, verified diplomas, and teaching credentials
+                    </span>
+                  </div>
                 </div>
-                <span style={{ background: '#FEF3C7', color: '#92400E', padding: '3px 10px', borderRadius: '999px', fontSize: '11px', fontWeight: '700' }}>
-                  Verified Teacher
-                </span>
+
+                <a
+                  href={`/teachers/${user?.slug || 'sheikh-ahmed-alazhari'}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    background: 'var(--color-gold-light, #FAF5E8)',
+                    color: 'var(--color-gold-deep, #92400E)',
+                    border: '1px solid rgba(197, 164, 90, 0.4)',
+                    padding: '6px 14px',
+                    borderRadius: '8px',
+                    fontSize: '12px',
+                    fontWeight: '700',
+                    textDecoration: 'none',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <Icon name="sparkles" size={13} color="var(--color-gold-deep)" />
+                  <span>View Public Profile ↗</span>
+                </a>
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                <div style={{ background: '#F8FAFC', padding: '12px 14px', borderRadius: '10px', border: '1px solid #E2E8F0' }}>
-                  <span style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>Certification / Ijazah:</span>
-                  <div style={{ fontWeight: '700', fontSize: '13.5px', color: 'var(--color-green-deep)' }}>
-                    {user?.sanadCertification || '10 Qira’at Mutawatirah Certification'}
-                  </div>
+              {/* 1. Connected Chain (Sanad) Box */}
+              <div>
+                <label className="form-label" style={{ marginBottom: '6px', display: 'flex', justifyContent: 'space-between' }}>
+                  <span>Connected Chain of Transmission (Sanad / الإسناد المتصل)</span>
+                  <span style={{ fontSize: '11px', color: 'var(--color-green-primary)' }}>Prophetic Lineage</span>
+                </label>
+                <textarea
+                  className="form-input"
+                  rows={2}
+                  value={sanad}
+                  onChange={(e) => setSanad(e.target.value)}
+                  placeholder="e.g. Connected Chain in Ten Minor & Major Qira'at back to the Prophet ﷺ (28 links unbroken)"
+                  style={{ resize: 'vertical', fontSize: '13px' }}
+                />
+              </div>
+
+              {/* 2. Key Logistics Grid */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <div>
+                  <label className="form-label" style={{ marginBottom: '6px' }}>
+                    Honorarium per Class ($ USD)
+                  </label>
+                  <input
+                    type="number"
+                    className="form-input"
+                    value={ratePerClass}
+                    onChange={(e) => setRatePerClass(e.target.value)}
+                    placeholder="35"
+                  />
                 </div>
 
-                <div style={{ background: '#F8FAFC', padding: '12px 14px', borderRadius: '10px', border: '1px solid #E2E8F0' }}>
-                  <span style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>Specialization:</span>
-                  <div style={{ fontWeight: '700', fontSize: '13.5px', color: 'var(--color-green-deep)' }}>
-                    {user?.specialization || 'Tajweed & Quran Memorization'}
-                  </div>
+                <div>
+                  <label className="form-label" style={{ marginBottom: '6px' }}>
+                    Years of Teaching Experience
+                  </label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={experience}
+                    onChange={(e) => setExperience(e.target.value)}
+                    placeholder="18+ Years"
+                  />
                 </div>
 
-                <div style={{ background: '#F8FAFC', padding: '12px 14px', borderRadius: '10px', border: '1px solid #E2E8F0' }}>
-                  <span style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>Next Scheduled Session:</span>
-                  <div style={{ fontWeight: '700', fontSize: '13.5px', color: '#0D4A38' }}>
-                    {user?.nextSession || 'Today at 5:00 PM with Tariq Al-Mansoor'}
-                  </div>
+                <div>
+                  <label className="form-label" style={{ marginBottom: '6px' }}>
+                    Total Certified Graduates
+                  </label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={graduates}
+                    onChange={(e) => setGraduates(e.target.value)}
+                    placeholder="180+ Sanad Recipients"
+                  />
+                </div>
+
+                <div>
+                  <label className="form-label" style={{ marginBottom: '6px' }}>
+                    Sanctuary / Teaching Location
+                  </label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    placeholder="Cairo, Egypt"
+                  />
                 </div>
               </div>
+
+              <div>
+                <label className="form-label" style={{ marginBottom: '6px' }}>
+                  Spoken Languages
+                </label>
+                <input
+                  type="text"
+                  className="form-input"
+                  value={languages}
+                  onChange={(e) => setLanguages(e.target.value)}
+                  placeholder="Arabic (Native), English (Fluent)"
+                />
+              </div>
+
+              {/* 3. Areas of Specialization Manager */}
+              <div style={{ background: '#F8FAFC', padding: '16px', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+                <label className="form-label" style={{ marginBottom: '8px', display: 'block' }}>
+                  Areas of Specialization &amp; Matn Mastery
+                </label>
+
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '12px' }}>
+                  {specialties.map((spec, i) => (
+                    <span
+                      key={i}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        background: '#0D4A38',
+                        color: '#FFDF85',
+                        padding: '4px 10px',
+                        borderRadius: '20px',
+                        fontSize: '12px',
+                        fontWeight: '600',
+                      }}
+                    >
+                      <span>✦ {spec}</span>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveSpecialty(spec)}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          color: '#FFDF85',
+                          cursor: 'pointer',
+                          padding: '0 2px',
+                          fontSize: '13px',
+                          lineHeight: 1,
+                        }}
+                        title="Remove tag"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
+
+                {/* Quick Preset Badges */}
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '10px' }}>
+                  {['Ten Qira\'at', 'Hifz & Itqan', 'Waqf & Ibtida', 'Al-Jazariyyah', 'Nahw & Sarf', 'Maqamat', 'Noorani Qaida'].map((preset) => (
+                    !specialties.includes(preset) && (
+                      <button
+                        key={preset}
+                        type="button"
+                        onClick={() => setSpecialties((prev) => [...prev, preset])}
+                        style={{
+                          background: '#FFFFFF',
+                          border: '1px dashed #CBD5E1',
+                          borderRadius: '6px',
+                          fontSize: '11px',
+                          padding: '3px 8px',
+                          color: 'var(--text-muted)',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        + {preset}
+                      </button>
+                    )
+                  ))}
+                </div>
+
+                {/* Add Custom Tag */}
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={newSpecialtyInput}
+                    onChange={(e) => setNewSpecialtyInput(e.target.value)}
+                    placeholder="Type custom specialty..."
+                    style={{ fontSize: '12px', padding: '6px 10px' }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleAddSpecialty();
+                      }
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleAddSpecialty}
+                    style={{
+                      background: 'var(--color-green-deep)',
+                      color: '#FFF',
+                      border: 'none',
+                      padding: '6px 14px',
+                      borderRadius: '8px',
+                      fontSize: '12px',
+                      fontWeight: '700',
+                      cursor: 'pointer',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    + Add
+                  </button>
+                </div>
+              </div>
+
+              {/* 4. Interactive Verified Diplomas & Certificates Showcase */}
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+                  <div>
+                    <h4 style={{ margin: 0, fontSize: '15px', fontWeight: '800', color: 'var(--color-green-deep)' }}>
+                      Official Diplomas &amp; Certificates ({certificates.length})
+                    </h4>
+                    <span style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>
+                      Degrees and Ijazahs displayed on your public landing profile
+                    </span>
+                  </div>
+
+                  {!showCertForm && (
+                    <button
+                      type="button"
+                      onClick={() => setShowCertForm(true)}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        background: '#0D4A38',
+                        color: '#FFDF85',
+                        border: '1px solid #D4AF37',
+                        padding: '6px 12px',
+                        borderRadius: '8px',
+                        fontSize: '12px',
+                        fontWeight: '700',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      <Icon name="check" size={13} color="#FFDF85" />
+                      <span>+ Add Certificate</span>
+                    </button>
+                  )}
+                </div>
+
+                {/* Add Certificate Inline Form */}
+                {showCertForm && (
+                  <div
+                    style={{
+                      background: '#FAF7EE',
+                      border: '1.5px solid #D4AF37',
+                      borderRadius: '12px',
+                      padding: '16px',
+                      marginBottom: '16px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '12px',
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontWeight: '800', fontSize: '14px', color: '#0D4A38' }}>
+                        🎓 Add Scholarly Certificate or Ijazah
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setShowCertForm(false)}
+                        style={{ background: 'none', border: 'none', fontSize: '16px', cursor: 'pointer', color: '#64748B' }}
+                      >
+                        ✕
+                      </button>
+                    </div>
+
+                    <div>
+                      <label style={{ fontSize: '11.5px', fontWeight: '700', color: '#0D4A38', display: 'block', marginBottom: '4px' }}>
+                        Certificate / Degree Title *
+                      </label>
+                      <input
+                        type="text"
+                        className="form-input"
+                        placeholder="e.g. Ph.D. in Quranic Sciences & Recitations"
+                        value={newCert.title}
+                        onChange={(e) => setNewCert({ ...newCert, title: e.target.value })}
+                        required
+                      />
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '10px' }}>
+                      <div>
+                        <label style={{ fontSize: '11.5px', fontWeight: '700', color: '#0D4A38', display: 'block', marginBottom: '4px' }}>
+                          Issuing University / Institution *
+                        </label>
+                        <input
+                          type="text"
+                          className="form-input"
+                          placeholder="e.g. Faculty of Quranic Recitations, Al-Azhar University"
+                          value={newCert.issuer}
+                          onChange={(e) => setNewCert({ ...newCert, issuer: e.target.value })}
+                          required
+                        />
+                      </div>
+
+                      <div>
+                        <label style={{ fontSize: '11.5px', fontWeight: '700', color: '#0D4A38', display: 'block', marginBottom: '4px' }}>
+                          Year Awarded
+                        </label>
+                        <input
+                          type="text"
+                          className="form-input"
+                          placeholder="2016"
+                          value={newCert.year}
+                          onChange={(e) => setNewCert({ ...newCert, year: e.target.value })}
+                        />
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                      <div>
+                        <label style={{ fontSize: '11.5px', fontWeight: '700', color: '#0D4A38', display: 'block', marginBottom: '4px' }}>
+                          Degree / License Level
+                        </label>
+                        <select
+                          className="form-input"
+                          value={newCert.degreeLevel}
+                          onChange={(e) => setNewCert({ ...newCert, degreeLevel: e.target.value })}
+                        >
+                          <option value="Doctor of Philosophy (Ph.D.)">Doctorate (Ph.D.)</option>
+                          <option value="Master of Arts (M.A.)">Master's Degree (M.A.)</option>
+                          <option value="Bachelor of Arts (B.A.)">Bachelor's Degree (B.A.)</option>
+                          <option value="Supreme Ijazah Kubra">Supreme Ijazah Kubra</option>
+                          <option value="Ijazah Sanad">Ijazah Sanad</option>
+                          <option value="Postgraduate Diploma">Postgraduate Diploma</option>
+                          <option value="Executive Trainer License">Master Trainer License</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label style={{ fontSize: '11.5px', fontWeight: '700', color: '#0D4A38', display: 'block', marginBottom: '4px' }}>
+                          Grade / Distinction
+                        </label>
+                        <input
+                          type="text"
+                          className="form-input"
+                          placeholder="e.g. Mumtaz with Highest Honors"
+                          value={newCert.grade}
+                          onChange={(e) => setNewCert({ ...newCert, grade: e.target.value })}
+                        />
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                      <div>
+                        <label style={{ fontSize: '11.5px', fontWeight: '700', color: '#0D4A38', display: 'block', marginBottom: '4px' }}>
+                          Credential / License ID
+                        </label>
+                        <input
+                          type="text"
+                          className="form-input"
+                          placeholder="AZH-QUR-2016-8910"
+                          value={newCert.credentialId}
+                          onChange={(e) => setNewCert({ ...newCert, credentialId: e.target.value })}
+                        />
+                      </div>
+
+                      <div>
+                        <label style={{ fontSize: '11.5px', fontWeight: '700', color: '#0D4A38', display: 'block', marginBottom: '4px' }}>
+                          Online Verification URL (Optional)
+                        </label>
+                        <input
+                          type="url"
+                          className="form-input"
+                          placeholder="https://alazhar.edu.eg/verify/..."
+                          value={newCert.verificationUrl}
+                          onChange={(e) => setNewCert({ ...newCert, verificationUrl: e.target.value })}
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label style={{ fontSize: '11.5px', fontWeight: '700', color: '#0D4A38', display: 'block', marginBottom: '4px' }}>
+                        Description &amp; Scope of Study
+                      </label>
+                      <input
+                        type="text"
+                        className="form-input"
+                        placeholder="e.g. Authorized to transmit unbroken chains and calibrate acoustic phonetics."
+                        value={newCert.description}
+                        onChange={(e) => setNewCert({ ...newCert, description: e.target.value })}
+                      />
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '10px', marginTop: '4px' }}>
+                      <button
+                        type="button"
+                        onClick={handleAddCertificate}
+                        style={{
+                          background: '#0D4A38',
+                          color: '#FFDF85',
+                          border: 'none',
+                          padding: '10px 18px',
+                          borderRadius: '8px',
+                          fontSize: '13px',
+                          fontWeight: '700',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        ✓ Add Certificate to Portfolio
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setShowCertForm(false)}
+                        style={{
+                          background: '#F1F5F9',
+                          color: '#475569',
+                          border: '1px solid #CBD5E1',
+                          padding: '10px 14px',
+                          borderRadius: '8px',
+                          fontSize: '13px',
+                          fontWeight: '600',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Certificates List */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  {certificates.length === 0 ? (
+                    <div
+                      style={{
+                        background: '#F8FAFC',
+                        border: '1px dashed #CBD5E1',
+                        borderRadius: '10px',
+                        padding: '24px',
+                        textAlign: 'center',
+                        color: 'var(--text-muted)',
+                        fontSize: '13px',
+                      }}
+                    >
+                      No certificates added yet. Click "+ Add Certificate" above to showcase your academic degrees and Ijazah accreditations.
+                    </div>
+                  ) : (
+                    certificates.map((cert) => (
+                      <div
+                        key={cert.id}
+                        style={{
+                          background: '#FAF7EE',
+                          border: '1px solid #E6D8A8',
+                          borderRadius: '10px',
+                          padding: '14px 16px',
+                          display: 'flex',
+                          alignItems: 'flex-start',
+                          justifyContent: 'space-between',
+                          gap: '12px',
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                          <div
+                            style={{
+                              width: '38px',
+                              height: '38px',
+                              borderRadius: '8px',
+                              background: '#0D4A38',
+                              color: '#FFDF85',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              flexShrink: 0,
+                              marginTop: '2px',
+                            }}
+                          >
+                            <Icon name="award" size={20} color="#FFDF85" />
+                          </div>
+
+                          <div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                              <h5 style={{ margin: 0, fontSize: '14.5px', fontWeight: '800', color: '#0D4A38' }}>
+                                {cert.title}
+                              </h5>
+                              <span
+                                style={{
+                                  background: '#FEF3C7',
+                                  color: '#92400E',
+                                  padding: '2px 8px',
+                                  borderRadius: '999px',
+                                  fontSize: '10.5px',
+                                  fontWeight: '700',
+                                }}
+                              >
+                                {cert.degreeLevel || 'Verified Degree'}
+                              </span>
+                            </div>
+
+                            <div style={{ fontSize: '12.5px', color: '#475569', marginTop: '4px' }}>
+                              <span>🏛 {cert.issuer}</span>
+                              {cert.year && <span> &bull; Year {cert.year}</span>}
+                              {cert.grade && <span style={{ color: '#0D4A38', fontWeight: '600' }}> &bull; {cert.grade}</span>}
+                            </div>
+
+                            {cert.description && (
+                              <p style={{ margin: '6px 0 0 0', fontSize: '12px', color: '#64748B', lineHeight: '1.4' }}>
+                                {cert.description}
+                              </p>
+                            )}
+
+                            {cert.credentialId && (
+                              <div style={{ marginTop: '6px', fontSize: '11px', color: '#0D4A38', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <Icon name="shield-check" size={13} color="#10B981" />
+                                <span>ID: <strong>{cert.credentialId}</strong></span>
+                                {cert.verificationUrl && (
+                                  <a
+                                    href={cert.verificationUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{ color: '#2563EB', textDecoration: 'underline', marginLeft: '6px' }}
+                                  >
+                                    Verify Credential ↗
+                                  </a>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveCertificate(cert.id)}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            color: '#EF4444',
+                            cursor: 'pointer',
+                            padding: '4px',
+                            borderRadius: '4px',
+                          }}
+                          title="Remove certificate"
+                        >
+                          <Icon name="x" size={16} />
+                        </button>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+
+              {/* Bottom Quick Save CTA */}
+              <button
+                type="button"
+                onClick={handleSaveProfile}
+                disabled={saving}
+                style={{
+                  background: '#0D4A38',
+                  color: '#FFDF85',
+                  border: '1px solid #D4AF37',
+                  padding: '14px 20px',
+                  borderRadius: '10px',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  marginTop: '8px',
+                }}
+              >
+                <Icon name="check" size={16} color="#FFDF85" />
+                <span>{saving ? 'Saving Portfolio...' : 'Save Scholarly Portfolio & Diplomas'}</span>
+              </button>
             </div>
           )}
 

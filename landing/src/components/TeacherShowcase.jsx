@@ -7,6 +7,7 @@ import { MALE_TEACHERS_DATA, MALE_TEACHER_CATEGORIES } from '../data/teachersDat
 
 export default function TeacherShowcase({ onOpenBooking, onSelectTeacher }) {
   const [activeCategory, setActiveCategory] = useState('all');
+  const [teachersList, setTeachersList] = useState(MALE_TEACHERS_DATA);
   const [isPaused, setIsPaused] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
@@ -16,14 +17,33 @@ export default function TeacherShowcase({ onOpenBooking, onSelectTeacher }) {
   const animFrameRef = useRef(null);
   const resumeTimeoutRef = useRef(null);
 
+  // Auto-fetch live teachers
+  useEffect(() => {
+    let isMounted = true;
+    async function loadTeachers() {
+      try {
+        const res = await fetch('/api/teachers?all=true', { cache: 'no-store' });
+        if (res.ok) {
+          const data = await res.json();
+          if (isMounted && data.teachers && data.teachers.length > 0) {
+            const brothersOnly = data.teachers.filter(t => t.division !== 'sisters');
+            if (brothersOnly.length > 0) setTeachersList(brothersOnly);
+          }
+        }
+      } catch {
+        // Fall back to MALE_TEACHERS_DATA
+      }
+    }
+    loadTeachers();
+    return () => { isMounted = false; };
+  }, []);
+
   const filteredTeachers = activeCategory === 'all'
-    ? MALE_TEACHERS_DATA
-    : MALE_TEACHERS_DATA.filter((t) => t.category === activeCategory);
+    ? teachersList
+    : teachersList.filter((t) => t.category === activeCategory);
 
   // Repeat items for seamless horizontal loop
-  const displayItems = activeCategory === 'all'
-    ? [...filteredTeachers, ...filteredTeachers, ...filteredTeachers]
-    : [...filteredTeachers, ...filteredTeachers, ...filteredTeachers];
+  const displayItems = [...filteredTeachers, ...filteredTeachers, ...filteredTeachers];
 
   // Smooth continuous horizontal scrolling animation
   useEffect(() => {
@@ -236,17 +256,42 @@ export default function TeacherShowcase({ onOpenBooking, onSelectTeacher }) {
                   </div>
                 </div>
 
-                {/* CTA Button: Book 1-on-1 with Mentor */}
-                <button
-                  type="button"
-                  className="card-enroll-btn teacher-book-btn"
-                  onClick={() => handleTeacherBooking(teacher)}
-                >
-                  <span>Book with Mentor</span>
-                  <div className="enroll-btn-icon">
-                    <Icon name="arrow-right" size={13} color="#FFFFFF" />
-                  </div>
-                </button>
+                {/* Action Buttons: Full Profile & Book with Mentor */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '8px', marginTop: '12px' }}>
+                  <Link
+                    href={`/teachers/${teacher.slug || teacher.id}`}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '4px',
+                      background: '#FFFFFF',
+                      color: '#0D4A38',
+                      border: '1.5px solid #0D4A38',
+                      borderRadius: '8px',
+                      padding: '8px 10px',
+                      fontSize: '12px',
+                      fontWeight: '700',
+                      textDecoration: 'none',
+                      transition: 'all 0.2s ease',
+                      textAlign: 'center',
+                    }}
+                  >
+                    <span>Full Profile</span>
+                  </Link>
+
+                  <button
+                    type="button"
+                    className="card-enroll-btn teacher-book-btn"
+                    onClick={() => handleTeacherBooking(teacher)}
+                    style={{ margin: 0, padding: '8px 12px', fontSize: '12px' }}
+                  >
+                    <span>Book 1-on-1</span>
+                    <div className="enroll-btn-icon">
+                      <Icon name="arrow-right" size={12} color="#FFFFFF" />
+                    </div>
+                  </button>
+                </div>
               </div>
             </div>
           ))}

@@ -25,9 +25,18 @@ export default function DigitalToolsDictionary({
     { id: 'makharij', label: 'Makharij (Articulation)', icon: 'mic' },
     { id: 'sifaat', label: 'Sifaat & Qalqalah', icon: 'award' },
     { id: 'noon_tanween', label: 'Noon & Tanween Rules', icon: 'disc' },
+    { id: 'meem_sakinah', label: 'Meem Sakinah Rules', icon: 'layers' },
     { id: 'madd', label: 'Madd Rules (Elongation)', icon: 'trending-up' },
     { id: 'waqf', label: 'Waqf Signs (Pausing)', icon: 'alert-circle' },
     { id: 'classroom', label: 'Classroom Directives', icon: 'volume-2' },
+  ];
+
+  // In-class anatomical articulation area quick presets for teacher
+  const anatomicalQuickFilters = [
+    { label: 'الحَلْق (Throat: ء هـ ع ح غ خ)', query: 'الحَلْق' },
+    { label: 'اللِّسَان (Tongue: ق ك ض ل ن ر...)', query: 'اللسان' },
+    { label: 'الشَّفَتَان (Lips: ف ب م و)', query: 'الشَّفَتَان' },
+    { label: 'الخَيْشُوم (Nasal: الغُنَّة)', query: 'الخَيْشُوم' },
   ];
 
   useEffect(() => {
@@ -131,6 +140,27 @@ export default function DigitalToolsDictionary({
                   {cat.icon && <Icon name={cat.icon} size={14} />}
                   {cat.label}
                 </span>
+              </button>
+            ))}
+          </div>
+
+          {/* In-Class Quick Makhraj Shortcuts */}
+          <div className="dictionary-anatomical-quick-row">
+            <span className="anatomical-quick-label">
+              <Icon name="mic" size={13} style={{ marginRight: 4 }} />
+              মৌলিক মাখরাজ শর্টকাট:
+            </span>
+            {anatomicalQuickFilters.map((preset, idx) => (
+              <button
+                key={idx}
+                type="button"
+                className="btn-anatomical-quick"
+                onClick={() => {
+                  setActiveCategory('makharij');
+                  setSearchQuery(preset.query);
+                }}
+              >
+                {preset.label}
               </button>
             ))}
           </div>

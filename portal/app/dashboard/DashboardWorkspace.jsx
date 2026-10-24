@@ -20,6 +20,7 @@ import ParentTeacherReviewModal from '../../components/ParentTeacherReviewModal'
 import TuitionInvoicesPageView from '../../components/TuitionInvoicesPageView';
 import TeacherDashboard from '../../components/TeacherDashboard';
 import TajweedToolsPageView from '../../components/TajweedToolsPageView';
+import StudentAchievementsBadgeView from '../../components/StudentAchievementsBadgeView';
 
 const mapSlugToTab = (slug) => {
   if (!slug) return null;
@@ -30,6 +31,7 @@ const mapSlugToTab = (slug) => {
   if (s === 'curriculum' || s === 'syllabus' || s === 'modules') return 'curriculum';
   if (s === 'mistakes' || s === 'quran' || s === 'annotator') return 'quran';
   if (s === 'quiz' || s === 'quizzes' || s === 'exams') return 'quiz';
+  if (s === 'badges' || s === 'achievements' || s === 'rewards' || s === 'sanad') return 'achievements';
   if (s === 'action-board' || s === 'actionboard' || s === 'attendance') return 'actionboard';
   if (s === 'salary' || s === 'billing' || s === 'earnings') return 'salary';
   if (s === 'students' || s === 'overview' || s === 'roster') return 'overview';
@@ -49,6 +51,7 @@ const mapTabToUrl = (tabKey) => {
     curriculum: '/dashboard/curriculum',
     quran: '/dashboard/quran',
     quiz: '/dashboard/quiz',
+    achievements: '/dashboard/achievements',
     actionboard: '/dashboard/action-board',
     salary: '/dashboard/salary',
     overview: '/dashboard/students',
@@ -464,8 +467,8 @@ export default function DashboardWorkspace({ initialTab }) {
             </>
           )}
 
-          {/* STUDENT & PARENT / GUARDIAN UNIFIED WORKSPACE */}
-          {(isStudent || isParent) && (
+          {/* STUDENT & FAMILY LEARNING WORKSPACE */}
+          {(!isTeacher && !isAdmin) && (
             <>
               {(activeTab === 'progress' || activeTab === 'overview') && (
                 <StudentParentProgressView
@@ -473,12 +476,13 @@ export default function DashboardWorkspace({ initialTab }) {
                   onOpenReviewModal={handleOpenReviewModal}
                   onOpenDigitalQuran={() => handleTabChange('digitalquran')}
                   onOpenInvoiceModal={() => handleTabChange('invoices')}
+                  onOpenAchievements={() => handleTabChange('achievements')}
                 />
               )}
 
               {activeTab === 'digitalquran' && (
                 <DigitalQuranReader
-                  studentId={isParent ? (selectedStudentId || 'QI-STU-8842') : (user?.id || 'QI-STU-8842')}
+                  studentId={user?.id || 'QI-STU-8842'}
                   onClose={() => handleTabChange('progress')}
                 />
               )}
@@ -497,16 +501,11 @@ export default function DashboardWorkspace({ initialTab }) {
               {activeTab === 'quran' && (
                 <InteractiveQuranAnnotator
                   currentUser={user}
-                  selectedStudentId={isParent ? (selectedStudentId || 'QI-STU-8842') : (user?.id || 'QI-STU-8842')}
-                  initialStudentId={isParent ? (selectedStudentId || 'QI-STU-8842') : (user?.id || 'QI-STU-8842')}
-                  studentsList={
-                    isParent
-                      ? [
-                          { id: 'QI-STU-8842', studentId: 'QI-STU-8842', name: 'Tariq Al-Mansoor (Child)', courseId: 'QI-CRS-001', courseTitle: 'Quran Reading Foundation & Tajweed Mastery' },
-                          { id: 'QI-STU-7721', studentId: 'QI-STU-7721', name: 'Zaid bin Harith (Child)', courseId: 'QI-CRS-001', courseTitle: 'Quran Reading Foundation & Tajweed Mastery' },
-                        ]
-                      : [{ id: user?.id || 'QI-STU-8842', studentId: user?.id || 'QI-STU-8842', name: user?.name || 'Tariq Al-Mansoor', courseId: course?.id || 'QI-CRS-001', courseTitle: course?.title || 'Quran Reading Foundation & Tajweed Mastery' }]
-                  }
+                  selectedStudentId={user?.id || 'QI-STU-8842'}
+                  initialStudentId={user?.id || 'QI-STU-8842'}
+                  studentsList={[
+                    { id: user?.id || 'QI-STU-8842', studentId: user?.id || 'QI-STU-8842', name: user?.name || 'Tariq Al-Mansoor', courseId: course?.id || 'QI-CRS-001', courseTitle: course?.title || 'Quran Reading Foundation & Tajweed Mastery' },
+                  ]}
                   onSelectStudent={(stuId) => setSelectedStudentId(stuId)}
                   course={course}
                   coursesList={coursesList}
@@ -550,6 +549,15 @@ export default function DashboardWorkspace({ initialTab }) {
           {activeTab === 'dictionary' && (
             <TajweedToolsPageView
               currentUser={user}
+              onNavigateTab={handleTabChange}
+            />
+          )}
+
+          {/* GAMIFIED ACHIEVEMENTS, JUZ BADGES & SANAD TAB */}
+          {activeTab === 'achievements' && (
+            <StudentAchievementsBadgeView
+              currentUser={user}
+              studentId={user?.id || selectedStudentId}
               onNavigateTab={handleTabChange}
             />
           )}

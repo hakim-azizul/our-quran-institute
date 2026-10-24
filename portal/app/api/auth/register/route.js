@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { findUserByEmail, createUser } from '../../../../lib/db';
 import { createSessionToken, setSessionCookie } from '../../../../lib/auth';
 
-const ALLOWED_ROLES = ['student', 'teacher', 'parent'];
+const ALLOWED_ROLES = ['student', 'teacher'];
 
 export async function POST(request) {
   try {
@@ -24,7 +24,7 @@ export async function POST(request) {
     } = body;
 
     // 1. STRICT SECURITY VALIDATION: Prevent any admin creation via API
-    const normalizedRole = typeof role === 'string' ? role.trim().toLowerCase() : '';
+    const normalizedRole = typeof role === 'string' ? role.trim().toLowerCase() : 'student';
 
     if (normalizedRole === 'admin' || (body.role && String(body.role).toLowerCase() === 'admin')) {
       return NextResponse.json(
@@ -37,11 +37,11 @@ export async function POST(request) {
       );
     }
 
-    // 2. Validate allowed roles (Student, Teacher, Parent)
+    // 2. Validate allowed roles (Student or Teacher)
     if (!ALLOWED_ROLES.includes(normalizedRole)) {
       return NextResponse.json(
         {
-          error: 'Registration is open for Students, Teachers/Scholars, and Parents/Guardians.',
+          error: 'Registration is open for Students and Teachers/Scholars.',
           allowedRoles: ALLOWED_ROLES,
         },
         { status: 400 }
@@ -51,7 +51,7 @@ export async function POST(request) {
     // 3. Basic credentials validation
     if (!name || !email || !password) {
       return NextResponse.json(
-        { error: 'Full name, email address, and password are required.' },
+        { error: 'Full name, email or phone number, and password are required.' },
         { status: 400 }
       );
     }
@@ -63,19 +63,35 @@ export async function POST(request) {
       );
     }
 
-    // 4. Duplicate email verification
-    const existing = findUserByEmail(email);
+    let cleanEmail = String(email || '').trim().toLowerCase();
+    let cleanPhone = String(body.phone || '').trim();
+
+    // EDGE CASE: User entered a mobile phone number into the email field (e.g. 01784413139)
+    if (!cleanEmail.includes('@')) {
+      const digitsOnly = cleanEmail.replace(/[^0-9]/g, '');
+      if (digitsOnly.length >= 8) {
+        if (!cleanPhone) cleanPhone = cleanEmail;
+        cleanEmail = `${digitsOnly}@phone.ourquran.org`;
+      }
+    }
+
+    // 4. Duplicate email / phone verification
+    const existingByEmail = findUserByEmail(cleanEmail);
+    const existingByPhone = cleanPhone ? findUserByEmail(cleanPhone) : null;
+    const existing = existingByEmail || existingByPhone;
+
     if (existing) {
       return NextResponse.json(
-        { error: 'An account with this email address already exists. Please log in.' },
+        { error: 'An account with this email address or phone number already exists. Please Sign In.', code: 'DUPLICATE_USER' },
         { status: 409 }
       );
     }
 
-    // 5. Assemble safe payload based on student, teacher, or parent role
+    // 5. Assemble safe payload based on student or teacher role
     const newUserData = {
       name: name.trim(),
-      email: email.trim().toLowerCase(),
+      email: cleanEmail,
+      phone: cleanPhone || null,
       password,
       role: normalizedRole,
       ...(normalizedRole === 'student' && {
@@ -86,20 +102,26 @@ export async function POST(request) {
         nextSession: 'Orientation Call with Academic Advisor (Upcoming)',
         memorizedJuz: 0,
         totalJuz: 30,
+        status: 'Enrolled',
       }),
       ...(normalizedRole === 'teacher' && {
-        sanadCertification: sanadCertification || 'Verified Ijazah with Connected Sanad',
-        specialization: specialization || 'Tajweed & Qira’at',
-        yearsExperience: yearsExperience || '3+ years',
-        qiraat: qiraat || 'Hafs ‘an ‘Asim',
-        ratePerClass: 25,
-        hourlyRate: 25,
+        honorific: body.honorific || (body.division === 'sisters' ? 'الأستاذة' : 'فضيلة الشيخ'),
+        title: body.title || `${body.specialization || 'Quran & Tajweed'} Instructor`,
+        division: body.division || 'brothers',
+        category: body.category || 'tajweed',
+        credentials: body.credentials || 'Al-Azhar / Islamic University Accreditation',
+        sanad: body.sanad || body.sanadCertification || 'Verified Ijazah with Connected Sanad',
+        sanadCertification: body.sanad || body.sanadCertification || 'Verified Ijazah with Connected Sanad',
+        specialization: body.specialization || 'Tajweed & Qira’at',
+        yearsExperience: body.yearsExperience || '3+ years',
+        experience: body.yearsExperience || '3+ years',
+        ratePerClass: Number(body.ratePerClass) || 25,
+        hourlyRate: Number(body.ratePerClass) || 25,
         studentsCount: 0,
-        nextSession: 'Faculty Onboarding Interview (Upcoming)',
-      }),
-      ...(normalizedRole === 'parent' && {
-        phone: body.phone || '+880 1711-000000',
-        childrenIds: Array.isArray(body.childrenIds) && body.childrenIds.length > 0 ? body.childrenIds : ['QI-STU-8842'],
+        status: 'Pending Credential Verification',
+        bio: body.bio || `${name} has applied as a faculty scholar for our Quranic Recitations department.`,
+        specialties: body.specialties || [body.specialization || 'Tajweed Rules', 'Hifz'],
+        certificates: body.certificates || [],
       }),
     };
 
@@ -112,7 +134,7 @@ export async function POST(request) {
         success: true,
         pendingApproval: true,
         message:
-          'Teacher registration submitted! Your account is currently pending administrator approval. You will receive access once approved.',
+          'Faculty application submitted successfully! Your credentials are under review by the Academic Affairs committee. You will be able to log in once approved.',
         user: userSafe,
         redirectUrl: '/login?pendingApproval=true',
       });

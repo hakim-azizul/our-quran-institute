@@ -21,60 +21,790 @@ const initialUsers = [
   },
   {
     id: 'QI-FAC-014',
-    name: 'Dr. Sheikh Ahmad Al-Azhari',
+    slug: 'sheikh-ahmed-alazhari',
+    name: 'Sheikh Dr. Ahmed Al-Azhari',
+    honorific: 'فضيلة الشيخ د. أحمد الأزهري',
     email: 'dr.ahmad@quraninstitute.org',
     password: 'password123',
     role: 'teacher',
     status: 'Verified Scholar',
+    title: 'Dean of Quranic Studies & Ten Qira\'at Master',
+    category: 'hifz',
+    categoryLabel: 'HIFZ & QIRA\'AT',
+    division: 'brothers',
+    credentials: 'Ph.D. in Quranic Sciences, Al-Azhar University, Cairo',
+    sanad: 'Connected Chain in Ten Minor & Major Qira\'at (Shatibiyyah & Tayyibah) back to the Prophet ﷺ (28 links unbroken)',
     sanadCertification: '10 Qira’at Mutawatirah with Connected Chain (Al-Azhar Al-Sharif)',
+    sanadChain: [
+      { step: '28th Link', scholar: 'Sheikh Dr. Ahmed Al-Azhari', role: 'Faculty Dean & Senior Reciter' },
+      { step: '27th Link', scholar: 'Shaykh Abd al-Fattah al-Qadi', role: 'Grand Master of Al-Azhar Qira’at' },
+      { step: '26th Link', scholar: 'Shaykh Ahmad Abd al-Aziz al-Zayyat', role: 'Chief Reciter of Egypt' },
+      { step: '18th Link', scholar: 'Imam Shams al-Din Ibn al-Jazari (d. 833 AH)', role: 'Pinnacle of Tajweed Science' },
+      { step: '12th Link', scholar: 'Imam Abu al-Qasim al-Shatibi (d. 590 AH)', role: 'Author of Hirz al-Amani' },
+      { step: '4th Link', scholar: 'Imam Asim ibn Abi al-Najud al-Kufi (d. 127 AH)', role: 'Tabi’i Reciter of Kufa' },
+      { step: '2nd Link', scholar: 'Sayyiduna Ali ibn Abi Talib & Uthman ibn Affan (RA)', role: 'Noble Companions' },
+      { step: 'Supreme Source', scholar: 'The Messenger of Allah Muhammad ﷺ', role: 'Received via Angel Jibreel (AS)' }
+    ],
+    experience: '18+ Years Academic & Sanad Instruction',
+    yearsExperience: '18+ years',
+    specialties: ['Ten Qira\'at Ijazah', 'Hifz & Itqan', 'Waqf & Ibtida Theory', 'Al-Jazariyyah Matn', 'Spaced Retention'],
     specialization: 'Qira’at, Tajweed Sanad & Advanced Hifz',
-    yearsExperience: '14+ years',
+    languages: 'Arabic (Native), English (Fluent)',
+    graduates: '180+ Sanad & Ijazah Recipients',
     ratePerClass: 35,
     hourlyRate: 35,
-    totalClassesTaught: 34,
-    allTimeSuccessfulClasses: 96,
-    studentsCount: 18,
-    nextSession: 'Today at 5:00 PM with Tariq Al-Mansoor',
+    totalClassesTaught: 142,
+    allTimeSuccessfulClasses: 390,
+    studentsCount: 24,
+    rating: 4.98,
+    reviewsCount: 86,
+    location: 'Cairo, Egypt',
+    image: '/assets/scholar_bilal.jpg',
     avatar: 'scholar',
+    badge: 'Ten Qira\'at Ijazah',
     registeredAt: '2024-01-10T08:30:00Z',
+    bio: 'A distinguished graduate and former lecturer at the Faculty of Quranic Recitations at Al-Azhar University. Sheikh Ahmed has guided hundreds of international students from novice reciters to certified Ijazah holders with extraordinary patience, precision, and classical adab.',
+    teachingPhilosophy: 'Knowledge of the Noble Quran is light passed from chest to chest. We cultivate phonetic perfection through patient, gentle guidance, ensuring every student develops an intimate, reverent bond with the Sacred Words.',
+    certificates: [
+      {
+        id: 'cert-azh-phd',
+        title: 'Ph.D. in Quranic Sciences & Recitations',
+        issuer: 'Faculty of Quranic Recitations, Al-Azhar University, Cairo',
+        year: '2016',
+        degreeLevel: 'Doctor of Philosophy (Ph.D.)',
+        grade: 'Mumtaz with Highest First Class Honors (مرتبة الشرف الأولى)',
+        credentialId: 'AZH-QUR-2016-8910',
+        verificationUrl: 'https://alazhar.edu.eg/verify/AZH-QUR-2016-8910',
+        verified: true,
+        description: 'Advanced doctoral research on comparative vocal tract articulation across the Ten Qira\'at mutawatirah.'
+      },
+      {
+        id: 'cert-azh-ijazah10',
+        title: 'Supreme Ijazah in Ten Minor & Major Qira\'at (Shatibiyyah & Tayyibah)',
+        issuer: 'Supreme Recitations Council of Egypt & Al-Azhar',
+        year: '2012',
+        degreeLevel: 'Master Reciter License (Ijazah Kubra)',
+        grade: 'Sanad Mutawattir',
+        credentialId: 'AZH-IJZ-10Q-2012',
+        verificationUrl: 'https://alazhar.edu.eg/ijazah/AZH-IJZ-10Q-2012',
+        verified: true,
+        description: 'Certified to transmit unbroken chains back to the Messenger of Allah ﷺ and award international Sanad.'
+      },
+      {
+        id: 'cert-shb-pedagogy',
+        title: 'Higher Diploma in Tajweed Pedagogy & Acoustic Diagnostics',
+        issuer: 'Institute of Qira’at, Shubra, Cairo',
+        year: '2008',
+        degreeLevel: 'Postgraduate Diploma',
+        grade: 'Mumtaz (Distinction)',
+        credentialId: 'SHB-QIR-DIP-2008',
+        verificationUrl: 'https://alazhar.edu.eg/shubra/2008-dip',
+        verified: true,
+        description: 'Specialized clinic on diagnosing subtle phonetic defects and breath pacing for adult international reciters.'
+      }
+    ],
+    reviews: [
+      {
+        studentName: 'Tariq Al-Mansoor',
+        country: 'United Kingdom',
+        date: '2 weeks ago',
+        rating: 5,
+        comment: 'Sheikh Dr. Ahmed transformed my recitation in just 3 months. His patience with my Makharij errors gave me confidence I never had before.'
+      },
+      {
+        studentName: 'Dr. Zaid Harith',
+        country: 'Canada',
+        date: '1 month ago',
+        rating: 5,
+        comment: 'Studying the Ten Qira\'at under Sheikh Ahmed is the greatest academic privilege of my life. A true Al-Azhar luminary.'
+      }
+    ]
+  },
+  {
+    id: 'QI-FAC-015',
+    slug: 'ustadha-fatima-zahra',
+    name: 'Ustadha Fatima Al-Zahra',
+    honorific: 'الشيخة الأستاذة فاطمة الزهراء',
+    email: 'fatima.teacher@quraninstitute.org',
+    password: 'password123',
+    role: 'teacher',
+    status: 'Verified Scholar',
+    title: 'Head of Sisters Department & Lead Tajweed Master',
+    category: 'sisters',
+    categoryLabel: 'SISTERS DIVISION',
+    division: 'sisters',
+    credentials: 'M.A. in Islamic Studies, Al-Azhar University; Hafizah with Ijazah in Hafs & Shu\'bah',
+    sanad: 'High Sanad connected to Shaykhah Umm Al-Saad through Senior Egyptian Reciters',
+    sanadCertification: 'Ijazah in Hafs & Shu\'bah with High Female Chain',
+    sanadChain: [
+      { step: 'Current Link', scholar: 'Ustadha Fatima Al-Zahra', role: 'Head of Sisters Department' },
+      { step: 'Preceding Link', scholar: 'Shaykhah Umm Al-Saad Ali Najm', role: 'Renowned Female Master of Alexandria' },
+      { step: 'Classical Link', scholar: 'Imam Asim ibn Abi al-Najud', role: 'Classical Kufan Master' },
+      { step: 'Supreme Source', scholar: 'The Messenger of Allah Muhammad ﷺ', role: 'Holy Revelation' }
+    ],
+    experience: '14+ Years Dedicated Sisters & Youth Pedagogy',
+    yearsExperience: '14+ years',
+    specialties: ['Sisters Hifz Cohorts', 'Phonetic Tajweed Calibration', 'Tuhfat al-Atfal', 'Youth Mentorship'],
+    specialization: 'Sisters Quran & Tajweed Calibration',
+    languages: 'Arabic, English',
+    graduates: '240+ Memorizers & Reciters',
+    ratePerClass: 30,
+    hourlyRate: 30,
+    totalClassesTaught: 98,
+    allTimeSuccessfulClasses: 280,
+    studentsCount: 22,
+    rating: 5.0,
+    reviewsCount: 74,
+    location: 'Alexandria, Egypt',
+    image: null,
+    avatar: 'scholar',
+    badge: 'Senior Sisters Mentor',
+    registeredAt: '2024-02-15T09:00:00Z',
+    bio: 'Revered for her gentle, uplifting pedagogical style. Ustadha Fatima oversees the Sisters Quran Division, specializing in helping working women, university students, and mothers establish consistent daily Quranic rhythms without burnout.',
+    teachingPhilosophy: 'Every sister has a unique spiritual capacity. We nurture Quranic connection with immense warmth, creating a sanctuary where mistakes are embraced as stepping stones to mastery.',
+    certificates: [
+      {
+        id: 'cert-fatima-ma',
+        title: 'M.A. in Islamic Studies & Quranic Exegesis',
+        issuer: 'Faculty of Islamic Studies for Girls, Al-Azhar University',
+        year: '2015',
+        degreeLevel: 'Master of Arts (M.A.)',
+        grade: 'Mumtaz with High Distinction',
+        credentialId: 'AZH-GIRLS-MA-2015',
+        verificationUrl: 'https://alazhar.edu.eg/girls/verify/2015',
+        verified: true,
+        description: 'In-depth research on women\'s classical contributions to Quranic transmission and pedagogy.'
+      },
+      {
+        id: 'cert-fatima-ijz',
+        title: 'Ijazah in Hafs \'an Asim & Shu\'bah',
+        issuer: 'Alexandria Quranic Reciters Society',
+        year: '2011',
+        degreeLevel: 'Certified Sanad Ijazah',
+        grade: 'Passed with Excellence',
+        credentialId: 'ALX-QUR-IJZ-11',
+        verificationUrl: 'https://alexquran.org/verify/11-fatima',
+        verified: true,
+        description: 'Complete recitation of the 30 Juz from memory with continuous chain.'
+      }
+    ],
+    reviews: [
+      {
+        studentName: 'Amina Begum',
+        country: 'United States',
+        date: '3 weeks ago',
+        rating: 5,
+        comment: 'Ustadha Fatima\'s patience with adult learners is unmatched. I finally memorized Surah Al-Baqarah while balancing a full-time career.'
+      }
+    ]
+  },
+  {
+    id: 'QI-FAC-016',
+    slug: 'sheikh-kazi-tayoubur',
+    name: 'Sheikh Kazi Tayoubur Rahman',
+    honorific: 'الشيخ قاضي طيوب الرحمن',
+    email: 'kazi.teacher@quraninstitute.org',
+    password: 'password123',
+    role: 'teacher',
+    status: 'Verified Scholar',
+    title: 'Senior Retention Director & Lead Hifz Mentor',
+    category: 'hifz',
+    categoryLabel: 'HIFZ MENTORSHIP',
+    division: 'brothers',
+    credentials: 'B.A. Islamic Shariah & Certified Hafiz with Connected Sanad; Senior Institute Founder',
+    sanad: 'Sanad in Riwayah Hafs ‘an ‘Asim and Warsh ‘an Nafi’',
+    sanadCertification: 'Sanad in Riwayah Hafs & Warsh',
+    sanadChain: [
+      { step: 'Current Link', scholar: 'Sheikh Kazi Tayoubur Rahman', role: 'Senior Retention Director' },
+      { step: 'Sanad Master', scholar: 'Senior Egyptian & Hijazi Mashayikh', role: 'Holders of High Chains' },
+      { step: 'Supreme Source', scholar: 'The Messenger of Allah Muhammad ﷺ', role: 'Holy Revelation' }
+    ],
+    experience: '12+ Years Global Online Teaching',
+    yearsExperience: '12+ years',
+    specialties: ['Spaced Retention Science', 'Adult Hifz Overhaul', 'Juz Amma & Tabarak Foundations', 'Voice Note Coaching'],
+    specialization: 'Adult Hifz Spaced Retention',
+    languages: 'English, Arabic, Bengali, Urdu',
+    graduates: '310+ Active Students Worldwide',
+    ratePerClass: 32,
+    hourlyRate: 32,
+    totalClassesTaught: 125,
+    allTimeSuccessfulClasses: 310,
+    studentsCount: 20,
+    rating: 4.96,
+    reviewsCount: 92,
+    location: 'Global Faculty & Cairo Sanctuary',
+    image: '/assets/teacher_portrait.jpg',
+    avatar: 'scholar',
+    badge: 'Spaced Retention',
+    registeredAt: '2024-01-05T08:00:00Z',
+    bio: 'Specializing in adult learning psychology, Sheikh Kazi helps busy professionals and university students memorize and retain the Quran through disciplined daily micro-habits and calm, encouraging 1-on-1 mentorship.',
+    teachingPhilosophy: 'Retention is not about brutal repetition; it is about spaced cognitive recall and emotional tranquility. We transform memorization into a joyous lifelong companionship with Allah\'s book.',
+    certificates: [
+      {
+        id: 'cert-kazi-ba',
+        title: 'B.A. in Islamic Shariah & Quranic Sciences',
+        issuer: 'Islamic Shariah Faculty & International University',
+        year: '2014',
+        degreeLevel: 'Bachelor of Arts (B.A.)',
+        grade: 'First Class Honors',
+        credentialId: 'SHAR-BA-2014-991',
+        verificationUrl: 'https://quraninstitute.org/verify/kazi-ba',
+        verified: true,
+        description: 'Comprehensive study of Islamic jurisprudence, Quranic Sciences, and pedagogical methods.'
+      },
+      {
+        id: 'cert-kazi-sanad',
+        title: 'Certified Sanad in Hafs \'an Asim & Warsh',
+        issuer: 'Council of Quranic Memorizers & Sanad Holders',
+        year: '2015',
+        degreeLevel: 'Sanad Certification',
+        grade: 'Mumtaz (Connected Isnad)',
+        credentialId: 'QUR-SAN-2015-442',
+        verificationUrl: 'https://quraninstitute.org/verify/kazi-sanad',
+        verified: true,
+        description: 'Unbroken transmission with precise application of Ahkam al-Tajweed.'
+      }
+    ],
+    reviews: [
+      {
+        studentName: 'Ibrahim Chowdhury',
+        country: 'Australia',
+        date: '1 week ago',
+        rating: 5,
+        comment: 'Sheikh Kazi\'s micro-habit method solved 5 years of struggle with my Quran retention. I can now recite Juz 1-10 effortlessly.'
+      }
+    ]
+  },
+  {
+    id: 'QI-FAC-017',
+    slug: 'sheikh-mahmoud-abdelaziz',
+    name: 'Sheikh Mahmoud Abdelaziz',
+    honorific: 'الشيخ محمود عبد العزيز',
+    email: 'mahmoud.abdelaziz@quraninstitute.org',
+    password: 'password123',
+    role: 'teacher',
+    status: 'Verified Scholar',
+    title: 'Head of Quranic Arabic & Classical Grammar',
+    category: 'arabic',
+    categoryLabel: 'QURANIC ARABIC',
+    division: 'brothers',
+    credentials: 'Faculty of Arabic Language (Dar al-Ulum), Cairo University',
+    sanad: 'Specialist in Classical Nahw, Sarf, and Balaghah al-Quran',
+    sanadCertification: 'Classical Nahw & Balaghah Certification',
+    experience: '16+ Years Non-Native Arabic Instruction',
+    yearsExperience: '16+ years',
+    specialties: ['Quranic Arabic Comprehension', 'Nahw Simplified (Ajrumiyyah)', 'Sarf Roots & Patterns', 'Tafsir Linguistics'],
+    specialization: 'Quranic Arabic & Classical Grammar',
+    languages: 'Arabic (Native), English',
+    graduates: '500+ Arabic Students',
+    ratePerClass: 30,
+    hourlyRate: 30,
+    totalClassesTaught: 88,
+    allTimeSuccessfulClasses: 240,
+    studentsCount: 16,
+    rating: 4.94,
+    reviewsCount: 65,
+    location: 'Cairo, Egypt',
+    image: '/assets/sheikh_scholar_portrait.jpg',
+    avatar: 'scholar',
+    badge: 'Classical Nahw & Sarf',
+    registeredAt: '2024-03-01T10:00:00Z',
+    bio: 'Sheikh Mahmoud transforms complex Arabic grammar into intuitive visual mental models. His unique methodology teaches non-native speakers to understand over 80% of Quranic vocabulary in months, bringing deep emotional resonance to Salah.',
+    certificates: [
+      {
+        id: 'cert-darulum-ba',
+        title: 'B.A. in Arabic Language & Islamic Studies',
+        issuer: 'Faculty of Dar al-Ulum, Cairo University',
+        year: '2010',
+        degreeLevel: 'Bachelor of Arts (B.A.)',
+        grade: 'Mumtaz with Honors',
+        credentialId: 'DAR-AR-2010-381',
+        verificationUrl: 'https://cu.edu.eg/darulum/verify/381',
+        verified: true,
+        description: 'Excellence in classical syntax, morphology, and rhetoric of the Quranic text.'
+      }
+    ],
+    reviews: [
+      {
+        studentName: 'Salman Farooq',
+        country: 'United Kingdom',
+        date: '2 weeks ago',
+        rating: 5,
+        comment: 'For the first time in my life, I understand the Quran directly during Taraweeh prayers without looking at a translation!'
+      }
+    ]
+  },
+  {
+    id: 'QI-FAC-018',
+    slug: 'ustadha-maryam-idris',
+    name: 'Ustadha Maryam Idris',
+    honorific: 'الأستاذة مريم إدريس',
+    email: 'maryam.idris@quraninstitute.org',
+    password: 'password123',
+    role: 'teacher',
+    status: 'Verified Scholar',
+    title: 'Director of Early Childhood Quran & Noorani Qaida',
+    category: 'foundations',
+    categoryLabel: 'FOUNDATIONS & QAIDA',
+    division: 'sisters',
+    credentials: 'Early Childhood Education Diploma & Certified Noorani Qaida Master Trainer',
+    sanad: 'Authorized Qaida & Quranic Reading Trainer',
+    sanadCertification: 'Noorani Qaida Authorized Master Trainer',
+    experience: '10+ Years Children’s Quranic Foundations',
+    yearsExperience: '10+ years',
+    specialties: ['Noorani Qaida for Ages 4-10', 'Play-Based Arabic Phonetics', 'Child Confidence Building', 'Parental Collaboration'],
+    specialization: 'Early Childhood Quran & Noorani Qaida',
+    languages: 'English, Arabic, French',
+    graduates: '420+ Children Graduated to Reading Quran',
+    ratePerClass: 28,
+    hourlyRate: 28,
+    totalClassesTaught: 72,
+    allTimeSuccessfulClasses: 190,
+    studentsCount: 15,
+    rating: 4.99,
+    reviewsCount: 110,
+    location: 'London & Cairo Sanctuary',
+    image: null,
+    avatar: 'scholar',
+    badge: 'Childhood Quran Master',
+    registeredAt: '2024-04-12T11:00:00Z',
+    bio: 'Beloved by young learners worldwide, Ustadha Maryam utilizes engaging visual games, interactive digital whiteboards, and endless warmth to make learning Arabic letters an inspiring, joyful adventure.',
+    certificates: [
+      {
+        id: 'cert-qaida-master',
+        title: 'Master Trainer Certification in Noorani Qaida Methodology',
+        issuer: 'International Quranic Reading Council',
+        year: '2016',
+        degreeLevel: 'Executive Trainer License',
+        grade: 'Gold Medal',
+        credentialId: 'QAIDA-MST-2016-102',
+        verificationUrl: 'https://quranreading.org/verify/102',
+        verified: true,
+        description: 'Specialization in child phonetics and play-based Arabic orthography.'
+      }
+    ],
+    reviews: [
+      {
+        studentName: 'Fatima Zahra (Parent)',
+        country: 'Canada',
+        date: '1 week ago',
+        rating: 5,
+        comment: 'My 6-year-old daughter looks forward to her Quran classes every single day. Ustadha Maryam is an angel on earth.'
+      }
+    ]
+  },
+  {
+    id: 'QI-FAC-019',
+    slug: 'sheikh-dr-tariq-mansoor',
+    name: 'Dr. Tariq Al-Mansoor',
+    honorific: 'د. طارق المنصور',
+    email: 'tariq.mansoor@quraninstitute.org',
+    password: 'password123',
+    role: 'teacher',
+    status: 'Verified Scholar',
+    title: 'Head of Islamic Studies & Prophetic Seerah',
+    category: 'islamic-studies',
+    categoryLabel: 'ISLAMIC STUDIES',
+    division: 'brothers',
+    credentials: 'Ph.D. in Islamic Jurisprudence (Fiqh & Usul), Al-Azhar University',
+    sanad: 'Ijazah in the 6 Canonical Books of Hadith (Kutub al-Sittah)',
+    sanadCertification: 'Ph.D. Islamic Fiqh & Hadith Kutub al-Sittah',
+    experience: '15+ Years Islamic Studies & Youth Counseling',
+    yearsExperience: '15+ years',
+    specialties: ['Orthodox Fiqh of Worship', 'Aqeedah Tahawiyyah', 'Seerah & Prophetic Leadership', 'Contemporary Youth Challenges'],
+    specialization: 'Islamic Jurisprudence & Prophetic Seerah',
+    languages: 'Arabic, English',
+    graduates: '350+ Students',
+    ratePerClass: 35,
+    hourlyRate: 35,
+    totalClassesTaught: 65,
+    allTimeSuccessfulClasses: 180,
+    studentsCount: 14,
+    rating: 4.97,
+    reviewsCount: 58,
+    location: 'Cairo, Egypt',
+    image: '/assets/scholar_azhari_young.jpg',
+    avatar: 'scholar',
+    badge: 'Ph.D. Islamic Fiqh',
+    registeredAt: '2024-02-01T09:30:00Z',
+    bio: 'Dr. Tariq connects classical Islamic jurisprudence and prophetic character to modern questions of life, fostering balanced mainstream wisdom and practical spiritual guidance.',
+    certificates: [
+      {
+        id: 'cert-tariq-phd',
+        title: 'Ph.D. in Comparative Islamic Jurisprudence (Fiqh Muqaran)',
+        issuer: 'Faculty of Shariah and Law, Al-Azhar University',
+        year: '2017',
+        degreeLevel: 'Doctor of Philosophy (Ph.D.)',
+        grade: 'First Class Honors with Recommendation to Print',
+        credentialId: 'AZH-SHAR-PHD-2017',
+        verificationUrl: 'https://alazhar.edu.eg/shariah/2017',
+        verified: true,
+        description: 'Excellence in legal maxims (Qawa\'id Fiqhiyyah) and contemporary applications.'
+      }
+    ],
+    reviews: [
+      {
+        studentName: 'Zayd K.',
+        country: 'United States',
+        date: '1 month ago',
+        rating: 5,
+        comment: 'Dr. Tariq explains complex fiqh questions with crystal clarity and deep empathy for Muslims living in the West.'
+      }
+    ]
+  },
+  {
+    id: 'QI-FAC-020',
+    slug: 'sheikh-bilal-almasri',
+    name: 'Sheikh Bilal Al-Masri',
+    honorific: 'الشيخ بلال المصري',
+    email: 'bilal.masri@quraninstitute.org',
+    password: 'password123',
+    role: 'teacher',
+    status: 'Verified Scholar',
+    title: 'Senior Tajweed Master & Al-Jazariyyah Evaluator',
+    category: 'tajweed',
+    categoryLabel: 'TAJWEED CALIBRATION',
+    division: 'brothers',
+    credentials: 'Senior Tajweed Examiner, Quranic Recitations Institute, Cairo',
+    sanad: 'High Sanad in Hafs & Warsh via Senior Al-Azhar Scholars',
+    sanadCertification: 'Senior Examiner Al-Jazariyyah & Hafs',
+    experience: '14+ Years Dedicated Sanad Pedagogy',
+    yearsExperience: '14+ years',
+    specialties: ['Phonetic Makharij', 'Al-Jazariyyah Calibration', 'Sifat & Nuances', 'Sanad Hafs'],
+    specialization: 'Phonetic Makharij & Matn Al-Jazariyyah',
+    languages: 'Arabic (Native), English',
+    graduates: '260+ Certified Reciters',
+    ratePerClass: 30,
+    hourlyRate: 30,
+    totalClassesTaught: 54,
+    allTimeSuccessfulClasses: 145,
+    studentsCount: 12,
+    rating: 4.95,
+    reviewsCount: 47,
+    location: 'Cairo, Egypt',
+    image: '/assets/scholar_bilal.jpg',
+    avatar: 'scholar',
+    badge: 'Al-Jazariyyah Sanad',
+    registeredAt: '2024-05-10T14:00:00Z',
+    bio: 'Specializes in phonetic mouth articulation (Makharij & Sifat), subtle acoustic calibration, and Al-Jazariyyah poem memorization with high unbroken Sanad transmission.',
+    certificates: [
+      {
+        id: 'cert-bilal-tajweed',
+        title: 'Senior Tajweed Examiner Credential',
+        issuer: 'Supreme Council of Reciters, Cairo',
+        year: '2015',
+        degreeLevel: 'Official Examiner Board',
+        grade: 'Mumtaz',
+        credentialId: 'EGY-TAJ-EXAM-2015',
+        verificationUrl: 'https://qurancouncil.gov.eg/verify/2015-bilal',
+        verified: true,
+        description: 'Certified to evaluate national and international Quran reciters on subtle Sifat flaws.'
+      }
+    ],
+    reviews: [
+      {
+        studentName: 'Hamza Malik',
+        country: 'Malaysia',
+        date: '3 weeks ago',
+        rating: 5,
+        comment: 'Sheikh Bilal\'s precision with letter attributes (Hams, Jahr, Isti\'la) transformed my recitation from ordinary to competition standard.'
+      }
+    ]
+  },
+  {
+    id: 'QI-FAC-021',
+    slug: 'sheikh-omar-aldimashqi',
+    name: 'Sheikh Omar Al-Dimashqi',
+    honorific: 'الشيخ عمر الدمشقي',
+    email: 'omar.dimashqi@quraninstitute.org',
+    password: 'password123',
+    role: 'teacher',
+    status: 'Verified Scholar',
+    title: 'Senior Hafiz & Adult Quran Retention Coach',
+    category: 'hifz',
+    categoryLabel: 'ADULT HIFZ OVERHAUL',
+    division: 'brothers',
+    credentials: 'Ijazah in Mutoon at-Tajweed & Complete Quran Memorization',
+    sanad: 'Connected Isnad back to the Prophet ﷺ (29th generational link)',
+    sanadCertification: 'High Isnad 29th Generational Link',
+    experience: '11+ Years Global Online Teaching',
+    yearsExperience: '11+ years',
+    specialties: ['Spaced Repetition', 'Adult Juz Retention', 'Patience & Adab', 'Daily Habit Coaching'],
+    specialization: 'Adult Quran Retention & Daily Halqas',
+    languages: 'Arabic, English',
+    graduates: '195+ Memorizers',
+    ratePerClass: 28,
+    hourlyRate: 28,
+    totalClassesTaught: 48,
+    allTimeSuccessfulClasses: 130,
+    studentsCount: 11,
+    rating: 4.93,
+    reviewsCount: 39,
+    location: 'Damascus & Cairo Sanctuary',
+    image: '/assets/teacher_portrait.jpg',
+    avatar: 'scholar',
+    badge: 'High Isnad 29th Link',
+    registeredAt: '2024-06-01T12:00:00Z',
+    bio: 'Expert in adult hifz retention methodology, helping busy working professionals memorize and retain complete Juz through daily 15-minute halqas.',
+    certificates: [
+      {
+        id: 'cert-omar-isnad',
+        title: 'Ijazah in Complete Quran Memorization with High Isnad',
+        issuer: 'Damascus Sanctuary of Quranic Reciters',
+        year: '2016',
+        degreeLevel: 'Unbroken Isnad License',
+        grade: 'Passed with Honors',
+        credentialId: 'DAM-ISN-2016-88',
+        verificationUrl: 'https://damascusquran.org/verify/88',
+        verified: true,
+        description: 'Complete recitation by heart according to Hafs from Asim with 29 links.'
+      }
+    ],
+    reviews: [
+      {
+        studentName: 'Dr. Tariq M.',
+        country: 'UAE',
+        date: '2 weeks ago',
+        rating: 5,
+        comment: 'His daily 15-minute morning routine is revolutionary. I am finally on track to finish 30 Juz before age 40.'
+      }
+    ]
+  },
+  {
+    id: 'QI-FAC-022',
+    slug: 'sheikh-mustafa-aliskandari',
+    name: 'Sheikh Mustafa Al-Iskandari',
+    honorific: 'الشيخ مصطفى الإسكندري',
+    email: 'mustafa.iskandari@quraninstitute.org',
+    password: 'password123',
+    role: 'teacher',
+    status: 'Verified Scholar',
+    title: 'Master of Tajweed & Beautiful Melodic Recitation',
+    category: 'tajweed',
+    categoryLabel: 'MELODIC TAJWEED',
+    division: 'brothers',
+    credentials: 'Al-Azhar Certified Qari & Maqamat Instructor, Alexandria',
+    sanad: 'Sanad in the Seven Canonical Readings (Shatibiyyah)',
+    sanadCertification: 'Seven Canonical Readings Sanad (Shatibiyyah)',
+    experience: '17+ Years Maqamat & Recitation Pedagogy',
+    yearsExperience: '17+ years',
+    specialties: ['Melodic Recitation', 'Maqam Bayati & Rast', 'Breath Control', 'Emotional Connection'],
+    specialization: 'Melodic Recitation & Maqamat Adab',
+    languages: 'Arabic (Native), English',
+    graduates: '410+ Reciters Coached',
+    ratePerClass: 35,
+    hourlyRate: 35,
+    totalClassesTaught: 62,
+    allTimeSuccessfulClasses: 175,
+    studentsCount: 14,
+    rating: 4.98,
+    reviewsCount: 78,
+    location: 'Alexandria, Egypt',
+    image: '/assets/sheikh_scholar_portrait.jpg',
+    avatar: 'scholar',
+    badge: 'Melodic Tajweed Master',
+    registeredAt: '2024-03-20T10:00:00Z',
+    bio: 'Guides students in unlocking confident, deeply moving, and acoustically resonant recitation without compromising rigorous tajweed rules.',
+    certificates: [
+      {
+        id: 'cert-mustafa-shatib',
+        title: 'Master Sanad in the Seven Canonical Recitations (Shatibiyyah)',
+        issuer: 'Alexandria Faculty of Quranic Recitations',
+        year: '2011',
+        degreeLevel: 'Seven Qira\'at License',
+        grade: 'Mumtaz',
+        credentialId: 'ALX-7Q-2011-301',
+        verificationUrl: 'https://alexreciters.edu/verify/301',
+        verified: true,
+        description: 'Complete recitation of Quran in seven canonical recitations.'
+      }
+    ],
+    reviews: [
+      {
+        studentName: 'Bilal Hassan',
+        country: 'Sweden',
+        date: '1 month ago',
+        rating: 5,
+        comment: 'Learning Maqam Bayati and emotional cadence from Sheikh Mustafa was a dream come true. Truly sublime.'
+      }
+    ]
+  },
+  {
+    id: 'QI-FAC-023',
+    slug: 'sheikh-yahya-alansari',
+    name: 'Sheikh Yahya Al-Ansari',
+    honorific: 'الشيخ يحيى الأنصاري',
+    email: 'yahya.ansari@quraninstitute.org',
+    password: 'password123',
+    role: 'teacher',
+    status: 'Verified Scholar',
+    title: 'Senior Scholar of Tafsir & Usul ad-Deen',
+    category: 'islamic-studies',
+    categoryLabel: 'TAFSIR & CONTEMPLATION',
+    division: 'brothers',
+    credentials: 'M.A. in Usul ad-Deen & Quranic Exegesis, Al-Azhar University',
+    sanad: 'Certified Instructor of Classical Tafsir Traditions',
+    sanadCertification: 'Al-Azhar Usul ad-Deen & Tafsir',
+    experience: '13+ Years Tafsir Instruction',
+    yearsExperience: '13+ years',
+    specialties: ['Tafsir Ibn Kathir', 'Quranic Contemplation (Tadabbur)', 'Usul al-Fiqh', 'Spiritual Purification'],
+    specialization: 'Tafsir Ibn Kathir & Tadabbur',
+    languages: 'Arabic, English, Urdu',
+    graduates: '320+ Students Worldwide',
+    ratePerClass: 30,
+    hourlyRate: 30,
+    totalClassesTaught: 44,
+    allTimeSuccessfulClasses: 120,
+    studentsCount: 10,
+    rating: 4.92,
+    reviewsCount: 34,
+    location: 'Cairo, Egypt',
+    image: '/assets/scholar_azhari_young.jpg',
+    avatar: 'scholar',
+    badge: 'Al-Azhar Usul Master',
+    registeredAt: '2024-04-05T15:00:00Z',
+    bio: 'Illuminates the verses of the Holy Quran through classical Tafsir (Ibn Kathir, Al-Qurtubi, Al-Tabari), cultivating intellectual depth and tranquil faith.',
+    certificates: [
+      {
+        id: 'cert-yahya-usul',
+        title: 'M.A. in Quranic Exegesis (Tafsir & Ulum al-Quran)',
+        issuer: 'Faculty of Usul ad-Deen, Al-Azhar University',
+        year: '2016',
+        degreeLevel: 'Master of Arts (M.A.)',
+        grade: 'First Class Honors',
+        credentialId: 'AZH-USL-MA-2016',
+        verificationUrl: 'https://alazhar.edu.eg/usul/verify/2016-yahya',
+        verified: true,
+        description: 'Excellence in classical methodologies of exegesis and linguistic nuances.'
+      }
+    ],
+    reviews: [
+      {
+        studentName: 'Nasir Uddin',
+        country: 'Bangladesh',
+        date: '3 weeks ago',
+        rating: 5,
+        comment: 'His Tafsir classes opened my eyes to the structural beauty and infinite wisdom of Surah Yusuf.'
+      }
+    ]
   },
   {
     id: 'QI-FAC-028',
+    slug: 'ustadh-mahmoud-almisri',
     name: 'Ustadh Mahmoud Al-Misri',
+    honorific: 'الأستاذ محمود المصري',
     email: 'mahmoud.teacher@quraninstitute.org',
     password: 'password123',
     role: 'teacher',
     status: 'Verified Scholar',
+    title: 'Senior Reciter & Tajweed Rules Specialist',
+    category: 'tajweed',
+    categoryLabel: 'TAJWEED RULES',
+    division: 'brothers',
+    credentials: 'Ijazah in Warsh ‘an Nafi’ & Hafs (Madinah University)',
+    sanad: 'Sanad in Hafs & Warsh from Islamic University of Madinah',
     sanadCertification: 'Ijazah in Warsh ‘an Nafi’ & Hafs (Madinah University)',
-    specialization: 'Tajweed Rules & Arabic Makharij',
+    experience: '9+ Years Dedicated Pedagogy',
     yearsExperience: '9 years',
+    specialties: ['Tajweed Rules & Arabic Makharij', 'Noorani Qaida', 'Sifat & Letters', 'Fluent Reading'],
+    specialization: 'Tajweed Rules & Arabic Makharij',
+    languages: 'Arabic, English',
+    graduates: '190+ Certified Reciters',
     ratePerClass: 25,
     hourlyRate: 25,
-    totalClassesTaught: 28,
-    allTimeSuccessfulClasses: 74,
+    totalClassesTaught: 38,
+    allTimeSuccessfulClasses: 94,
     studentsCount: 12,
-    nextSession: 'Thursday at 4:30 PM',
+    rating: 4.90,
+    reviewsCount: 31,
+    location: 'Cairo, Egypt',
+    image: '/assets/teacher_portrait.jpg',
     avatar: 'scholar',
+    badge: 'Madinah University Sanad',
     registeredAt: '2024-06-18T14:15:00Z',
+    bio: 'Dedicated instructor with deep focus on phonetic accuracy, articulation points of Arabic letters, and systematic tajweed rules application.',
+    certificates: [
+      {
+        id: 'cert-mahmoud-madinah',
+        title: 'Ijazah in Riwayah Warsh & Hafs',
+        issuer: 'Islamic University of Madinah',
+        year: '2018',
+        degreeLevel: 'Sanad License',
+        grade: 'Mumtaz',
+        credentialId: 'MAD-QUR-2018-77',
+        verificationUrl: 'https://iu.edu.sa/verify/77',
+        verified: true,
+        description: 'Complete recitation certification under scholars of the Prophet’s Mosque.'
+      }
+    ],
+    reviews: [
+      {
+        studentName: 'Zaid bin Harith',
+        country: 'United Kingdom',
+        date: '2 weeks ago',
+        rating: 5,
+        comment: 'Ustadh Mahmoud made Tajweed rules easy to remember with his color-coded diagrams and patient corrections.'
+      }
+    ]
   },
   {
     id: 'QI-FAC-035',
+    slug: 'ustadh-bilal-alhashemi',
     name: 'Ustadh Bilal Al-Hashemi',
+    honorific: 'الأستاذ بلال الهاشمي',
     email: 'bilal.teacher@quraninstitute.org',
     password: 'password123',
     role: 'teacher',
-    status: 'Pending Credential Verification',
+    status: 'Verified Scholar',
+    title: 'Hifz Revision Coach & Tajweed Mentor',
+    category: 'hifz',
+    categoryLabel: 'HIFZ REVISION',
+    division: 'brothers',
+    credentials: 'Ijaza in Qaloon & Hafs from University of Jordan',
+    sanad: 'Ijazah in Qaloon & Hafs',
     sanadCertification: 'Ijaza in Qaloon & Hafs from University of Jordan',
-    specialization: 'Hifz Revision & Tajweed Application',
+    experience: '5+ Years Academic Coaching',
     yearsExperience: '5 years',
+    specialties: ['Hifz Revision & Tajweed Application', 'Juz Amma Memorization', 'Teenage Hifz Guidance'],
+    specialization: 'Hifz Revision & Tajweed Application',
+    languages: 'Arabic, English',
+    graduates: '110+ Students',
     ratePerClass: 25,
     hourlyRate: 25,
-    totalClassesTaught: 19,
-    allTimeSuccessfulClasses: 52,
-    studentsCount: 0,
-    nextSession: 'Faculty Onboarding Interview (Upcoming)',
+    totalClassesTaught: 24,
+    allTimeSuccessfulClasses: 68,
+    studentsCount: 8,
+    rating: 4.88,
+    reviewsCount: 22,
+    location: 'Amman, Jordan',
+    image: '/assets/scholar_azhari_young.jpg',
     avatar: 'scholar',
+    badge: 'Jordan University Sanad',
     registeredAt: '2026-10-12T14:00:00Z',
+    bio: 'Patient and attentive coach dedicated to helping students solidify their memorization through structured daily review sessions and gentle encouragement.',
+    certificates: [
+      {
+        id: 'cert-bilal-jordan',
+        title: 'Ijazah in Qaloon \'an Nafi\' & Hafs \'an Asim',
+        issuer: 'Faculty of Shariah, University of Jordan',
+        year: '2021',
+        degreeLevel: 'Sanad License',
+        grade: 'Passed with Distinction',
+        credentialId: 'JOR-QUR-2021-19',
+        verificationUrl: 'https://uj.edu.jo/verify/19',
+        verified: true,
+        description: 'Complete recitation certification with unbroken chain.'
+      }
+    ],
+    reviews: [
+      {
+        studentName: 'Omar Farooq',
+        country: 'Jordan',
+        date: '1 month ago',
+        rating: 5,
+        comment: 'Ustadh Bilal has a gentle and methodical way of testing memorization that prevents forgetting.'
+      }
+    ]
   },
   {
     id: 'QI-STU-8842',
@@ -143,50 +873,28 @@ const initialUsers = [
     avatar: 'student',
     registeredAt: '2026-10-14T11:00:00Z',
   },
-  {
-    id: 'QI-PAR-101',
-    name: 'Hajji Mansoor Rahman',
-    email: 'parent@quraninstitute.org',
-    password: 'password123',
-    role: 'parent',
-    status: 'Active',
-    childrenIds: ['QI-STU-8842', 'QI-STU-7721'],
-    phone: '+880 1711-223344',
-    avatar: 'parent',
-    registeredAt: '2024-01-15T10:00:00Z',
-  },
-  {
-    id: 'QI-PAR-102',
-    name: 'Dr. Fatima Al-Qasim',
-    email: 'fatima.parent@quraninstitute.org',
-    password: 'password123',
-    role: 'parent',
-    status: 'Active',
-    childrenIds: ['QI-STU-9904'],
-    phone: '+880 1711-556677',
-    avatar: 'parent',
-    registeredAt: '2024-02-01T11:00:00Z',
-  },
-  {
-    id: 'QI-PAR-103',
-    name: 'Kamrul Hasan',
-    email: 'kamrul.parent@quraninstitute.org',
-    password: 'password123',
-    role: 'parent',
-    status: 'Pending Approval',
-    childrenIds: ['QI-STU-6512'],
-    phone: '+880 1711-889900',
-    avatar: 'parent',
-    registeredAt: '2024-10-10T09:30:00Z',
-  },
 ];
-globalThis.__QURAN_USERS__ = globalThis.__QURAN_USERS__ || initialUsers;
-// Synchronize new initialUsers into global cache if not present
-initialUsers.forEach((u) => {
-  if (!globalThis.__QURAN_USERS__.some((existing) => existing.id === u.id)) {
-    globalThis.__QURAN_USERS__.push(u);
-  }
-});
+if (!globalThis.__QURAN_USERS__) {
+  globalThis.__QURAN_USERS__ = [...initialUsers].filter(u => u.role !== 'parent');
+} else {
+  // Synchronize initialUsers updates and new schema fields into the running global cache
+  initialUsers.forEach((u) => {
+    const existingIndex = globalThis.__QURAN_USERS__.findIndex((existing) => existing.id === u.id);
+    if (existingIndex >= 0) {
+      // Merge initial profile enhancements while keeping dynamic runtime updates
+      globalThis.__QURAN_USERS__[existingIndex] = {
+        ...u,
+        ...globalThis.__QURAN_USERS__[existingIndex],
+        certificates: globalThis.__QURAN_USERS__[existingIndex].certificates || u.certificates || [],
+        sanadChain: globalThis.__QURAN_USERS__[existingIndex].sanadChain || u.sanadChain || [],
+        specialties: globalThis.__QURAN_USERS__[existingIndex].specialties || u.specialties || [],
+        reviews: globalThis.__QURAN_USERS__[existingIndex].reviews || u.reviews || [],
+      };
+    } else if (u.role !== 'parent') {
+      globalThis.__QURAN_USERS__.push(u);
+    }
+  });
+}
 const users = globalThis.__QURAN_USERS__;
 
 // 2. Initial Flagship Course: How to Read the Quran / Quran Reading Mastery
@@ -929,11 +1637,21 @@ const studentMistakes = globalThis.__QURAN_MISTAKES__;
 // --- USER OPERATIONS ---
 export function findUserByEmail(email) {
   if (!email) return null;
-  const cleanEmail = email.trim().toLowerCase();
+  const cleanInput = String(email).trim().toLowerCase();
+  const digitsOnly = cleanInput.replace(/[^0-9]/g, '');
+
   return (
-    users.find(
-      (u) => u.email.toLowerCase() === cleanEmail || u.id.toLowerCase() === cleanEmail
-    ) || null
+    users.find((u) => {
+      if (u.email && u.email.toLowerCase() === cleanInput) return true;
+      if (u.id && u.id.toLowerCase() === cleanInput) return true;
+      if (digitsOnly.length >= 8) {
+        const uPhoneDigits = String(u.phone || '').replace(/[^0-9]/g, '');
+        if (uPhoneDigits && (uPhoneDigits === digitsOnly || uPhoneDigits.endsWith(digitsOnly) || digitsOnly.endsWith(uPhoneDigits))) {
+          return true;
+        }
+      }
+      return false;
+    }) || null
   );
 }
 
@@ -949,23 +1667,21 @@ export function createUser(userData) {
     );
   }
 
-  const roleLower = String(userData.role || '').toLowerCase();
-  if (roleLower !== 'student' && roleLower !== 'teacher' && roleLower !== 'parent') {
-    throw new Error('Invalid user role. Only Student, Teacher, and Parent accounts may be registered.');
+  const roleLower = String(userData.role || 'student').toLowerCase();
+  if (roleLower !== 'student' && roleLower !== 'teacher') {
+    throw new Error('Invalid user role. Academic accounts may be registered as Student or Scholar.');
   }
 
-  const rolePrefix = roleLower === 'teacher' ? 'FAC' : roleLower === 'parent' ? 'PAR' : 'STU';
+  const rolePrefix = roleLower === 'teacher' ? 'FAC' : 'STU';
   const randomNum = Math.floor(1000 + Math.random() * 9000);
   const newId = `QI-${rolePrefix}-${randomNum}`;
 
   const defaultStatus =
     roleLower === 'teacher'
       ? 'Pending Credential Verification'
-      : roleLower === 'parent'
-      ? 'Active'
       : 'Enrolled';
 
-  const defaultAvatar = roleLower === 'teacher' ? 'scholar' : roleLower === 'parent' ? 'parent' : roleLower === 'admin' ? 'admin' : 'student';
+  const defaultAvatar = roleLower === 'teacher' ? 'scholar' : 'student';
 
   const newUser = {
     id: newId,
@@ -978,6 +1694,84 @@ export function createUser(userData) {
 
   users.push(newUser);
   return newUser;
+}
+
+// Allows System Administrator to assign or change a user's role
+export function setUserRole(userId, newRole) {
+  const user = users.find((u) => u.id === userId);
+  if (!user) throw new Error('User account not found.');
+  if (user.role === 'admin') throw new Error('Administrator role cannot be altered.');
+
+  const roleLower = String(newRole).trim().toLowerCase();
+  if (roleLower !== 'student' && roleLower !== 'teacher') {
+    throw new Error('Valid roles to assign are Student or Scholar.');
+  }
+
+  user.role = roleLower;
+  if (roleLower === 'teacher') {
+    user.avatar = 'scholar';
+    user.status = 'Verified Scholar';
+    if (!user.ratePerClass) user.ratePerClass = 25;
+    if (!user.hourlyRate) user.hourlyRate = 25;
+    if (!user.sanadCertification) user.sanadCertification = 'Verified Institute Teacher / Scholar';
+    if (!user.specialization) user.specialization = 'Quran Reading & Tajweed Rules';
+    if (!user.yearsExperience) user.yearsExperience = '3+ years';
+  } else if (roleLower === 'student') {
+    user.avatar = 'student';
+    user.status = 'Enrolled';
+    if (!user.memorizedJuz) user.memorizedJuz = 0;
+    if (!user.totalJuz) user.totalJuz = 30;
+  }
+
+  const { password: _, ...safeUser } = user;
+  return safeUser;
+}
+
+// Direct Admin User Provisioning with designated role
+export function adminCreateUser(userData) {
+  const { name, email, password, role = 'student', status = 'Enrolled', mentor, tajweedLevel, ratePerClass, specialization } = userData;
+  if (!name || !email || !password) {
+    throw new Error('Name, email, and password are required to create a user.');
+  }
+  const existing = users.find((u) => u.email.toLowerCase() === email.toLowerCase());
+  if (existing) {
+    throw new Error('An account with this email address already exists.');
+  }
+
+  const roleLower = String(role).trim().toLowerCase();
+  const rolePrefix = roleLower === 'teacher' ? 'FAC' : 'STU';
+  const randomNum = Math.floor(1000 + Math.random() * 9000);
+  const newId = `QI-${rolePrefix}-${randomNum}`;
+
+  const created = {
+    id: newId,
+    name: name.trim(),
+    email: email.trim().toLowerCase(),
+    password,
+    role: roleLower,
+    status: status || (roleLower === 'teacher' ? 'Verified Scholar' : 'Enrolled'),
+    avatar: roleLower === 'teacher' ? 'scholar' : 'student',
+    registeredAt: new Date().toISOString(),
+    ...(roleLower === 'teacher' && {
+      ratePerClass: parseFloat(ratePerClass) || 25,
+      hourlyRate: parseFloat(ratePerClass) || 25,
+      specialization: specialization || 'Tajweed & Qira’at',
+      sanadCertification: 'Verified Ijazah with Connected Sanad',
+      yearsExperience: '5+ years',
+      totalClassesTaught: 0,
+      studentsCount: 0,
+    }),
+    ...(roleLower === 'student' && {
+      tajweedLevel: tajweedLevel || 'Intermediate',
+      memorizedJuz: 0,
+      totalJuz: 30,
+      mentor: mentor || 'Dr. Sheikh Ahmad Al-Azhari',
+    }),
+  };
+
+  users.push(created);
+  const { password: _, ...safeUser } = created;
+  return safeUser;
 }
 
 export function getAllUsers() {
@@ -1015,15 +1809,63 @@ export function getAllTeachers() {
     .filter(
       (u) =>
         u.role === 'teacher' &&
-        (u.status === 'Verified Scholar' || u.status === 'Active')
+        (u.status === 'Verified Scholar' || u.status === 'Active' || u.status === 'Enrolled')
     )
     .map(({ password: _, ...safeUser }) => safeUser);
 }
 
-export function getAllParents() {
-  return users
-    .filter((u) => u.role === 'parent')
-    .map(({ password: _, ...safeUser }) => safeUser);
+export function getTeacherByIdOrSlug(idOrSlug) {
+  if (!idOrSlug) return null;
+  const normalized = String(idOrSlug).toLowerCase().trim();
+  const teacher = users.find(
+    (u) =>
+      u.role === 'teacher' &&
+      (String(u.id).toLowerCase() === normalized ||
+       String(u.slug || '').toLowerCase() === normalized ||
+       String(u.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-') === normalized)
+  );
+  if (!teacher) return null;
+  const { password: _, ...safeTeacher } = teacher;
+  return safeTeacher;
+}
+
+export function getPublicTeachersList({ category = 'all', search = '', page = 1, limit = 6 } = {}) {
+  let teachers = getAllTeachers();
+
+  if (category && category !== 'all') {
+    if (category === 'sisters') {
+      teachers = teachers.filter((t) => t.division === 'sisters' || t.category === 'sisters');
+    } else {
+      teachers = teachers.filter((t) => t.category === category || t.division === category);
+    }
+  }
+
+  if (search && search.trim()) {
+    const q = search.toLowerCase().trim();
+    teachers = teachers.filter((t) =>
+      (t.name && t.name.toLowerCase().includes(q)) ||
+      (t.title && t.title.toLowerCase().includes(q)) ||
+      (t.credentials && t.credentials.toLowerCase().includes(q)) ||
+      (t.sanad && t.sanad.toLowerCase().includes(q)) ||
+      (t.specialties && Array.isArray(t.specialties) && t.specialties.some(s => s.toLowerCase().includes(q))) ||
+      (t.bio && t.bio.toLowerCase().includes(q))
+    );
+  }
+
+  const total = teachers.length;
+  const pageNum = Math.max(1, parseInt(page, 10) || 1);
+  const limitNum = Math.max(1, parseInt(limit, 10) || 6);
+  const totalPages = Math.ceil(total / limitNum) || 1;
+  const offset = (pageNum - 1) * limitNum;
+  const paginated = teachers.slice(offset, offset + limitNum);
+
+  return {
+    teachers: paginated,
+    total,
+    page: pageNum,
+    limit: limitNum,
+    totalPages,
+  };
 }
 
 export function updateUserProfile(userId, updates) {
@@ -1040,7 +1882,6 @@ export function updateUserProfile(userId, updates) {
 export function getInstituteStats() {
   const students = users.filter((u) => u.role === 'student');
   const teachers = users.filter((u) => u.role === 'teacher');
-  const parents = users.filter((u) => u.role === 'parent');
   const verifiedTeachers = teachers.filter(
     (u) => u.status === 'Verified Scholar' || u.status === 'Active'
   );
@@ -1049,9 +1890,6 @@ export function getInstituteStats() {
   );
   const pendingStudents = students.filter(
     (u) => u.status === 'Pending Approval' || u.status === 'Pending Credential Verification'
-  );
-  const pendingParents = parents.filter(
-    (u) => u.status === 'Pending Approval'
   );
   const admins = users.filter((u) => u.role === 'admin');
   const totalMemorizedJuz = students.reduce((acc, curr) => acc + (curr.memorizedJuz || 0), 0);
@@ -2980,4 +3818,40 @@ export function getDictionaryEntries(category = 'all', search = '') {
     return true;
   });
 }
+
+export function addDictionaryEntry(entryData) {
+  const newId = `DIC-${String(dictionary.length + 1).padStart(3, '0')}`;
+  const newEntry = {
+    id: newId,
+    termArabic: entryData.termArabic || '',
+    termTranslit: entryData.termTranslit || '',
+    termEnglish: entryData.termEnglish || '',
+    category: entryData.category || 'makharij',
+    definition: entryData.definition || '',
+    example: entryData.example || '',
+    createdAt: new Date().toISOString(),
+    createdBy: entryData.createdBy || 'Teacher / Admin',
+  };
+  dictionary.unshift(newEntry);
+  return newEntry;
+}
+
+export function updateDictionaryEntry(id, updates) {
+  const idx = dictionary.findIndex((item) => item.id === id);
+  if (idx === -1) return null;
+  dictionary[idx] = {
+    ...dictionary[idx],
+    ...updates,
+    updatedAt: new Date().toISOString(),
+  };
+  return dictionary[idx];
+}
+
+export function deleteDictionaryEntry(id) {
+  const idx = dictionary.findIndex((item) => item.id === id);
+  if (idx === -1) return false;
+  dictionary.splice(idx, 1);
+  return true;
+}
+
 

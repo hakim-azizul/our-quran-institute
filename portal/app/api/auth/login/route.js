@@ -9,7 +9,7 @@ export async function POST(request) {
 
     if (!email || !password) {
       return NextResponse.json(
-        { error: 'Email or Institute ID, and password are required.' },
+        { error: 'Email address, phone number, or Institute ID, and password are required.' },
         { status: 400 }
       );
     }
@@ -18,7 +18,7 @@ export async function POST(request) {
 
     if (!user) {
       return NextResponse.json(
-        { error: 'No account found with this email or institute ID.' },
+        { error: 'No account found with this email address, phone number, or Institute ID.' },
         { status: 401 }
       );
     }

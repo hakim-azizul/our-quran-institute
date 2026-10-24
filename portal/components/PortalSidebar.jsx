@@ -53,6 +53,7 @@ export default function PortalSidebar({
     curriculum: '/dashboard/curriculum',
     quran: '/dashboard/quran',
     quiz: '/dashboard/quiz',
+    achievements: '/dashboard/achievements',
     invoices: '/dashboard/invoices',
     dictionary: '/dashboard/dictionary',
     catalog: '/dashboard/catalog',
@@ -111,11 +112,9 @@ export default function PortalSidebar({
             <span className="portal-brand-tag">
               {portalType === 'admin'
                 ? 'Admin'
-                : isParent
-                ? 'Parent Portal'
                 : isTeacher
                 ? 'Teacher Portal'
-                : 'Student Portal'}
+                : 'Student & Family Portal'}
             </span>
           </div>
         </div>
@@ -353,11 +352,15 @@ export default function PortalSidebar({
                 type="button"
                 onClick={() => handleItemClick('digitalquran')}
                 className={`portal-nav-item ${currentTab === 'digitalquran' ? 'active' : ''}`}
+                title="Genuine Quran Sharif & Mushaf Reading Studio"
               >
                 <div className="portal-nav-item-content">
-                  <span className="nav-icon"><Icon name="book-open" size={17} /></span>
-                  <span>Quran Reader</span>
+                  <span className="nav-icon"><Icon name="book-open" size={17} color="#D4AF37" /></span>
+                  <span>Noble Quran (মুসহাফ)</span>
                 </div>
+                <span className="portal-nav-badge" style={{ background: '#0D4A38', color: '#FFDF85' }}>
+                  Mushaf
+                </span>
               </button>
 
               <button
@@ -402,6 +405,21 @@ export default function PortalSidebar({
                   <span className="nav-icon"><Icon name="award" size={17} /></span>
                   <span>Quizzes</span>
                 </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleItemClick('achievements')}
+                className={`portal-nav-item ${currentTab === 'achievements' ? 'active' : ''}`}
+                id="sidebar-nav-achievements"
+              >
+                <div className="portal-nav-item-content">
+                  <span className="nav-icon"><Icon name="award" size={17} color="#D4AF37" /></span>
+                  <span>Badges &amp; Sanad</span>
+                </div>
+                <span className="portal-nav-badge">
+                  ১০-পারা সনদ
+                </span>
               </button>
 
               <button

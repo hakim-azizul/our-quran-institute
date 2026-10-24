@@ -4,12 +4,10 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import AuthNavbar from '../../../components/AuthNavbar';
-import RoleSelector from '../../../components/RoleSelector';
 import { Icon } from '../../../components/Icons';
 
 export default function LoginPage() {
   const router = useRouter();
-  const [role, setRole] = useState('student'); // 'student' | 'teacher'
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -18,43 +16,35 @@ export default function LoginPage() {
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const [infoMsg, setInfoMsg] = useState('');
+  const [activeFilledAccount, setActiveFilledAccount] = useState('');
 
   React.useEffect(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
       if (params.get('pendingApproval') === 'true' || params.get('pending') === 'true') {
         setInfoMsg(
-          'Teacher Application Submitted: Your account has been registered and is awaiting administrator approval. You will be able to log in once approved.'
+          'Account Registration Submitted: Your registration is under administrative verification. You will be able to log in once your account has been reviewed.'
         );
-        setRole('teacher');
       }
     }
   }, []);
 
-  // 1-Click Demo Fill for easy testing
-  const handleDemoFill = (selectedRole) => {
+  // 1-Click Quick Fill for testing different roles without manual role selection
+  const handleDemoFill = (type) => {
     setErrorMsg('');
-    if (selectedRole === 'student') {
-      setRole('student');
+    if (type === 'student') {
       setEmail('tariq.student@quraninstitute.org');
       setPassword('password123');
-    } else if (selectedRole === 'teacher') {
-      setRole('teacher');
+      setActiveFilledAccount('Student: Tariq Al-Mansoor');
+    } else if (type === 'teacher') {
       setEmail('dr.ahmad@quraninstitute.org');
       setPassword('password123');
-    } else if (selectedRole === 'parent') {
-      setRole('parent');
-      setEmail('parent@quraninstitute.org');
-      setPassword('password123');
-    } else if (selectedRole === 'admin') {
+      setActiveFilledAccount('Scholar: Dr. Sheikh Ahmad Al-Azhari');
+    } else if (type === 'admin') {
       setEmail('admin@quraninstitute.org');
       setPassword('admin123');
+      setActiveFilledAccount('Administrator: Sheikh Dr. Ibrahim');
     }
-  };
-
-  const handleRoleChange = (newRole) => {
-    setRole(newRole);
-    setErrorMsg('');
   };
 
   const handleSubmit = async (e) => {
@@ -67,7 +57,7 @@ export default function LoginPage() {
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, role }),
+        body: JSON.stringify({ email, password }),
       });
 
       const data = await res.json();
@@ -78,8 +68,22 @@ export default function LoginPage() {
         return;
       }
 
-      setSuccessMsg(`Welcome back, ${data.user.name}! Opening your dashboard...`);
-      const targetDestination = data.redirectUrl || (data.user.role === 'admin' ? '/admin' : '/dashboard');
+      const roleBadge =
+        data.user.role === 'admin'
+          ? 'Administrator'
+          : data.user.role === 'teacher'
+          ? 'Scholar'
+          : 'Student';
+
+      setSuccessMsg(`Welcome back, ${data.user.name} (${roleBadge})! Opening your dashboard...`);
+      const targetDestination =
+        data.redirectUrl ||
+        (data.user.role === 'admin'
+          ? '/admin'
+          : data.user.role === 'teacher'
+          ? '/dashboard/teacher'
+          : '/dashboard');
+
       setTimeout(() => {
         router.push(targetDestination);
       }, 700);
@@ -107,16 +111,13 @@ export default function LoginPage() {
           <div className="auth-card-header">
             <div className="auth-card-badge">
               <Icon name="sparkles" size={13} color="#0D4A38" />
-              <span>Student &amp; Teacher Portal</span>
+              <span>Institute Academic Portal</span>
             </div>
-            <h1 className="auth-card-title">Welcome to Your Portal</h1>
+            <h1 className="auth-card-title">Sign In to Your Account</h1>
             <p className="auth-card-subtitle">
-              Live Quran classes, progress tracking, and daily reports for students and parents.
+              Enter your credentials to access your classes, Quran lessons, and dashboard.
             </p>
           </div>
-
-          {/* Role Switcher (Student & Teacher Only) */}
-          <RoleSelector activeRole={role} onRoleChange={handleRoleChange} />
 
           {/* Quick Demo Pre-Fill Box */}
           <div className="demo-helper-box">
@@ -125,14 +126,14 @@ export default function LoginPage() {
                 <span className="demo-helper-sparkle">
                   <Icon name="zap" size={13} />
                 </span>
-                <span>Quick Test Access:</span>
+                <span>Quick Access Demo Accounts:</span>
               </div>
-              <span className="demo-helper-hint">Click role to auto-fill</span>
+              <span className="demo-helper-hint">Automatic role detection</span>
             </div>
-            <div className="demo-helper-btn-grid">
+            <div className="demo-helper-btn-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
               <button
                 type="button"
-                className="demo-helper-btn"
+                className={`demo-helper-btn ${activeFilledAccount.includes('Student') ? 'active' : ''}`}
                 onClick={() => handleDemoFill('student')}
                 title="Fill Tariq Al-Mansoor (Student)"
               >
@@ -140,7 +141,7 @@ export default function LoginPage() {
               </button>
               <button
                 type="button"
-                className="demo-helper-btn"
+                className={`demo-helper-btn ${activeFilledAccount.includes('Scholar') ? 'active' : ''}`}
                 onClick={() => handleDemoFill('teacher')}
                 title="Fill Dr. Sheikh Ahmad Al-Azhari (Scholar)"
               >
@@ -148,21 +149,18 @@ export default function LoginPage() {
               </button>
               <button
                 type="button"
-                className="demo-helper-btn"
-                onClick={() => handleDemoFill('parent')}
-                title="Fill Hajji Mansoor Rahman (Parent)"
-              >
-                <Icon name="parent" size={14} style={{ marginRight: 6 }} /> Parent
-              </button>
-              <button
-                type="button"
-                className="demo-helper-btn demo-helper-btn-admin"
+                className={`demo-helper-btn demo-helper-btn-admin ${activeFilledAccount.includes('Administrator') ? 'active' : ''}`}
                 onClick={() => handleDemoFill('admin')}
-                title="Fill Database-Provisioned Admin"
+                title="Fill Sheikh Dr. Ibrahim (Director & Admin)"
               >
                 <Icon name="shield-user" size={14} style={{ marginRight: 6 }} /> Admin
               </button>
             </div>
+            {activeFilledAccount && (
+              <div style={{ marginTop: '8px', fontSize: '12px', color: '#0D4A38', fontWeight: 600 }}>
+                Selected: {activeFilledAccount}
+              </div>
+            )}
           </div>
 
           {/* Info feedback */}
@@ -203,11 +201,7 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit} className="auth-form">
             <div className="form-group">
               <label className="form-label" htmlFor="portal-email-input">
-                {role === 'student'
-                  ? 'Student Email or Institute ID (QI-STU-8842)'
-                  : role === 'teacher'
-                  ? 'Faculty Scholar Email or ID (QI-FAC-014)'
-                  : 'Guardian Email or Parent ID (parent@quraninstitute.org)'}
+                Email Address or Institute ID
               </label>
               <div className="form-input-container">
                 <span className="form-input-icon">
@@ -218,14 +212,11 @@ export default function LoginPage() {
                   type="text"
                   required
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder={
-                    role === 'student'
-                      ? 'student@quraninstitute.org or QI-STU-8842'
-                      : role === 'teacher'
-                      ? 'faculty@quraninstitute.org or QI-FAC-014'
-                      : 'parent@quraninstitute.org or QI-PAR-101'
-                  }
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    setActiveFilledAccount('');
+                  }}
+                  placeholder="e.g. name@quraninstitute.org or QI-ID"
                   className="form-input"
                   autoComplete="username"
                 />
@@ -242,7 +233,7 @@ export default function LoginPage() {
                   onClick={(e) => {
                     e.preventDefault();
                     alert(
-                      'Password reset instruction has been dispatched to your registered admissions email address.'
+                      'Password reset instruction has been dispatched to your registered email address.'
                     );
                   }}
                   className="form-forgot-link"
@@ -284,7 +275,7 @@ export default function LoginPage() {
                 className="form-checkbox"
               />
               <label htmlFor="portal-remember-me" className="form-checkbox-text">
-                Keep me securely signed in on this computer
+                Keep me securely signed in on this device
               </label>
             </div>
 
@@ -294,17 +285,10 @@ export default function LoginPage() {
               className="btn-auth-submit"
             >
               {isSubmitting ? (
-                <span>Signing In...</span>
+                <span>Verifying Credentials...</span>
               ) : (
                 <>
-                  <span>
-                    Sign In to{' '}
-                    {role === 'student'
-                      ? 'Student Portal'
-                      : role === 'teacher'
-                      ? 'Teacher Portal'
-                      : 'Parent Portal'}
-                  </span>
+                  <span>Sign In to Dashboard</span>
                   <Icon name="arrow-right" size={16} color="#FFDF85" />
                 </>
               )}
@@ -314,7 +298,7 @@ export default function LoginPage() {
           {/* Footer */}
           <div className="auth-card-footer">
             <p className="auth-footer-prompt">
-              New student or parent?
+              New student applying for admission?{' '}
               <Link href="/register" className="auth-footer-link">
                 Register New Account
               </Link>

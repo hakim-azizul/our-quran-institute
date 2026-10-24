@@ -9,63 +9,25 @@ export default function StudentParentProgressView({
   onOpenReviewModal,
   onOpenDigitalQuran,
   onOpenInvoiceModal,
+  onOpenAchievements,
 }) {
-  const isParent = currentUser?.role === 'parent';
+  const activeStudent = {
+    id: currentUser?.id || 'QI-STU-8842',
+    name: currentUser?.name || 'Tariq Al-Mansoor',
+    avatar: currentUser?.avatar || 'student',
+    memorizedJuz: currentUser?.memorizedJuz || 12,
+    totalJuz: 30,
+    mentor: currentUser?.mentor || 'Dr. Sheikh Ahmad Al-Azhari',
+    mentorId: currentUser?.assignedTeacherId || 'QI-FAC-014',
+    attendanceRate: 96,
+    currentSurah: 'Surah Yusuf (يُوسُف)',
+    currentPara: currentUser?.memorizedJuz || 12,
+    targetKhatmDate: 'June 2027',
+    pagesMemorized: (currentUser?.memorizedJuz || 12) * 20,
+    parentName: currentUser?.parentName || 'Family / Guardian',
+  };
 
-  // Demo children for parent
-  const parentChildren = [
-    {
-      id: 'QI-STU-8842',
-      name: 'Tariq Al-Mansoor',
-      avatar: 'student',
-      role: 'student',
-      memorizedJuz: 12,
-      totalJuz: 30,
-      mentor: 'Dr. Sheikh Ahmad Al-Azhari',
-      mentorId: 'QI-FAC-014',
-      attendanceRate: 96,
-      currentSurah: 'Surah Yusuf (يُوسُف)',
-      currentPara: 12,
-      targetKhatmDate: 'June 2027',
-      pagesMemorized: 240,
-    },
-    {
-      id: 'QI-STU-7721',
-      name: 'Zaid bin Harith',
-      avatar: 'student',
-      role: 'student',
-      memorizedJuz: 6,
-      totalJuz: 30,
-      mentor: 'Ustadh Mahmoud Al-Misri',
-      mentorId: 'QI-FAC-028',
-      attendanceRate: 92,
-      currentSurah: 'Surah An-Nisa (النِّسَاء)',
-      currentPara: 6,
-      targetKhatmDate: 'December 2027',
-      pagesMemorized: 120,
-    },
-  ];
-
-  const [activeChildId, setActiveChildId] = useState(
-    isParent ? parentChildren[0].id : currentUser?.id || 'QI-STU-8842'
-  );
-
-  const activeStudent = isParent
-    ? parentChildren.find((c) => c.id === activeChildId) || parentChildren[0]
-    : {
-        id: currentUser?.id || 'QI-STU-8842',
-        name: currentUser?.name || 'Tariq Al-Mansoor',
-        avatar: currentUser?.avatar || 'student',
-        memorizedJuz: currentUser?.memorizedJuz || 12,
-        totalJuz: 30,
-        mentor: currentUser?.mentor || 'Dr. Sheikh Ahmad Al-Azhari',
-        mentorId: currentUser?.assignedTeacherId || 'QI-FAC-014',
-        attendanceRate: 96,
-        currentSurah: 'Surah Yusuf (يُوسُف)',
-        currentPara: currentUser?.memorizedJuz || 12,
-        targetKhatmDate: 'June 2027',
-        pagesMemorized: (currentUser?.memorizedJuz || 12) * 20,
-      };
+  const isParent = false;
 
   const [progressLogs, setProgressLogs] = useState([]);
   const [attendanceRecords, setAttendanceRecords] = useState([]);
@@ -262,6 +224,42 @@ export default function StudentParentProgressView({
         memorizedJuz={activeStudent.memorizedJuz}
         progressLogs={progressLogs}
       />
+
+      {/* Gamified Milestone & Sanad Showcase Banner */}
+      <div className="progress-achievements-banner">
+        <div className="achievements-banner-left">
+          <div className="achievements-banner-crest">
+            <Icon name="award" size={32} color="#D4AF37" />
+          </div>
+          <div className="achievements-banner-text">
+            <div className="achievements-banner-badge">
+              <span className="badge-tag-special">🏆 বিশেষ সম্মাননা অর্জিত</span>
+              <span className="badge-tag-sanad">১০ পারা সমাপ্তি সনদপত্র</span>
+              <span className="badge-tag-score">মুমায (৯৬% স্কোর)</span>
+            </div>
+            <h3 className="achievements-banner-title">
+              মাশাআল্লাহ! {activeStudent.name} প্রথম ১০ পারা হিফজ ও তাজবীদ সফলভাবে সমাপ্ত করেছেন
+            </h3>
+            <p className="achievements-banner-sub">
+              মোট ১২টি একক পারা ব্যাজ, ১টি বিশেষ গোল্ড ক্রেস্ট এবং ইনস্টিটিউটের অফিসিয়াল সনদপত্র অর্জিত হয়েছে।
+            </p>
+          </div>
+        </div>
+
+        <div className="achievements-banner-actions">
+          {onOpenAchievements && (
+            <button
+              type="button"
+              className="btn-achievements-banner-cta"
+              onClick={onOpenAchievements}
+              id="btn-progress-open-sanad"
+            >
+              <Icon name="award" size={16} style={{ marginRight: 6 }} />
+              <span>📜 সনদপত্র ও ব্যাজ দেখুন →</span>
+            </button>
+          )}
+        </div>
+      </div>
 
       {/* Real-Time Daily Feed */}
       <div className="daily-updates-section">

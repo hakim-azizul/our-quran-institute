@@ -2,8 +2,16 @@
 
 import React, { useState, useEffect } from 'react';
 import { QURAN_SURAHS } from '../lib/quranData';
+import {
+  MUSHAF_SURAHS_DATA,
+  MUSHAF_JUZ_DATA,
+  getJuzByPage,
+  getSurahByPage,
+  getMushafPageImageUrl,
+} from '../lib/mushafData';
 import { Icon } from './Icons';
 import SurahSearchSelect from './SurahSearchSelect';
+import DigitalToolsDictionary from './DigitalToolsDictionary';
 
 export default function InteractiveQuranAnnotator({
   currentUser,
@@ -120,9 +128,34 @@ export default function InteractiveQuranAnnotator({
   })();
 
   const [activeSurahNumber, setActiveSurahNumber] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [mushafMode, setMushafMode] = useState('calligraphy'); // 'calligraphy' | 'printed'
   const [mistakes, setMistakes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('mushaf'); // 'mushaf' | 'mistake_log' | 'resolved_history'
+
+  // Synchronize startPage when Surah is changed
+  const handleSelectSurah = (surahNum) => {
+    setActiveSurahNumber(surahNum);
+    const surahMeta = MUSHAF_SURAHS_DATA.find((s) => s.number === surahNum);
+    if (surahMeta && surahMeta.startPage) {
+      setCurrentPage(surahMeta.startPage);
+    }
+  };
+
+  // Synchronize Surah when Page changes (1-604)
+  const handlePageChange = (newPage) => {
+    const p = Math.max(1, Math.min(604, Number(newPage) || 1));
+    setCurrentPage(p);
+    const surahMeta = getSurahByPage(p);
+    if (surahMeta && surahMeta.number !== activeSurahNumber) {
+      setActiveSurahNumber(surahMeta.number);
+    }
+  };
+
+  const currentJuz = getJuzByPage(currentPage);
+  const currentSurahMeta =
+    MUSHAF_SURAHS_DATA.find((s) => s.number === activeSurahNumber) || MUSHAF_SURAHS_DATA[0];
 
   // Teacher Flagging Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -133,6 +166,11 @@ export default function InteractiveQuranAnnotator({
   const [categoryLabel, setCategoryLabel] = useState('Madd Duration Deviation');
   const [correctionNote, setCorrectionNote] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDictOpen, setIsDictOpen] = useState(false);
+
+  const handleInsertDictTerm = (formattedTerm) => {
+    setCorrectionNote((prev) => (prev ? `${prev}\n${formattedTerm}` : formattedTerm));
+  };
 
   // Resolution Modal State
   const [resolveTargetMistake, setResolveTargetMistake] = useState(null);
@@ -591,314 +629,736 @@ export default function InteractiveQuranAnnotator({
 
         {/* Surah Dropdown Selector with Instant Live Search & 114 Surahs */}
         {activeTab === 'mushaf' && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              onClick={() => setIsDictOpen(true)}
+              className="btn-open-dict-annotator"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '7px 14px',
+                background: '#FFFDF7',
+                border: '1.5px solid #D4AF37',
+                color: '#0D4A38',
+                borderRadius: '9px',
+                fontSize: '12.5px',
+                fontWeight: '700',
+                cursor: 'pointer',
+              }}
+              title="ডিজিটাল তাজবীদ ও মাখরাজ ডিকশনারি ওপেন করুন"
+              id="btn-annotator-open-dict"
+            >
+              <Icon name="book-marked" size={14} color="#D4AF37" />
+              <span>ডিজিটাল ডিকশনারি</span>
+            </button>
+
             <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-muted)' }}>
-              Surah:
+              সূরা নির্বাচন:
             </span>
             <SurahSearchSelect
               selectedSurahNumber={activeSurahNumber}
-              onSelectSurah={(num) => setActiveSurahNumber(num)}
+              onSelectSurah={(num) => handleSelectSurah(num)}
               align="right"
             />
           </div>
         )}
       </div>
 
-      {/* Main Tab Content 1: Interactive Mushaf Display */}
+      {/* Main Tab Content 1: Genuine Quran Sharif Mushaf Display */}
       {activeTab === 'mushaf' && (
-        <div
-          style={{
-            background: 'var(--color-white)',
-            border: '2px solid var(--color-gold-primary)',
-            borderRadius: '20px',
-            padding: '36px 32px',
-            boxShadow: 'var(--shadow-elevated)',
-            position: 'relative',
-          }}
-        >
-          {/* Surah Header Title Ribbon */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          {/* Authentic Mushaf Studio Toolbar */}
           <div
             style={{
-              textAlign: 'center',
-              borderBottom: '2px dashed var(--color-gold-border)',
-              paddingBottom: '24px',
-              marginBottom: '28px',
+              background: '#FAF7EE',
+              border: '1.5px solid #D4AF37',
+              borderRadius: '14px',
+              padding: '12px 18px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: '12px',
+              boxShadow: '0 2px 8px rgba(13, 74, 56, 0.04)',
             }}
           >
-            <div
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '4px 16px',
-                background: 'var(--color-gold-light)',
-                border: '1px solid var(--color-gold-primary)',
-                borderRadius: '999px',
-                color: 'var(--color-gold-deep)',
-                fontSize: '12px',
-                fontWeight: '700',
-                marginBottom: '8px',
-              }}
-            >
-              <span>{activeSurah.revelationType} Revelation</span>
-              <span>•</span>
-              <span>{activeSurah.ayahCount} Verses</span>
-            </div>
-
-            <h3
-              style={{
-                fontFamily: 'var(--font-arabic)',
-                fontSize: '44px',
-                color: 'var(--color-green-primary)',
-                fontWeight: '700',
-                margin: '6px 0',
-                letterSpacing: '0.02em',
-              }}
-            >
-              سُورَةُ {activeSurah.arabicName}
-            </h3>
-
-            <span style={{ fontSize: '16px', fontWeight: '600', color: 'var(--text-muted)' }}>
-              {activeSurah.name} ({activeSurah.englishName})
-            </span>
-
-            {activeSurah.bismillah && (
+            {/* View Mode Switcher: Calligraphy Mushaf vs Printed Madani Scan */}
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ fontSize: '12px', fontWeight: '800', color: '#0D4A38', marginRight: '4px' }}>
+                মুসহাফ ফরম্যাট:
+              </span>
               <div
                 style={{
-                  fontFamily: 'var(--font-arabic)',
-                  fontSize: '32px',
-                  color: 'var(--color-green-primary)',
-                  marginTop: '16px',
+                  display: 'inline-flex',
+                  background: '#FFFFFF',
+                  borderRadius: '8px',
+                  padding: '3px',
+                  border: '1px solid #D4AF37',
                 }}
               >
-                بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+                <button
+                  type="button"
+                  onClick={() => setMushafMode('calligraphy')}
+                  style={{
+                    border: 'none',
+                    background: mushafMode === 'calligraphy' ? '#0D4A38' : 'transparent',
+                    color: mushafMode === 'calligraphy' ? '#FFFFFF' : '#0D4A38',
+                    padding: '6px 14px',
+                    borderRadius: '6px',
+                    fontSize: '12px',
+                    fontWeight: '700',
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    transition: 'all 0.15s ease',
+                  }}
+                >
+                  <Icon name="book-open" size={14} color="currentColor" />
+                  <span>ক্যালিগ্রাফি মুসহাফ</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setMushafMode('printed')}
+                  style={{
+                    border: 'none',
+                    background: mushafMode === 'printed' ? '#0D4A38' : 'transparent',
+                    color: mushafMode === 'printed' ? '#FFFFFF' : '#0D4A38',
+                    padding: '6px 14px',
+                    borderRadius: '6px',
+                    fontSize: '12px',
+                    fontWeight: '700',
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    transition: 'all 0.15s ease',
+                  }}
+                >
+                  <Icon name="book" size={14} color="currentColor" />
+                  <span>মুদ্রিত আসল মুসহাফ</span>
+                </button>
               </div>
+            </div>
+
+            {/* Page Navigation Stepper (Pages 1-604) */}
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage <= 1}
+                style={{
+                  border: '1px solid #D4AF37',
+                  background: '#FFFFFF',
+                  color: '#0D4A38',
+                  padding: '6px 12px',
+                  borderRadius: '6px',
+                  fontSize: '12px',
+                  fontWeight: '700',
+                  cursor: currentPage <= 1 ? 'not-allowed' : 'pointer',
+                  opacity: currentPage <= 1 ? 0.4 : 1,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                }}
+              >
+                ◀ পূর্ববর্তী পৃষ্ঠা
+              </button>
+
+              <div
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  padding: '5px 12px',
+                  background: '#FFFFFF',
+                  border: '1px solid #D4AF37',
+                  borderRadius: '6px',
+                  fontSize: '12px',
+                  fontWeight: '800',
+                  color: '#0D4A38',
+                }}
+              >
+                <span>পৃষ্ঠা</span>
+                <input
+                  type="number"
+                  min="1"
+                  max="604"
+                  value={currentPage}
+                  onChange={(e) => handlePageChange(Number(e.target.value))}
+                  style={{
+                    width: '46px',
+                    textAlign: 'center',
+                    fontWeight: '800',
+                    fontSize: '12.5px',
+                    border: '1px solid #CBD5E1',
+                    borderRadius: '4px',
+                    padding: '2px 4px',
+                    color: '#0D4A38',
+                  }}
+                />
+                <span style={{ color: '#64748B' }}>/ ৬০৪</span>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage >= 604}
+                style={{
+                  border: '1px solid #D4AF37',
+                  background: '#FFFFFF',
+                  color: '#0D4A38',
+                  padding: '6px 12px',
+                  borderRadius: '6px',
+                  fontSize: '12px',
+                  fontWeight: '700',
+                  cursor: currentPage >= 604 ? 'not-allowed' : 'pointer',
+                  opacity: currentPage >= 604 ? 0.4 : 1,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                }}
+              >
+                পরবর্তী পৃষ্ঠা ▶
+              </button>
+            </div>
+
+            {/* Teacher Direct Flagging Action */}
+            {isTeacherOrAdmin && (
+              <button
+                type="button"
+                onClick={() => handleOpenFlagModal(activeSurah.ayahs[0] || { number: 1 })}
+                style={{
+                  background: '#0D4A38',
+                  color: '#FFDF85',
+                  border: '1.5px solid #D4AF37',
+                  padding: '7px 16px',
+                  borderRadius: '8px',
+                  fontSize: '12.5px',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  boxShadow: '0 2px 6px rgba(13, 74, 56, 0.15)',
+                }}
+              >
+                <Icon name="flag" size={14} color="#FFDF85" />
+                <span>+ নতুন ভুল চিহ্নিত করুন</span>
+              </button>
             )}
           </div>
 
-          {/* Verses Container */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-            {activeSurah.ayahs.map((ayah) => {
-              const ayahActiveMistakes = mistakes.filter(
-                (m) =>
-                  m.surahNumber === activeSurahNumber &&
-                  m.ayahNumber === ayah.number &&
-                  m.status === 'active'
-              );
+          {/* =========================================================================
+              AUTHENTIC QURAN SHARIF CANVAS (MODE A: ILLUMINATED CALLIGRAPHY MUSHAF)
+              ========================================================================= */}
+          {mushafMode === 'calligraphy' && (
+            <div
+              style={{
+                background: '#FAF7EE',
+                border: '3.5px double #D4AF37',
+                borderRadius: '18px',
+                padding: '32px 36px',
+                boxShadow: '0 8px 32px rgba(13, 74, 56, 0.08)',
+                position: 'relative',
+              }}
+            >
+              {/* Top Page Header Margin Ribbon */}
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  paddingBottom: '14px',
+                  borderBottom: '1px solid #D4AF37',
+                  marginBottom: '24px',
+                  color: '#0D4A38',
+                  fontSize: '13px',
+                  fontWeight: '700',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span
+                    style={{
+                      background: '#FDF8EC',
+                      border: '1px solid #D4AF37',
+                      padding: '2px 8px',
+                      borderRadius: '6px',
+                      fontSize: '11px',
+                      fontWeight: '800',
+                      color: '#B8860B',
+                    }}
+                  >
+                    {currentSurahMeta.revelationType === 'Meccan' ? 'مَكِّيَّة • মাক্কী' : 'مَدَنِيَّة • মাদানী'}
+                  </span>
+                  <span>{currentSurahMeta.ayahCount} আয়াত</span>
+                </div>
 
-              return (
+                {/* Center Juz Cartouche */}
                 <div
-                  key={ayah.number}
                   style={{
-                    background: ayahActiveMistakes.length > 0 ? '#FFFBEB' : '#FAFAF8',
-                    border: ayahActiveMistakes.length > 0 ? '1.5px solid #FCD34D' : '1px solid var(--border-light)',
-                    borderRadius: '16px',
-                    padding: '20px 24px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '12px',
-                    transition: 'all 0.2s ease',
+                    background: '#FDF8EC',
+                    border: '1.5px solid #D4AF37',
+                    padding: '3px 16px',
+                    borderRadius: '20px',
+                    fontSize: '12.5px',
+                    fontWeight: '800',
+                    color: '#0D4A38',
+                    letterSpacing: '0.4px',
                   }}
                 >
-                  {/* Top Bar for Ayah: Verse Number and Teacher Action */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  الجُزْءُ {currentJuz.number} • পারা {currentJuz.number} ({currentJuz.nameBangla})
+                </div>
+
+                <div style={{ textAlign: 'right' }}>
+                  <strong style={{ fontSize: '15px', fontFamily: 'var(--font-arabic)' }}>
+                    سُورَةُ {currentSurahMeta.arabicName}
+                  </strong>{' '}
+                  <span style={{ fontSize: '12px', color: '#64748B' }}>({currentSurahMeta.banglaName})</span>
+                </div>
+              </div>
+
+              {/* Ornate Surah Cartouche Frame (Traditional Header) */}
+              <div
+                style={{
+                  margin: '0 auto 20px',
+                  maxWidth: '560px',
+                  textAlign: 'center',
+                  background: 'linear-gradient(135deg, #FDF8EC 0%, #FAF0D6 100%)',
+                  border: '2px solid #D4AF37',
+                  borderRadius: '12px',
+                  padding: '12px 20px',
+                  boxShadow: 'inset 0 0 10px rgba(212, 175, 55, 0.15)',
+                  position: 'relative',
+                }}
+              >
+                <h3
+                  style={{
+                    fontFamily: 'var(--font-arabic)',
+                    fontSize: '40px',
+                    color: '#0D4A38',
+                    fontWeight: '700',
+                    margin: '0 0 4px',
+                    lineHeight: '1.3',
+                  }}
+                >
+                  سُورَةُ {activeSurah.arabicName}
+                </h3>
+                <div style={{ fontSize: '13px', fontWeight: '700', color: '#8C6819' }}>
+                  {activeSurah.name} ({activeSurah.englishName}) • {activeSurah.ayahCount} Verses
+                </div>
+              </div>
+
+              {/* Bismillah Calligraphy Banner (Except Surah At-Tawbah) */}
+              {activeSurah.bismillah !== false && activeSurah.number !== 9 && (
+                <div
+                  style={{
+                    textAlign: 'center',
+                    fontFamily: 'var(--font-arabic)',
+                    fontSize: '32px',
+                    color: '#0D4A38',
+                    fontWeight: '700',
+                    margin: '14px 0 24px',
+                    letterSpacing: '0.02em',
+                  }}
+                >
+                  بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+                </div>
+              )}
+
+              {/* Authentic Continuous Quranic Flow (Pure Quran Sharif - NO Translations!) */}
+              <div
+                dir="rtl"
+                style={{
+                  fontFamily: 'var(--font-arabic)',
+                  fontSize: '36px',
+                  lineHeight: '2.5',
+                  color: '#0D4A38',
+                  textAlign: 'justify',
+                  wordSpacing: '6px',
+                  padding: '10px 14px',
+                }}
+              >
+                {activeSurah.ayahs.map((ayah) => {
+                  return (
+                    <React.Fragment key={ayah.number}>
+                      {ayah.words ? (
+                        ayah.words.map((w) => {
+                          const wordMistake = getWordMistake(ayah.number, w.wordIndex);
+                          const resolvedMistake = getResolvedWordMistake(ayah.number, w.wordIndex);
+
+                          return (
+                            <span
+                              key={w.wordIndex}
+                              onClick={() => {
+                                if (wordMistake) {
+                                  setActiveSelectedMistake(wordMistake);
+                                } else if (isTeacherOrAdmin) {
+                                  handleOpenFlagModal(ayah, w);
+                                }
+                              }}
+                              title={
+                                wordMistake
+                                  ? `Active Recitation Slip: ${wordMistake.categoryLabel} (Click to inspect guidance)`
+                                  : isTeacherOrAdmin
+                                  ? `Click to mark student mistake on "${w.text}"`
+                                  : w.text
+                              }
+                              style={{
+                                display: 'inline-block',
+                                padding: '0 6px',
+                                margin: '0 3px',
+                                borderRadius: '8px',
+                                cursor: wordMistake || isTeacherOrAdmin ? 'pointer' : 'default',
+                                background: wordMistake
+                                  ? wordMistake.severity === 'major'
+                                    ? '#FEE2E2'
+                                    : '#FEF3C7'
+                                  : resolvedMistake
+                                  ? '#DCFCE7'
+                                  : 'transparent',
+                                borderBottom: wordMistake
+                                  ? `3px solid ${wordMistake.severity === 'major' ? '#DC2626' : '#D97706'}`
+                                  : resolvedMistake
+                                  ? '2.5px solid #16A34A'
+                                  : 'none',
+                                color: wordMistake
+                                  ? wordMistake.severity === 'major'
+                                    ? '#991B1B'
+                                    : '#92400E'
+                                  : 'inherit',
+                                transition: 'all 0.15s ease',
+                              }}
+                            >
+                              {w.text}
+                              {wordMistake && (
+                                <sup
+                                  style={{
+                                    fontSize: '12px',
+                                    marginRight: '2px',
+                                    color: wordMistake.severity === 'major' ? '#DC2626' : '#D97706',
+                                  }}
+                                >
+                                  ●
+                                </sup>
+                              )}
+                            </span>
+                          );
+                        })
+                      ) : (
+                        <span>{ayah.textArabic}</span>
+                      )}
+
+                      {/* Traditional Ornate Ayah Stop Medallion ۝ */}
                       <span
+                        onClick={() => {
+                          if (isTeacherOrAdmin) handleOpenFlagModal(ayah);
+                        }}
+                        title={isTeacherOrAdmin ? `Ayah ${ayah.number} (Click to flag full verse)` : `Ayah ${ayah.number}`}
                         style={{
                           display: 'inline-flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          width: '32px',
-                          height: '32px',
-                          borderRadius: '50%',
-                          background: 'var(--color-green-primary)',
-                          color: 'var(--color-gold-vibrant)',
-                          fontSize: '13.5px',
-                          fontWeight: '700',
+                          margin: '0 8px',
+                          color: '#B8860B',
+                          fontSize: '28px',
+                          cursor: isTeacherOrAdmin ? 'pointer' : 'default',
                         }}
                       >
-                        {ayah.number}
+                        ۝{ayah.number}
                       </span>
-                      <span style={{ fontSize: '13.5px', fontWeight: '600', color: 'var(--text-muted)' }}>
-                        Ayah {ayah.number} of {activeSurah.ayahCount}
-                      </span>
-                    </div>
+                    </React.Fragment>
+                  );
+                })}
+              </div>
 
-                    {isTeacherOrAdmin && (
-                      <button
-                        onClick={() => handleOpenFlagModal(ayah)}
-                        className="btn-table-action"
-                        style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '6px',
-                          fontSize: '13px',
-                          padding: '6px 14px',
-                          borderColor: 'var(--color-gold-primary)',
-                          color: 'var(--color-green-primary)',
-                        }}
-                      >
-                        <Icon name="flag" size={14} color="var(--color-gold-deep)" />
-                        <span>Flag Verse Mistake</span>
-                      </button>
-                    )}
-                  </div>
+              {/* Bottom Page Footer Margin */}
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  paddingTop: '18px',
+                  borderTop: '1px solid #D4AF37',
+                  marginTop: '28px',
+                }}
+              >
+                <div
+                  style={{
+                    background: '#FDF8EC',
+                    border: '1.5px solid #D4AF37',
+                    padding: '3px 18px',
+                    borderRadius: '20px',
+                    fontSize: '12px',
+                    fontWeight: '800',
+                    color: '#B8860B',
+                  }}
+                >
+                  صَفْحَة {currentPage} • পৃষ্ঠা {currentPage}
+                </div>
+              </div>
+            </div>
+          )}
 
-                  {/* Arabic Text (Word-by-word clickable rendering) */}
-                  <div
-                    dir="rtl"
-                    style={{
-                      fontFamily: 'var(--font-arabic)',
-                      fontSize: '38px',
-                      lineHeight: '2.3',
-                      color: 'var(--color-green-deep)',
-                      textAlign: 'right',
-                      wordSpacing: '6px',
-                      padding: '8px 0',
-                    }}
-                  >
-                    {ayah.words ? (
-                      ayah.words.map((w) => {
-                        const wordMistake = getWordMistake(ayah.number, w.wordIndex);
-                        const resolvedMistake = getResolvedWordMistake(ayah.number, w.wordIndex);
+          {/* =========================================================================
+              AUTHENTIC QURAN SHARIF CANVAS (MODE B: PRINTED MADANI MUSHAF PAGE SCAN)
+              ========================================================================= */}
+          {mushafMode === 'printed' && (
+            <div
+              style={{
+                background: '#FAF7EE',
+                border: '3.5px double #D4AF37',
+                borderRadius: '18px',
+                padding: '24px 28px',
+                boxShadow: '0 8px 32px rgba(13, 74, 56, 0.08)',
+                textAlign: 'center',
+              }}
+            >
+              {/* Printed Mushaf Page Header */}
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  paddingBottom: '12px',
+                  borderBottom: '1px solid #D4AF37',
+                  marginBottom: '18px',
+                  fontSize: '13px',
+                  fontWeight: '700',
+                  color: '#0D4A38',
+                }}
+              >
+                <div>
+                  سُورَةُ {currentSurahMeta.arabicName} ({currentSurahMeta.banglaName})
+                </div>
+                <div
+                  style={{
+                    background: '#FDF8EC',
+                    border: '1px solid #D4AF37',
+                    padding: '2px 14px',
+                    borderRadius: '12px',
+                    fontSize: '12px',
+                    fontWeight: '800',
+                  }}
+                >
+                  الجُزْءُ {currentJuz.number} • পারা {currentJuz.number}
+                </div>
+                <div>
+                  صَفْحَة {currentPage} • পৃষ্ঠা {currentPage}
+                </div>
+              </div>
 
-                        return (
-                          <span
-                            key={w.wordIndex}
-                            onClick={() => {
-                              if (wordMistake) {
-                                setActiveSelectedMistake(wordMistake);
-                              } else if (isTeacherOrAdmin) {
-                                handleOpenFlagModal(ayah, w);
-                              }
-                            }}
-                            title={
-                              wordMistake
-                                ? `Active Mistake: ${wordMistake.categoryLabel} (Click to inspect)`
-                                : isTeacherOrAdmin
-                                ? 'Click to mark student mistake on this word'
-                                : w.text
-                            }
-                            style={{
-                              display: 'inline-block',
-                              padding: '2px 8px',
-                              margin: '0 4px',
-                              borderRadius: '10px',
-                              cursor: wordMistake || isTeacherOrAdmin ? 'pointer' : 'default',
-                              background: wordMistake
-                                ? wordMistake.severity === 'major'
-                                ? '#FEE2E2'
-                                  : '#FEF3C7'
-                                : resolvedMistake
-                                ? '#DCFCE7'
-                                : 'transparent',
-                              borderBottom: wordMistake
-                                ? `3px solid ${wordMistake.severity === 'major' ? '#DC2626' : '#D97706'}`
-                                : resolvedMistake
-                                ? '2.5px solid #16A34A'
-                                : 'none',
-                              color: wordMistake
-                                ? wordMistake.severity === 'major'
-                                  ? '#991B1B'
-                                  : '#92400E'
-                                : 'inherit',
-                              transition: 'all 0.15s ease',
-                            }}
-                          >
-                            {w.text}
-                            {wordMistake && (
-                              <sup
-                                style={{
-                                  fontSize: '12px',
-                                  marginRight: '2px',
-                                  color: wordMistake.severity === 'major' ? '#DC2626' : '#D97706',
-                                }}
-                              >
-                                ●
-                              </sup>
-                            )}
-                          </span>
-                        );
-                      })
-                    ) : (
-                      <span>{ayah.textArabic}</span>
-                    )}
+              {/* Official 15-Line Madani Mushaf Scanned Page (Pure Quran Sharif) */}
+              <div
+                style={{
+                  display: 'inline-block',
+                  background: '#FCFBF7',
+                  padding: '12px',
+                  borderRadius: '12px',
+                  border: '1.5px solid #EEDFB8',
+                  boxShadow: '0 6px 20px rgba(0, 0, 0, 0.08)',
+                  maxWidth: '100%',
+                }}
+              >
+                <img
+                  src={getMushafPageImageUrl(currentPage)}
+                  alt={`Madani Mushaf Page ${currentPage}`}
+                  style={{
+                    display: 'block',
+                    maxHeight: '840px',
+                    maxWidth: '100%',
+                    height: 'auto',
+                    borderRadius: '8px',
+                    margin: '0 auto',
+                  }}
+                  onError={(e) => {
+                    // Fallback notice if image loading fails
+                    e.target.style.display = 'none';
+                  }}
+                />
+              </div>
 
-                    {/* Ayah End Symbol */}
-                    <span
+              <div style={{ marginTop: '14px', fontSize: '12px', color: '#64748B' }}>
+                মদীনা মুনাওয়ারা মুদ্রিত ১৫ লাইনের হিফজ মুসহাফ (Madani 15-Line Printed Mushaf) • পৃষ্ঠা নং {currentPage}
+              </div>
+            </div>
+          )}
+
+          {/* =========================================================================
+              RECITATION MISTAKE LEDGER & TEACHER ANNOTATIONS (ON THIS SURAH / PAGE)
+              ========================================================================= */}
+          <div
+            style={{
+              background: '#FFFFFF',
+              border: '1.5px solid #EEDFB8',
+              borderRadius: '14px',
+              padding: '18px 22px',
+              boxShadow: '0 4px 16px rgba(13, 74, 56, 0.04)',
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: '8px',
+                paddingBottom: '12px',
+                borderBottom: '1px solid #F1EAD8',
+                marginBottom: '14px',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span
+                  style={{
+                    width: '28px',
+                    height: '28px',
+                    borderRadius: '6px',
+                    background: '#FDF8EC',
+                    border: '1px solid #D4AF37',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#B8860B',
+                  }}
+                >
+                  <Icon name="alert-circle" size={15} />
+                </span>
+                <h4 style={{ margin: 0, fontSize: '15px', fontWeight: '800', color: '#0D4A38' }}>
+                  এই সূরা ও পৃষ্ঠার চিহ্নিত ভুল ও উস্তাদের নির্দেশনা ({currentStudent.name})
+                </h4>
+              </div>
+
+              <span
+                style={{
+                  fontSize: '11px',
+                  fontWeight: '700',
+                  padding: '2px 8px',
+                  borderRadius: '10px',
+                  background: activeMistakes.filter((m) => m.surahNumber === activeSurahNumber).length > 0 ? '#FEE2E2' : '#DCFCE7',
+                  color: activeMistakes.filter((m) => m.surahNumber === activeSurahNumber).length > 0 ? '#991B1B' : '#166534',
+                  border: activeMistakes.filter((m) => m.surahNumber === activeSurahNumber).length > 0 ? '1px solid #FCA5A5' : '1px solid #86EFAC',
+                }}
+              >
+                {activeMistakes.filter((m) => m.surahNumber === activeSurahNumber).length} টি সক্রিয় ভুল
+              </span>
+            </div>
+
+            {/* List of active recitation slips on this Surah */}
+            {activeMistakes.filter((m) => m.surahNumber === activeSurahNumber).length === 0 ? (
+              <div
+                style={{
+                  textAlign: 'center',
+                  padding: '24px 16px',
+                  background: '#F0FDF4',
+                  border: '1px solid #BBF7D0',
+                  borderRadius: '10px',
+                  color: '#166534',
+                }}
+              >
+                <div style={{ fontSize: '14px', fontWeight: '800', marginBottom: '4px' }}>
+                  ما شاء الله • এই সূরা / পৃষ্ঠায় কোনো ভুল চিহ্নিত নেই
+                </div>
+                <p style={{ margin: 0, fontSize: '12.5px', color: '#15803D' }}>
+                  ছাত্রের তেলাওয়াত বিশুদ্ধ ও তাযবীদসম্মত। পরবর্তী পৃষ্ঠা বা সূরায় এগিয়ে চলুন।
+                </p>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                {activeMistakes
+                  .filter((m) => m.surahNumber === activeSurahNumber)
+                  .map((m) => (
+                    <div
+                      key={m.id}
+                      onClick={() => setActiveSelectedMistake(m)}
                       style={{
-                        marginRight: '10px',
-                        color: 'var(--color-gold-deep)',
-                        fontSize: '30px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        background: m.severity === 'major' ? '#FEF2F2' : '#FFFBEB',
+                        border: `1.5px solid ${m.severity === 'major' ? '#F87171' : '#FCD34D'}`,
+                        borderRadius: '10px',
+                        padding: '12px 16px',
+                        cursor: 'pointer',
+                        transition: 'all 0.15s ease',
                       }}
                     >
-                      ۝{ayah.number}
-                    </span>
-                  </div>
-
-                  {/* English Translation */}
-                  <p
-                    style={{
-                      fontSize: '16px',
-                      color: 'var(--text-body)',
-                      lineHeight: '1.65',
-                      fontStyle: 'italic',
-                      borderTop: '1px solid rgba(0, 0, 0, 0.06)',
-                      paddingTop: '12px',
-                      margin: 0,
-                    }}
-                  >
-                    "{ayah.textEnglish}"
-                  </p>
-
-                  {/* If active mistakes exist on this ayah, display note pill */}
-                  {ayahActiveMistakes.length > 0 && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '6px' }}>
-                      {ayahActiveMistakes.map((m) => (
-                        <div
-                          key={m.id}
-                          onClick={() => setActiveSelectedMistake(m)}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <span
                           style={{
-                            display: 'flex',
+                            width: '26px',
+                            height: '26px',
+                            borderRadius: '50%',
+                            background: m.severity === 'major' ? '#DC2626' : '#D97706',
+                            color: '#FFFFFF',
+                            display: 'inline-flex',
                             alignItems: 'center',
-                            justifyContent: 'space-between',
-                            background: m.severity === 'major' ? '#FEF2F2' : '#FFFBEB',
-                            border: `1.5px solid ${m.severity === 'major' ? '#F87171' : '#FCD34D'}`,
-                            borderRadius: '12px',
-                            padding: '10px 14px',
-                            cursor: 'pointer',
+                            justifyContent: 'center',
+                            fontSize: '11px',
+                            fontWeight: '800',
+                            flexShrink: 0,
                           }}
                         >
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                            <span style={{ display: 'inline-flex', alignItems: 'center' }}>
-                              <Icon
-                                name="alert-circle"
-                                size={18}
-                                color={m.severity === 'major' ? '#DC2626' : '#D97706'}
-                              />
-                            </span>
-                            <div>
-                              <strong style={{ fontSize: '14px', color: m.severity === 'major' ? '#991B1B' : '#92400E' }}>
-                                {m.wordText ? `Word: "${m.wordText}" — ` : ''}{m.categoryLabel}
-                              </strong>
-                              <p style={{ margin: 0, fontSize: '13px', color: '#4B5563' }}>
-                                {m.correctionNote}
-                              </p>
-                            </div>
-                          </div>
+                          {m.ayahNumber}
+                        </span>
 
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <span style={{ fontSize: '12.5px', fontWeight: '700', color: 'var(--color-green-primary)' }}>
-                              Inspect Details →
+                        <div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                            <strong style={{ fontSize: '13.5px', color: m.severity === 'major' ? '#991B1B' : '#92400E' }}>
+                              আয়াত {m.ayahNumber} {m.wordText ? `• শব্দ: "${m.wordText}"` : ''} — {m.categoryLabel}
+                            </strong>
+                            <span
+                              style={{
+                                fontSize: '10px',
+                                fontWeight: '700',
+                                padding: '1px 6px',
+                                borderRadius: '4px',
+                                background: m.severity === 'major' ? '#FEE2E2' : '#FEF3C7',
+                                color: m.severity === 'major' ? '#991B1B' : '#92400E',
+                                textTransform: 'uppercase',
+                              }}
+                            >
+                              {m.severity}
                             </span>
                           </div>
+                          <p style={{ margin: '3px 0 0', fontSize: '12.5px', color: '#4B5563' }}>
+                            উস্তাদের নির্দেশনা: {m.correctionNote}
+                          </p>
                         </div>
-                      ))}
+                      </div>
+
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        {isTeacherOrAdmin && (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setResolveTargetMistake(m);
+                            }}
+                            style={{
+                              background: '#166534',
+                              color: '#FFFFFF',
+                              border: 'none',
+                              padding: '5px 12px',
+                              borderRadius: '6px',
+                              fontSize: '11.5px',
+                              fontWeight: '700',
+                              cursor: 'pointer',
+                            }}
+                          >
+                            Mark Resolved
+                          </button>
+                        )}
+                        <span style={{ fontSize: '12px', fontWeight: '700', color: '#0D4A38' }}>
+                          বিস্তারিত →
+                        </span>
+                      </div>
                     </div>
-                  )}
-                </div>
-              );
-            })}
+                  ))}
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -1102,44 +1562,62 @@ export default function InteractiveQuranAnnotator({
         >
           <div
             style={{
-              background: 'var(--color-white)',
-              border: '2px solid var(--color-gold-primary)',
+              background: '#FFFFFF',
+              border: '1.5px solid rgba(212, 175, 55, 0.45)',
               borderRadius: '20px',
-              maxWidth: '540px',
+              maxWidth: '620px',
               width: '100%',
               padding: '28px',
-              boxShadow: 'var(--shadow-elevated)',
+              boxShadow: '0 20px 40px -15px rgba(6, 42, 31, 0.35), 0 0 0 1px rgba(212, 175, 55, 0.2)',
             }}
             onClick={(e) => e.stopPropagation()}
           >
+            {/* Modal Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px', fontFamily: 'var(--font-serif)', fontSize: '22px', fontWeight: '700', color: 'var(--color-green-primary)' }}>
-                <Icon name="flag" size={22} color="var(--color-gold-deep)" />
+              <h3 style={{ display: 'flex', alignItems: 'center', gap: '10px', fontFamily: 'var(--font-serif)', fontSize: '21px', fontWeight: '800', color: '#0D4A38', margin: 0 }}>
+                <span style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(212, 175, 55, 0.15)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Icon name="flag" size={18} color="#D4AF37" />
+                </span>
                 <span>Flag Recitation Mistake for {currentStudent.name}</span>
               </h3>
               <button
+                type="button"
                 onClick={() => setIsModalOpen(false)}
-                style={{ background: 'none', border: 'none', fontSize: '22px', cursor: 'pointer', color: 'var(--text-muted)' }}
+                style={{ width: '32px', height: '32px', borderRadius: '8px', border: '1px solid #E2E8F0', background: '#F8FAFC', fontSize: '18px', cursor: 'pointer', color: '#64748B', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s ease' }}
+                title="Close"
               >
                 ×
               </button>
             </div>
 
             {/* Target Summary */}
-            <div style={{ background: 'var(--color-green-surface)', border: '1px solid rgba(13, 74, 56, 0.15)', borderRadius: '10px', padding: '12px', marginBottom: '18px' }}>
-              <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Student &amp; Verse Target:</span>
-              <p style={{ fontSize: '14px', fontWeight: '700', color: 'var(--color-green-deep)', margin: '2px 0' }}>
-                {currentStudent.name} ({effectiveStudentId}) • Surah {activeSurah.name} • Verse {targetAyah?.number} {targetWord ? `• Word: "${targetWord.text}"` : ''}
-              </p>
+            <div style={{ background: 'linear-gradient(135deg, rgba(13, 74, 56, 0.05) 0%, rgba(212, 175, 55, 0.08) 100%)', border: '1px solid rgba(13, 74, 56, 0.12)', borderRadius: '12px', padding: '12px 16px', marginBottom: '18px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
+                <div>
+                  <span style={{ fontSize: '11px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B' }}>Target Student &amp; Verse Location:</span>
+                  <p style={{ fontSize: '14.5px', fontWeight: '700', color: '#0D4A38', margin: '2px 0 0' }}>
+                    {currentStudent.name} • Surah {activeSurah.name} • Verse {targetAyah?.number}
+                  </p>
+                </div>
+                {targetWord && (
+                  <span style={{ background: '#0D4A38', color: '#FFDF85', padding: '4px 12px', borderRadius: '8px', fontSize: '16px', fontFamily: 'var(--font-serif)', fontWeight: '700', direction: 'rtl' }}>
+                    {targetWord.text}
+                  </span>
+                )}
+              </div>
             </div>
 
-            <form onSubmit={handleSubmitMistake} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-              <div className="form-group">
-                <label className="form-label">Mistake Classification</label>
+            <form onSubmit={handleSubmitMistake} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {/* Mistake Classification */}
+              <div className="form-group" style={{ margin: 0 }}>
+                <label className="form-label" style={{ fontWeight: '700', color: '#0F172A', marginBottom: '6px' }}>
+                  Mistake Classification (ভুলের প্রকারভেদ)
+                </label>
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="form-input form-select"
+                  className="form-input form-select form-input-noicon"
+                  style={{ width: '100%', fontSize: '14px' }}
                 >
                   <option value="tajweed_rule">Tajweed Rule Slip (Madd, Ghunnah, Qalqalah, Ikhfa, Idgham)</option>
                   <option value="harakah_jaliyy">Major Slip: Harakah / Vowel Misread (اللحن الجلي)</option>
@@ -1149,35 +1627,101 @@ export default function InteractiveQuranAnnotator({
                 </select>
               </div>
 
-              <div className="form-row-two">
-                <div className="form-group">
-                  <label className="form-label">Severity Level</label>
-                  <select
-                    value={severity}
-                    onChange={(e) => setSeverity(e.target.value)}
-                    className="form-input form-select"
-                  >
-                    <option value="major">Major (Critical - Alters Meaning)</option>
-                    <option value="minor">Minor (Tajweed Inaccuracy)</option>
-                    <option value="info">Info (Scholarly Advice / Recommendation)</option>
-                  </select>
+              {/* Severity Level (Interactive 3-Card Segmented Grid) */}
+              <div className="form-group" style={{ margin: 0 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                  <label className="form-label" style={{ fontWeight: '700', color: '#0F172A', margin: 0 }}>
+                    Severity Level (তীব্রতার স্তর)
+                  </label>
+                  <span style={{ fontSize: '12px', fontWeight: '700', color: severity === 'major' ? '#DC2626' : severity === 'minor' ? '#D97706' : '#0284C7' }}>
+                    {severity === 'major' ? '🔴 Critical Slip (লহনে জলী)' : severity === 'minor' ? '🟡 Tajweed Inaccuracy (লহনে খফী)' : '🔵 Guidance Note (পরামর্শ)'}
+                  </span>
                 </div>
+                <div className="severity-segmented-grid">
+                  <button
+                    type="button"
+                    onClick={() => setSeverity('major')}
+                    className={`severity-card-btn severity-major ${severity === 'major' ? 'active' : ''}`}
+                  >
+                    <div className="severity-head">
+                      <span>🔴</span>
+                      <span>Major</span>
+                    </div>
+                    <div className="severity-desc">Critical (Alters Meaning)</div>
+                  </button>
 
-                <div className="form-group">
-                  <label className="form-label">Short Tag / Title</label>
-                  <input
-                    type="text"
-                    required
-                    value={categoryLabel}
-                    onChange={(e) => setCategoryLabel(e.target.value)}
-                    placeholder="e.g. Madd Lazim too short"
-                    className="form-input form-input-noicon"
-                  />
+                  <button
+                    type="button"
+                    onClick={() => setSeverity('minor')}
+                    className={`severity-card-btn severity-minor ${severity === 'minor' ? 'active' : ''}`}
+                  >
+                    <div className="severity-head">
+                      <span>🟡</span>
+                      <span>Minor</span>
+                    </div>
+                    <div className="severity-desc">Tajweed Rule Inaccuracy</div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setSeverity('info')}
+                    className={`severity-card-btn severity-info ${severity === 'info' ? 'active' : ''}`}
+                  >
+                    <div className="severity-head">
+                      <span>🔵</span>
+                      <span>Guidance</span>
+                    </div>
+                    <div className="severity-desc">Scholarly Advice &amp; Pacing</div>
+                  </button>
                 </div>
               </div>
 
-              <div className="form-group">
-                <label className="form-label">Scholarly Correction Note &amp; Instructions</label>
+              {/* Short Tag / Title */}
+              <div className="form-group" style={{ margin: 0 }}>
+                <label className="form-label" style={{ fontWeight: '700', color: '#0F172A', marginBottom: '6px' }}>
+                  Short Tag / Title (সংক্ষিপ্ত শিরোনাম)
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={categoryLabel}
+                  onChange={(e) => setCategoryLabel(e.target.value)}
+                  placeholder="e.g. Madd Lazim insufficient length or Harakah Kasrah misread"
+                  className="form-input form-input-noicon"
+                  style={{ width: '100%', fontSize: '14px' }}
+                />
+              </div>
+
+              {/* Correction Notes with Dictionary Button */}
+              <div className="form-group" style={{ margin: 0 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                  <label className="form-label" style={{ fontWeight: '700', color: '#0F172A', margin: 0 }}>
+                    Scholarly Correction Note &amp; Instructions (শিক্ষকের দিকনির্দেশনা)
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setIsDictOpen(true)}
+                    style={{
+                      background: '#FFFDF7',
+                      border: '1px solid #D4AF37',
+                      color: '#0D4A38',
+                      padding: '4px 10px',
+                      borderRadius: '7px',
+                      fontSize: '11.5px',
+                      fontWeight: '700',
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '5px',
+                      boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
+                      transition: 'all 0.2s ease',
+                    }}
+                    id="btn-annotator-modal-insert-dict"
+                  >
+                    <Icon name="book-marked" size={13} color="#D4AF37" />
+                    <span>ডিকশনারি থেকে ইনসার্ট</span>
+                  </button>
+                </div>
                 <textarea
                   required
                   rows={3}
@@ -1185,24 +1729,26 @@ export default function InteractiveQuranAnnotator({
                   onChange={(e) => setCorrectionNote(e.target.value)}
                   placeholder="Detail exact instruction on tongue position, harakah counts, or pronunciation correction..."
                   className="form-input form-input-noicon"
-                  style={{ resize: 'vertical' }}
+                  style={{ resize: 'vertical', width: '100%', fontSize: '14px', lineHeight: '1.5' }}
                 />
               </div>
 
-              <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+              {/* Action Buttons */}
+              <div style={{ display: 'flex', gap: '12px', marginTop: '6px' }}>
                 <button
                   type="submit"
                   disabled={isSubmitting}
                   className="btn-auth-submit"
-                  style={{ margin: 0 }}
+                  style={{ margin: 0, flex: 1, padding: '12px 20px', fontSize: '14.5px', fontWeight: '700' }}
                 >
-                  {isSubmitting ? 'Saving Mistake Marker...' : `Save Flag to ${currentStudent.name}'s Mushaf`}
+                  <Icon name="flag" size={16} color="#062A24" />
+                  <span>{isSubmitting ? 'Saving Mistake Marker...' : `Save Flag to ${currentStudent.name}'s Mushaf`}</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
                   className="btn-table-action"
-                  style={{ padding: '0 16px' }}
+                  style={{ padding: '0 20px', borderRadius: '12px' }}
                 >
                   Cancel
                 </button>
@@ -1399,6 +1945,12 @@ export default function InteractiveQuranAnnotator({
           </div>
         </div>
       )}
+      {/* Embedded Digital Tajweed Dictionary for in-class recitation annotation */}
+      <DigitalToolsDictionary
+        isOpen={isDictOpen}
+        onClose={() => setIsDictOpen(false)}
+        onInsertTerm={handleInsertDictTerm}
+      />
     </div>
   );
 }

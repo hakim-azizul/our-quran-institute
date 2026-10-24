@@ -12,6 +12,21 @@ export default function TajweedToolsPageView({ currentUser, onNavigateTab }) {
   const [toastMessage, setToastMessage] = useState('');
   const [selectedMakhrajRegion, setSelectedMakhrajRegion] = useState(null);
 
+  // Admin & Teacher editing capabilities
+  const isTeacherOrAdmin = currentUser?.role === 'teacher' || currentUser?.role === 'admin';
+  const [isRuleModalOpen, setIsRuleModalOpen] = useState(false);
+  const [editingRule, setEditingRule] = useState(null);
+  const [ruleFormData, setRuleFormData] = useState({
+    category: 'noon_tanween',
+    termArabic: '',
+    termTranslit: '',
+    termEnglish: '',
+    definition: '',
+    example: '',
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [deleteConfirmId, setDeleteConfirmId] = useState(null);
+
   const categories = [
     { id: 'all', label: 'All Tajweed Rules', icon: 'book-open' },
     { id: 'makharij', label: 'Makharij (Articulation)', icon: 'mic' },
@@ -147,6 +162,118 @@ export default function TajweedToolsPageView({ currentUser, onNavigateTab }) {
     }
   };
 
+  // Admin & Teacher Tajweed Rule Handlers
+  const handleOpenAddRule = () => {
+    setEditingRule(null);
+    setRuleFormData({
+      category: activeCategory !== 'all' ? activeCategory : 'noon_tanween',
+      termArabic: '',
+      termTranslit: '',
+      termEnglish: '',
+      definition: '',
+      example: '',
+    });
+    setIsRuleModalOpen(true);
+  };
+
+  const handleOpenEditRule = (rule) => {
+    setEditingRule(rule);
+    setRuleFormData({
+      category: rule.category || 'noon_tanween',
+      termArabic: rule.termArabic || '',
+      termTranslit: rule.termTranslit || '',
+      termEnglish: rule.termEnglish || '',
+      definition: rule.definition || '',
+      example: rule.example || '',
+    });
+    setIsRuleModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsRuleModalOpen(false);
+    setEditingRule(null);
+    setIsSubmitting(false);
+  };
+
+  const handleFormChange = (field, value) => {
+    setRuleFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleSaveRule = async (e) => {
+    if (e) e.preventDefault();
+    if (!ruleFormData.termArabic?.trim() || !ruleFormData.termEnglish?.trim()) {
+      showToast('⚠️ আরবী নাম এবং ইংরেজি/বাংলা শিরোনাম আবশ্যক!');
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      if (editingRule) {
+        // PUT update existing rule
+        const res = await fetch('/api/dictionary', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: editingRule.id, ...ruleFormData }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast(`✓ তাজবীদ নিয়ম "${ruleFormData.termArabic}" সফলভাবে আপডেট হয়েছে!`);
+          handleCloseModal();
+          await fetchEntries();
+        } else {
+          showToast(`ত্রুটি: ${data.error || 'আপডেট করতে ব্যর্থ হয়েছে'}`);
+        }
+      } else {
+        // POST create new rule
+        const res = await fetch('/api/dictionary', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(ruleFormData),
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast(`✓ নতুন তাজবীদ নিয়ম "${ruleFormData.termArabic}" সফলভাবে সংযুক্ত হয়েছে!`);
+          handleCloseModal();
+          await fetchEntries();
+        } else {
+          showToast(`ত্রুটি: ${data.error || 'সংরক্ষণ করতে ব্যর্থ হয়েছে'}`);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to save Tajweed rule:', err);
+      showToast('সার্ভার সংযোগে ত্রুটি দেখা দিয়েছে');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDeleteRule = (rule) => {
+    setDeleteConfirmId(rule.id);
+  };
+
+  const confirmDeleteRule = async () => {
+    if (!deleteConfirmId) return;
+    try {
+      setIsSubmitting(true);
+      const res = await fetch(`/api/dictionary?id=${encodeURIComponent(deleteConfirmId)}`, {
+        method: 'DELETE',
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast('✓ তাজবীদ নিয়মটি তালিকা থেকে মুছে ফেলা হয়েছে');
+        setDeleteConfirmId(null);
+        await fetchEntries();
+      } else {
+        showToast(`ত্রুটি: ${data.error || 'ডিলিট করতে ব্যর্থ হয়েছে'}`);
+      }
+    } catch (err) {
+      console.error('Failed to delete Tajweed rule:', err);
+      showToast('ডিলিট করার সময় ত্রুটি হয়েছে');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   // Group count summary
   const categoryCounts = useMemo(() => {
     const counts = { all: entries.length };
@@ -204,6 +331,18 @@ export default function TajweedToolsPageView({ currentUser, onNavigateTab }) {
             <span className="stat-num">5</span>
             <span className="stat-label">Anatomical Areas</span>
           </div>
+
+          {isTeacherOrAdmin && (
+            <button
+              type="button"
+              className="btn-faculty-add-rule"
+              onClick={handleOpenAddRule}
+              id="btn-add-tajweed-rule"
+            >
+              <Icon name="plus" size={15} style={{ marginRight: 6 }} />
+              <span>+ নতুন নিয়ম যোগ করুন</span>
+            </button>
+          )}
         </div>
       </section>
 
@@ -385,28 +524,235 @@ export default function TajweedToolsPageView({ currentUser, onNavigateTab }) {
                 )}
 
                 <div className="rule-card-footer">
-                  <span className="rule-id-tag">REF #{entry.id}</span>
-                  <button
-                    type="button"
-                    className="btn-copy-tajweed-rule"
-                    onClick={() => handleCopy(entry)}
-                  >
-                    {copiedId === entry.id ? (
+                  <div className="rule-card-footer-left">
+                    <span className="rule-id-tag">REF #{entry.id}</span>
+                  </div>
+
+                  <div className="rule-card-footer-actions">
+                    {isTeacherOrAdmin && (
                       <>
-                        <Icon name="check-circle" size={13} /> Copied!
-                      </>
-                    ) : (
-                      <>
-                        <Icon name="copy" size={13} style={{ marginRight: 4 }} /> Copy Rule &amp; Example
+                        <button
+                          type="button"
+                          className="btn-tajweed-admin-edit"
+                          onClick={() => handleOpenEditRule(entry)}
+                          title="নিয়মটি সম্পাদনা করুন (Edit Rule)"
+                          id={`btn-edit-rule-${entry.id}`}
+                        >
+                          <Icon name="edit" size={12} style={{ marginRight: 4 }} />
+                          <span>এডিট</span>
+                        </button>
+                        <button
+                          type="button"
+                          className="btn-tajweed-admin-delete"
+                          onClick={() => handleDeleteRule(entry)}
+                          title="নিয়মটি মুছে ফেলুন (Delete Rule)"
+                          id={`btn-delete-rule-${entry.id}`}
+                        >
+                          <Icon name="trash" size={12} style={{ marginRight: 4 }} />
+                          <span>মুছুন</span>
+                        </button>
                       </>
                     )}
-                  </button>
+
+                    <button
+                      type="button"
+                      className="btn-copy-tajweed-rule"
+                      onClick={() => handleCopy(entry)}
+                    >
+                      {copiedId === entry.id ? (
+                        <>
+                          <Icon name="check-circle" size={13} /> Copied!
+                        </>
+                      ) : (
+                        <>
+                          <Icon name="copy" size={13} style={{ marginRight: 4 }} /> Copy Rule &amp; Example
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
           </div>
         )}
       </section>
+
+      {/* 6. Admin / Teacher Tajweed Rule Add & Edit Modal */}
+      {isRuleModalOpen && (
+        <div className="portal-modal-backdrop" onClick={handleCloseModal}>
+          <div
+            className="portal-modal-dialog tajweed-rule-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="portal-modal-header">
+              <div className="portal-modal-header-info">
+                <span className="modal-header-badge">
+                  <Icon name="scholar" size={14} style={{ marginRight: 6 }} />
+                  {currentUser?.role === 'admin' ? 'এডমিন কনসোল' : 'শিক্ষক প্যানেল'}
+                </span>
+                <h3 className="portal-modal-title">
+                  {editingRule ? 'তাজবীদ নিয়ম সম্পাদনা (Edit Rule)' : 'নতুন তাজবীদ নিয়ম যোগ করুন (Add Rule)'}
+                </h3>
+              </div>
+              <button
+                type="button"
+                className="portal-modal-close-btn"
+                onClick={handleCloseModal}
+                aria-label="Close modal"
+              >
+                <Icon name="x" size={18} />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveRule} className="tajweed-rule-form">
+              <div className="tajweed-form-row">
+                <div className="tajweed-form-group">
+                  <label className="tajweed-form-label">ক্যাটাগরি (Category)</label>
+                  <select
+                    className="tajweed-form-select"
+                    value={ruleFormData.category}
+                    onChange={(e) => handleFormChange('category', e.target.value)}
+                  >
+                    <option value="noon_tanween">নূন সাকিন ও তানভীন (Noon & Tanween)</option>
+                    <option value="makharij">মাখরাজ ও উচ্চারণ (Makharij)</option>
+                    <option value="sifaat">সিফাত ও কলকলাহ (Sifaat & Qalqalah)</option>
+                    <option value="meem_sakinah">মীম সাকিনার বিধান (Meem Sakinah)</option>
+                    <option value="madd">মাদ ও ত্বলাক্বাহ (Madd Elongation)</option>
+                    <option value="waqf">ওয়াকফ ও বিরতি চিহ্ন (Waqf Signs)</option>
+                    <option value="classroom">ক্লাসরুম নির্দেশনা (Classroom)</option>
+                  </select>
+                </div>
+
+                <div className="tajweed-form-group">
+                  <label className="tajweed-form-label">উচ্চারণ ও ইংরেজি শিরোনাম (Transliteration)</label>
+                  <input
+                    type="text"
+                    className="tajweed-form-input"
+                    placeholder="e.g. Al-Ikhfa Al-Haqiqi"
+                    value={ruleFormData.termTranslit}
+                    onChange={(e) => handleFormChange('termTranslit', e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="tajweed-form-row">
+                <div className="tajweed-form-group">
+                  <label className="tajweed-form-label">আরবী পরিভাষা (Arabic Term)*</label>
+                  <input
+                    type="text"
+                    dir="rtl"
+                    className="tajweed-form-input tajweed-arabic-input"
+                    placeholder="যেমন: الإِخْفَاءُ الحَقِيقِيُّ"
+                    value={ruleFormData.termArabic}
+                    onChange={(e) => handleFormChange('termArabic', e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div className="tajweed-form-group">
+                  <label className="tajweed-form-label">বাংলা/ইংরেজি শিরোনাম (Title/Meaning)*</label>
+                  <input
+                    type="text"
+                    className="tajweed-form-input"
+                    placeholder="যেমন: ইখফায়ে হাকিকী (True Concealment)"
+                    value={ruleFormData.termEnglish}
+                    onChange={(e) => handleFormChange('termEnglish', e.target.value)}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="tajweed-form-group">
+                <label className="tajweed-form-label">নিয়ম ও বিস্তারিত সংজ্ঞা (Definition &amp; Rules)</label>
+                <textarea
+                  className="tajweed-form-textarea"
+                  rows={4}
+                  placeholder="নিয়মের প্রয়োগ পদ্ধতি, হরফ সংখ্যা, গুন্নাহর পরিমাণ ও সতর্কতা লিখুন..."
+                  value={ruleFormData.definition}
+                  onChange={(e) => handleFormChange('definition', e.target.value)}
+                />
+              </div>
+
+              <div className="tajweed-form-group">
+                <label className="tajweed-form-label">কোরআনী উদাহরণ (Authentic Quranic Example)</label>
+                <input
+                  type="text"
+                  dir="rtl"
+                  className="tajweed-form-input tajweed-arabic-input"
+                  placeholder="যেমন: مِن قَبْلِكُمْ ، كُنتُمْ خَيْرَ أُمَّةٍ"
+                  value={ruleFormData.example}
+                  onChange={(e) => handleFormChange('example', e.target.value)}
+                />
+              </div>
+
+              <div className="tajweed-modal-footer">
+                <button
+                  type="button"
+                  className="btn-modal-cancel"
+                  onClick={handleCloseModal}
+                  disabled={isSubmitting}
+                >
+                  বাতিল
+                </button>
+                <button
+                  type="submit"
+                  className="btn-modal-save-rule"
+                  disabled={isSubmitting}
+                  id="btn-save-tajweed-rule"
+                >
+                  {isSubmitting ? (
+                    <>সংরক্ষণ করা হচ্ছে...</>
+                  ) : (
+                    <>
+                      <Icon name="check" size={15} style={{ marginRight: 6 }} />
+                      {editingRule ? 'আপডেট সংরক্ষণ করুন' : 'নতুন নিয়ম যুক্ত করুন'}
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* 7. Delete Confirmation Dialog */}
+      {deleteConfirmId && (
+        <div className="portal-modal-backdrop" onClick={() => setDeleteConfirmId(null)}>
+          <div
+            className="portal-modal-dialog delete-confirm-dialog"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="delete-dialog-body">
+              <div className="delete-dialog-icon">
+                <Icon name="trash" size={32} color="#DC2626" />
+              </div>
+              <h3 className="delete-dialog-title">তাজবীদ নিয়মটি মুছে ফেলতে চান?</h3>
+              <p className="delete-dialog-text">
+                এই নিয়মটি ডিলিট করলে তা শিক্ষক ও শিক্ষার্থীদের তাজবীদ রেফারেন্স তালিকা থেকে স্থায়ীভাবে অপসারিত হবে।
+              </p>
+              <div className="delete-dialog-actions">
+                <button
+                  type="button"
+                  className="btn-dialog-cancel"
+                  onClick={() => setDeleteConfirmId(null)}
+                  disabled={isSubmitting}
+                >
+                  না, বাতিল করুন
+                </button>
+                <button
+                  type="button"
+                  className="btn-dialog-confirm-delete"
+                  onClick={confirmDeleteRule}
+                  disabled={isSubmitting}
+                  id="btn-confirm-delete-rule"
+                >
+                  {isSubmitting ? 'মুছে ফেলা হচ্ছে...' : 'হ্যাঁ, নিশ্চিতভাবে মুছুন'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

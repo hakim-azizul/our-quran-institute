@@ -10,6 +10,7 @@ export default function StudentProgressComboChart({
   progressLogs = [],
 }) {
   const [timeframe, setTimeframe] = useState('weekly'); // 'weekly' | 'monthly'
+  const [selectedCalendarWeek, setSelectedCalendarWeek] = useState('2026-W43'); // ISO format e.g. '2026-W43'
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [pieMode, setPieMode] = useState('curriculum'); // 'curriculum' | 'quality'
   const [hoveredSlice, setHoveredSlice] = useState(null);
@@ -17,27 +18,74 @@ export default function StudentProgressComboChart({
   // Dynamic datasets based on student
   const isSecondStudent = studentId === 'QI-STU-7721' || memorizedJuz < 10;
 
-  const weeklyData = isSecondStudent
-    ? [
-        { label: 'W1', period: 'Week 1', date: 'Aug 15', pages: 8, accuracy: 88, status: 'Good Retention' },
-        { label: 'W2', period: 'Week 2', date: 'Aug 22', pages: 10, accuracy: 89, status: 'Good Progress' },
-        { label: 'W3', period: 'Week 3', date: 'Aug 29', pages: 9, accuracy: 91, status: 'Madd Mastered' },
-        { label: 'W4', period: 'Week 4', date: 'Sep 05', pages: 12, accuracy: 92, status: 'Consistent Pace' },
-        { label: 'W5', period: 'Week 5', date: 'Sep 12', pages: 11, accuracy: 90, status: 'Revision Focus' },
-        { label: 'W6', period: 'Week 6', date: 'Sep 19', pages: 14, accuracy: 93, status: 'Surah Completed' },
-        { label: 'W7', period: 'Week 7', date: 'Sep 26', pages: 13, accuracy: 94, status: 'Punctual & Fluent' },
-        { label: 'W8', period: 'Week 8', date: 'Oct 03 (Current)', pages: 15, accuracy: 95, status: 'Mumtaz Recitation' },
-      ]
-    : [
-        { label: 'W1', period: 'Week 1', date: 'Aug 15', pages: 12, accuracy: 91, status: 'Smooth Progression' },
-        { label: 'W2', period: 'Week 2', date: 'Aug 22', pages: 15, accuracy: 93, status: 'Ghunnah Precision' },
-        { label: 'W3', period: 'Week 3', date: 'Aug 29', pages: 14, accuracy: 94, status: 'Sabqi Cleared' },
-        { label: 'W4', period: 'Week 4', date: 'Sep 05', pages: 18, accuracy: 95, status: 'Excellent Cadence' },
-        { label: 'W5', period: 'Week 5', date: 'Sep 12', pages: 16, accuracy: 95, status: '100% Punctual' },
-        { label: 'W6', period: 'Week 6', date: 'Sep 19', pages: 20, accuracy: 97, status: 'Surah Yusuf Milestone' },
-        { label: 'W7', period: 'Week 7', date: 'Sep 26', pages: 17, accuracy: 96, status: 'Tajweed Mastery' },
-        { label: 'W8', period: 'Week 8', date: 'Oct 03 (Current)', pages: 22, accuracy: 98, status: 'Mumtaz (Top Scholar Grade)' },
-      ];
+  // Comprehensive Academic Calendar Weeks for Term 2026 (Centered around October 2026)
+  const ACADEMIC_WEEKS = [
+    { iso: '2026-W34', weekNum: 34, label: 'W34', period: 'Week 34', date: 'Aug 17', dateRange: 'Aug 17 – Aug 23, 2026', dateRangeBn: '১৭ – ২৩ আগস্ট, ২০২৬', pages: isSecondStudent ? 8 : 12, accuracy: 91, status: 'Smooth Progression', sabaq: 'Surah Al-Anbiya (Ayahs 1–25)', sabqi: 'Juz 8 (4p)', manzil: 'Juz 1–3 Cycle' },
+    { iso: '2026-W35', weekNum: 35, label: 'W35', period: 'Week 35', date: 'Aug 24', dateRange: 'Aug 24 – Aug 30, 2026', dateRangeBn: '২৪ – ৩০ আগস্ট, ২০২৬', pages: isSecondStudent ? 9 : 14, accuracy: 92, status: 'Ghunnah Precision', sabaq: 'Surah Al-Anbiya (Ayahs 26–55)', sabqi: 'Juz 8–9 (6p)', manzil: 'Juz 1–4 Cycle' },
+    { iso: '2026-W36', weekNum: 36, label: 'W36', period: 'Week 36', date: 'Aug 31', dateRange: 'Aug 31 – Sep 06, 2026', dateRangeBn: '৩১ আগস্ট – ০৬ সেপ্টেম্বর, ২০২৬', pages: isSecondStudent ? 10 : 15, accuracy: 93, status: 'Sabqi Cleared', sabaq: 'Surah Al-Hajj (Ayahs 1–24)', sabqi: 'Juz 9 (6p)', manzil: 'Juz 1–4 Cycle' },
+    { iso: '2026-W37', weekNum: 37, label: 'W37', period: 'Week 37', date: 'Sep 07', dateRange: 'Sep 07 – Sep 13, 2026', dateRangeBn: '০৭ – ১৩ সেপ্টেম্বর, ২০২৬', pages: isSecondStudent ? 11 : 16, accuracy: 94, status: 'Madd Rules Mastered', sabaq: 'Surah Al-Hajj (Ayahs 25–55)', sabqi: 'Juz 9–10 (7p)', manzil: 'Juz 1–5 Cycle' },
+    { iso: '2026-W38', weekNum: 38, label: 'W38', period: 'Week 38', date: 'Sep 14', dateRange: 'Sep 14 – Sep 20, 2026', dateRangeBn: '১৪ – ২০ সেপ্টেম্বর, ২০২৬', pages: isSecondStudent ? 12 : 18, accuracy: 95, status: 'Excellent Cadence', sabaq: 'Surah Al-Mu\'minun (Ayahs 1–35)', sabqi: 'Juz 10 (8p)', manzil: 'Juz 1–5 Cycle' },
+    { iso: '2026-W39', weekNum: 39, label: 'W39', period: 'Week 39', date: 'Sep 21', dateRange: 'Sep 21 – Sep 27, 2026', dateRangeBn: '২১ – ২৭ সেপ্টেম্বর, ২০২৬', pages: isSecondStudent ? 13 : 17, accuracy: 95, status: '100% Punctual', sabaq: 'Surah Al-Mu\'minun (Ayahs 36–75)', sabqi: 'Juz 10–11 (8p)', manzil: 'Juz 1–6 Cycle' },
+    { iso: '2026-W40', weekNum: 40, label: 'W40', period: 'Week 40', date: 'Sep 28', dateRange: 'Sep 28 – Oct 04, 2026', dateRangeBn: '২৮ সেপ্টেম্বর – ০৪ অক্টোবর, ২০২৬', pages: isSecondStudent ? 14 : 19, accuracy: 96, status: 'Tajweed Mastery', sabaq: 'Surah An-Nur (Ayahs 1–30)', sabqi: 'Juz 11 (8p)', manzil: 'Juz 1–6 Cycle' },
+    { iso: '2026-W41', weekNum: 41, label: 'W41', period: 'Week 41', date: 'Oct 05', dateRange: 'Oct 05 – Oct 11, 2026', dateRangeBn: '০৫ – ১১ অক্টোবর, ২০২৬', pages: isSecondStudent ? 14 : 20, accuracy: 97, status: 'Juz 11 Passed Exam', sabaq: 'Surah An-Nur (Ayahs 31–64)', sabqi: 'Juz 11 Cleared', manzil: 'Juz 1–6 Cycle' },
+    { iso: '2026-W42', weekNum: 42, label: 'W42', period: 'Week 42', date: 'Oct 12', dateRange: 'Oct 12 – Oct 18, 2026', dateRangeBn: '১২ – ১৮ অক্টোবর, ২০২৬', pages: isSecondStudent ? 15 : 21, accuracy: 97, status: 'Surah Yusuf Milestone', sabaq: 'Surah Yusuf (Ayahs 1–25)', sabqi: 'Juz 11 (8p)', manzil: 'Juz 1–6 Cycle' },
+    { iso: '2026-W43', weekNum: 43, label: 'W43 (Current)', period: 'Week 43 (Current)', date: 'Oct 19', dateRange: 'Oct 19 – Oct 25, 2026', dateRangeBn: '১৯ – ২৫ অক্টোবর, ২০২৬ (চলতি সপ্তাহ)', pages: isSecondStudent ? 15 : 22, accuracy: 98, status: 'Mumtaz (Top Scholar Grade)', sabaq: 'Surah Yusuf (Ayahs 26–52)', sabqi: 'Juz 11–12 (9p)', manzil: 'Juz 1–6 Cycle' },
+    { iso: '2026-W44', weekNum: 44, label: 'W44', period: 'Week 44', date: 'Oct 26', dateRange: 'Oct 26 – Nov 01, 2026', dateRangeBn: '২৬ অক্টোবর – ০১ নভেম্বর, ২০২৬', pages: isSecondStudent ? 16 : 22, accuracy: 98, status: 'Upcoming Target', sabaq: 'Surah Yusuf (Ayahs 53–79)', sabqi: 'Juz 12 (9p)', manzil: 'Juz 1–7 Cycle' },
+  ];
+
+  // Helper to parse arbitrary ISO week string (e.g. '2026-W42')
+  const getCustomWeekInfo = (isoStr) => {
+    const existing = ACADEMIC_WEEKS.find((w) => w.iso === isoStr);
+    if (existing) return existing;
+
+    const match = isoStr.match(/^(\d{4})-W(\d{2})$/);
+    if (!match) return ACADEMIC_WEEKS[ACADEMIC_WEEKS.length - 2];
+
+    const year = parseInt(match[1], 10);
+    const weekNum = parseInt(match[2], 10);
+
+    const simple = new Date(year, 0, 1 + (weekNum - 1) * 7);
+    const dayOfWeek = simple.getDay();
+    const ISOweekStart = simple;
+    if (dayOfWeek <= 4) {
+      ISOweekStart.setDate(simple.getDate() - simple.getDay() + 1);
+    } else {
+      ISOweekStart.setDate(simple.getDate() + 8 - simple.getDay());
+    }
+    const ISOweekEnd = new Date(ISOweekStart);
+    ISOweekEnd.setDate(ISOweekStart.getDate() + 6);
+
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const sDate = `${ISOweekStart.getDate().toString().padStart(2, '0')} ${monthNames[ISOweekStart.getMonth()]}`;
+    const eDate = `${ISOweekEnd.getDate().toString().padStart(2, '0')} ${monthNames[ISOweekEnd.getMonth()]}, ${year}`;
+
+    return {
+      iso: isoStr,
+      weekNum,
+      label: `W${weekNum}`,
+      period: `Week ${weekNum}`,
+      date: sDate,
+      dateRange: `${sDate} – ${eDate}`,
+      dateRangeBn: `সপ্তাহ ${weekNum} (${year})`,
+      pages: isSecondStudent ? Math.min(18, 8 + (weekNum % 8)) : Math.min(24, 12 + (weekNum % 10)),
+      accuracy: 90 + (weekNum % 9),
+      status: 'Hafiz Cadence Active',
+      sabaq: `Weekly Sabaq Unit ${weekNum}`,
+      sabqi: `Juz Revision Pace`,
+      manzil: `Regular Manzil Cycle`,
+    };
+  };
+
+  const selectedWeekObj = getCustomWeekInfo(selectedCalendarWeek);
+
+  // Build rolling 8-week window displayed on the bar chart that includes the selected calendar week
+  const selectedIdxInList = ACADEMIC_WEEKS.findIndex((w) => w.iso === selectedCalendarWeek);
+  const endIdx = selectedIdxInList !== -1 ? Math.min(ACADEMIC_WEEKS.length, Math.max(8, selectedIdxInList + 1)) : ACADEMIC_WEEKS.length;
+  const startIdx = Math.max(0, endIdx - 8);
+  const weeklyData = ACADEMIC_WEEKS.slice(startIdx, endIdx).map((w) => ({
+    ...w,
+    isSelected: w.iso === selectedCalendarWeek,
+  }));
 
   const monthlyData = isSecondStudent
     ? [
@@ -132,7 +180,12 @@ export default function StudentProgressComboChart({
     activeDataset.reduce((sum, d) => sum + d.accuracy, 0) / activeDataset.length
   ).toFixed(1);
 
-  const activePoint = hoveredIndex !== null ? points[hoveredIndex] : points[points.length - 1];
+  const activePoint =
+    hoveredIndex !== null
+      ? points[hoveredIndex]
+      : timeframe === 'weekly'
+      ? points.find((p) => p.isSelected) || points[points.length - 1]
+      : points[points.length - 1];
 
   // =========================================================================
   // PIE / DONUT CHART DATASETS (Curriculum Focus vs Recitation Quality)
@@ -481,6 +534,199 @@ export default function StudentProgressComboChart({
         </div>
       </div>
 
+      {/* Interactive Calendar Week Selector Toolbar */}
+      {timeframe === 'weekly' && (
+        <div
+          style={{
+            background: '#FAF8F3',
+            border: '1.5px solid #EEDFB8',
+            borderRadius: '12px',
+            padding: '10px 14px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '12px',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+              <span
+                style={{
+                  width: '26px',
+                  height: '26px',
+                  borderRadius: '6px',
+                  background: '#FDF8EC',
+                  border: '1px solid #D4AF37',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#B8860B',
+                }}
+              >
+                <Icon name="calendar" size={14} />
+              </span>
+              <span style={{ fontSize: '12.5px', fontWeight: '800', color: '#0D4A38' }}>
+                ক্যালেন্ডার সপ্তাহ (Calendar Week):
+              </span>
+            </div>
+
+            {/* Stepper Navigation */}
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+              <button
+                type="button"
+                title="Previous Calendar Week"
+                onClick={() => {
+                  const curIdx = ACADEMIC_WEEKS.findIndex((w) => w.iso === selectedCalendarWeek);
+                  if (curIdx > 0) {
+                    setSelectedCalendarWeek(ACADEMIC_WEEKS[curIdx - 1].iso);
+                  }
+                }}
+                style={{
+                  width: '28px',
+                  height: '28px',
+                  borderRadius: '6px',
+                  border: '1px solid #D4AF37',
+                  background: '#FFFFFF',
+                  color: '#0D4A38',
+                  fontWeight: '800',
+                  fontSize: '13px',
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                ◀
+              </button>
+              <button
+                type="button"
+                title="Next Calendar Week"
+                onClick={() => {
+                  const curIdx = ACADEMIC_WEEKS.findIndex((w) => w.iso === selectedCalendarWeek);
+                  if (curIdx !== -1 && curIdx < ACADEMIC_WEEKS.length - 1) {
+                    setSelectedCalendarWeek(ACADEMIC_WEEKS[curIdx + 1].iso);
+                  }
+                }}
+                style={{
+                  width: '28px',
+                  height: '28px',
+                  borderRadius: '6px',
+                  border: '1px solid #D4AF37',
+                  background: '#FFFFFF',
+                  color: '#0D4A38',
+                  fontWeight: '800',
+                  fontSize: '13px',
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                ▶
+              </button>
+            </div>
+
+            {/* HTML5 Native Calendar Week Picker */}
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+              <input
+                type="week"
+                id="calendar-week-picker"
+                value={selectedCalendarWeek}
+                onChange={(e) => {
+                  if (e.target.value) {
+                    setSelectedCalendarWeek(e.target.value);
+                    if (timeframe !== 'weekly') setTimeframe('weekly');
+                  }
+                }}
+                title="Click to pick calendar week from calendar"
+                style={{
+                  padding: '4px 8px',
+                  fontSize: '12px',
+                  fontWeight: '700',
+                  borderRadius: '6px',
+                  border: '1.5px solid #D4AF37',
+                  background: '#FFFFFF',
+                  color: '#0D4A38',
+                  cursor: 'pointer',
+                  outline: 'none',
+                }}
+              />
+            </div>
+
+            {/* Academic Weeks Dropdown */}
+            <select
+              value={selectedCalendarWeek}
+              onChange={(e) => {
+                setSelectedCalendarWeek(e.target.value);
+                if (timeframe !== 'weekly') setTimeframe('weekly');
+              }}
+              style={{
+                padding: '5px 10px',
+                fontSize: '12px',
+                fontWeight: '700',
+                borderRadius: '6px',
+                border: '1.5px solid #D4AF37',
+                background: '#FFFFFF',
+                color: '#0D4A38',
+                cursor: 'pointer',
+                outline: 'none',
+                maxWidth: '260px',
+              }}
+            >
+              {ACADEMIC_WEEKS.map((w) => (
+                <option key={w.iso} value={w.iso}>
+                  {w.dateRange} ({w.label})
+                </option>
+              ))}
+            </select>
+
+            {/* Quick "This Week" Button */}
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedCalendarWeek('2026-W43');
+                if (timeframe !== 'weekly') setTimeframe('weekly');
+              }}
+              style={{
+                padding: '4px 10px',
+                fontSize: '11px',
+                fontWeight: '800',
+                borderRadius: '6px',
+                border: selectedCalendarWeek === '2026-W43' ? '1.5px solid #0D4A38' : '1px solid #CBD5E1',
+                background: selectedCalendarWeek === '2026-W43' ? '#0D4A38' : '#FFFFFF',
+                color: selectedCalendarWeek === '2026-W43' ? '#FFFFFF' : '#475569',
+                cursor: 'pointer',
+                transition: 'all 0.15s ease',
+              }}
+            >
+              চলতি সপ্তাহ
+            </button>
+          </div>
+
+          {/* Selected Week Badge & Date Range Display */}
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+            <span
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '4px 10px',
+                borderRadius: '8px',
+                background: '#E8F5E9',
+                border: '1px solid #A5D6A7',
+                fontSize: '11.5px',
+                fontWeight: '700',
+                color: '#1B5E20',
+              }}
+            >
+              <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#2E7D32', display: 'inline-block' }} />
+              <span>সপ্তাহ {selectedWeekObj.weekNum}: <strong>{selectedWeekObj.dateRangeBn || selectedWeekObj.dateRange}</strong></span>
+            </span>
+          </div>
+        </div>
+      )}
+
       {/* =====================================================================
           TWO-COLUMN EXECUTIVE ANALYTICS: COMBO CHART + PIE / DONUT BREAKDOWN
           ===================================================================== */}
@@ -583,19 +829,47 @@ export default function StudentProgressComboChart({
                 return (
                   <g
                     key={`track-${p.index}`}
+                    onClick={() => {
+                      if (p.iso) setSelectedCalendarWeek(p.iso);
+                    }}
                     onMouseEnter={() => setHoveredIndex(p.index)}
                     onMouseLeave={() => setHoveredIndex(null)}
                     style={{ cursor: 'pointer' }}
                   >
+                    {/* Active Selection Badge above Pillar */}
+                    {p.isSelected && (
+                      <g>
+                        <rect
+                          x={p.x - 22}
+                          y={paddingTop - 16}
+                          width="44"
+                          height="13"
+                          rx="4"
+                          fill="#B8860B"
+                        />
+                        <text
+                          x={p.x}
+                          y={paddingTop - 6}
+                          textAnchor="middle"
+                          fontSize="7.5"
+                          fontWeight="900"
+                          fill="#FFFFFF"
+                          letterSpacing="0.4"
+                        >
+                          ACTIVE
+                        </text>
+                      </g>
+                    )}
+
                     {/* Pillar Guide Track */}
                     <rect
                       x={p.barX - 2}
                       y={paddingTop}
                       width={p.barWidth + 4}
                       height={chartHeight}
-                      fill={isHovered ? '#FDF8EC' : '#FFFFFF'}
-                      stroke={isHovered ? '#D4AF37' : '#F1EAD8'}
-                      strokeWidth="1"
+                      fill={p.isSelected ? '#FFF8E1' : isHovered ? '#FDF8EC' : '#FFFFFF'}
+                      stroke={p.isSelected ? '#B8860B' : isHovered ? '#D4AF37' : '#F1EAD8'}
+                      strokeWidth={p.isSelected ? '2' : '1'}
                       rx="5"
                       ry="5"
                     />
@@ -606,7 +880,7 @@ export default function StudentProgressComboChart({
                       y={p.barY}
                       width={p.barWidth}
                       height={p.barHeight}
-                      fill={isHovered ? '#B8860B' : '#D4AF37'}
+                      fill={p.isSelected ? '#B8860B' : isHovered ? '#D4AF37' : '#D4AF37'}
                       rx="4"
                       ry="4"
                     />
@@ -1022,6 +1296,74 @@ export default function StudentProgressComboChart({
         </div>
       </div>
 
+      {/* Selected Calendar Week Syllabus & Target Dossier */}
+      {timeframe === 'weekly' && (
+        <div
+          style={{
+            background: 'linear-gradient(135deg, #FAF7EE 0%, #FFFFFF 100%)',
+            border: '1.5px solid #D4AF37',
+            borderRadius: '12px',
+            padding: '12px 16px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '12px',
+            boxShadow: '0 2px 8px rgba(13, 74, 56, 0.04)',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <span
+              style={{
+                width: '32px',
+                height: '32px',
+                borderRadius: '8px',
+                background: '#0D4A38',
+                color: '#D4AF37',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+              }}
+            >
+              <Icon name="book" size={16} />
+            </span>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                <span style={{ fontSize: '13px', fontWeight: '800', color: '#0D4A38' }}>
+                  সাপ্তাহিক রুটিন ও সিলেবাস: {selectedWeekObj.dateRangeBn || selectedWeekObj.dateRange}
+                </span>
+                <span style={{ fontSize: '11px', fontWeight: '700', padding: '1px 6px', borderRadius: '4px', background: '#D4AF37', color: '#FFFFFF' }}>
+                  {selectedWeekObj.period}
+                </span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap', marginTop: '4px', fontSize: '12px' }}>
+                <span style={{ color: '#1E293B' }}>
+                  <strong style={{ color: '#B8860B' }}>নতুন পড়া (Sabaq):</strong> {selectedWeekObj.sabaq}
+                </span>
+                <span style={{ color: '#1E293B' }}>
+                  <strong style={{ color: '#0D4A38' }}>নৈশ পড়া (Sabqi):</strong> {selectedWeekObj.sabqi}
+                </span>
+                <span style={{ color: '#1E293B' }}>
+                  <strong style={{ color: '#15664F' }}>আমোল পারা (Manzil):</strong> {selectedWeekObj.manzil}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '10px' }}>
+            <div style={{ textAlign: 'right' }}>
+              <div style={{ fontSize: '14px', fontWeight: '800', color: '#0D4A38' }}>
+                {selectedWeekObj.pages} Pages • {selectedWeekObj.accuracy}%
+              </div>
+              <div style={{ fontSize: '10.5px', fontWeight: '600', color: '#8C6819' }}>
+                {selectedWeekObj.status}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* =====================================================================
           SMART SPACE KPI MATRIX — BALANCED 4-CARD EXECUTIVE ROW
           ===================================================================== */}
@@ -1065,7 +1407,7 @@ export default function StudentProgressComboChart({
             {activePoint.period}
           </div>
           <div style={{ fontSize: '11px', color: '#64748B' }}>
-            Date: <strong style={{ color: '#0D4A38' }}>{activePoint.date}</strong>
+            Date: <strong style={{ color: '#0D4A38' }}>{activePoint.dateRange || activePoint.date}</strong>
           </div>
         </div>
 

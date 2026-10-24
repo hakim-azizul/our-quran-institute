@@ -643,6 +643,52 @@ export function Icon({
         </svg>
       );
 
+    case 'maximize':
+    case 'fullscreen':
+    case 'expand':
+      return (
+        <svg {...props} viewBox="0 0 24 24">
+          <path d="M8 3H5a2 2 0 0 0-2 2v3" />
+          <path d="M21 8V5a2 2 0 0 0-2-2h-3" />
+          <path d="M3 16v3a2 2 0 0 0 2 2h3" />
+          <path d="M16 21h3a2 2 0 0 0 2-2v-3" />
+        </svg>
+      );
+
+    case 'maximize-2':
+    case 'expand-arrows':
+      return (
+        <svg {...props} viewBox="0 0 24 24">
+          <polyline points="15 3 21 3 21 9" />
+          <polyline points="9 21 3 21 3 15" />
+          <line x1="21" x2="14" y1="3" y2="10" />
+          <line x1="3" x2="10" y1="21" y2="14" />
+        </svg>
+      );
+
+    case 'minimize':
+    case 'exit-fullscreen':
+    case 'shrink':
+      return (
+        <svg {...props} viewBox="0 0 24 24">
+          <path d="M8 3v3a2 2 0 0 1-2 2H3" />
+          <path d="M21 8h-3a2 2 0 0 1-2-2V3" />
+          <path d="M3 16h3a2 2 0 0 1 2 2v3" />
+          <path d="M16 21v-3a2 2 0 0 1 2-2h3" />
+        </svg>
+      );
+
+    case 'minimize-2':
+    case 'shrink-arrows':
+      return (
+        <svg {...props} viewBox="0 0 24 24">
+          <polyline points="4 14 10 14 10 20" />
+          <polyline points="20 10 14 10 14 4" />
+          <line x1="14" x2="21" y1="10" y2="3" />
+          <line x1="3" x2="10" y1="21" y2="14" />
+        </svg>
+      );
+
     default:
       return null;
   }
